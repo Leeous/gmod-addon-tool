@@ -1,0 +1,21 @@
+{
+  "name": "gmod-addon-tool",
+  "version": "1.0.0",
+  "description": "A simple tool to update workshop addons.",
+  "main": "index.js",
+  "dependencies": {
+    "cross-spawn": "^6.0.5",
+    "electron-settings": "^3.2.0",
+    "jquery": "^3.4.0"
+  },
+  "devDependencies": {
+    "electron": "^5.0.0",
+    "electron-connect": "^0.6.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "author": "Leeous <contact@leeous.com>",
+  "license": "ISC"
+}

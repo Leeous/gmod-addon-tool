@@ -1,0 +1,157 @@
+/* General */
+
+body {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+}
+
+header, main, footer {
+    padding: 0 5px;    
+}
+
+header input[type="file"] {
+    padding: 5px 30px;
+    color: white;
+    display: inline-block;
+}
+
+header {
+    text-align: center;
+}
+
+button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+    font-size: .8em;
+    cursor: pointer;
+    transition: ease 0.5s all;
+    outline: none;
+}
+
+button:hover {
+    background-color: rgb(167, 167, 167); 
+    color: white;
+}
+
+/* IDs */
+
+#main_titlebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0f0f0f;
+    -webkit-app-region: drag;
+    font-weight: 700;
+    /* box-shadow: black 0 0 15px; */
+}
+
+#main_titlebar .main_buttons p {
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0;
+    -webkit-app-region: no-drag;
+}
+
+#main_titlebar .main_buttons p:hover {
+    background-color: #202020;
+}
+
+#main_titlebar .main_title p {
+    display: inline-block;
+    margin: 0;
+    padding: 0 5px;
+}
+
+#dir_select_prompt {
+    font-weight: 400;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+#real_select {
+    display: none;
+}
+
+#fake_select {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+    font-size: .8em;
+    cursor: pointer;
+    transition: ease 0.5s all;
+    outline: none;
+}
+
+#fake_select:hover {
+    background-color: rgb(167, 167, 167); 
+    color: white;
+}
+
+#status_of_dir {
+    text-align: center;
+}
+
+#dir_prompt_next {
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+#dir_prompt_next button {
+    width: 100%;
+    border-radius: 0;
+    background-color: #0f0f0f;
+    color: white;
+    cursor: not-allowed;
+    border: none;
+    padding: 10px 0;
+    transform: ease 0.8s;
+    font-weight: 700;
+}
+
+#gmodDirSelect {
+    text-align: center;
+}
+
+#checkmarkNote {
+    background-color: rgba(0, 0, 0, .7);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    text-align: center;
+    font-weight: 700;
+    display: none;
+}
+
+#checkmarkNote img {
+    display: block;
+    width: 15%;
+    margin-top: 50px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#addon_management, #directory_selection {
+}
+
+#addon_management {
+    display: none;
+    text-align: center;
+}
+
+#addon_management button {
+    font-size: 1.1em;
+    margin: 10px;
+}
+
+#directory_selection {
+    display: none;
+}

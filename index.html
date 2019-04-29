@@ -1,0 +1,45 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script>require('electron-connect').client.create()</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+    <script src="src/js/script.js"></script>
+    <title>Garry's Mod Addon Tool</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <div id="main_titlebar">
+        <div class="main_title">
+            <p>Garry's Mod Addon Tool</p>
+        </div>
+        <div class="main_buttons">
+            <p id="minApp">—</p>
+            <p id="closeApp">X</p>
+        </div>
+    </div>
+    <div id="directory_selection">
+        <div id="gmodDirSelect">
+            <h3 id="dir_select_prompt">Please select your Garry's Mod directory</h3>
+            <button id="fake_select">Choose Directory</button>
+            <input id="real_select" type="file" webkitdirectory />
+        </div>
+        <p id="status_of_dir"></p>
+        <div id="dir_prompt_next">
+            <button disabled>Next</button>
+        </div>
+    </div>
+    <div id="addon_management">
+        <h3>What would you like to do?</h3>
+        <button>Create a new addon</button>
+        <br/>
+        <button>Update an existing addon</button>
+    </div>
+    <div id="checkmarkNote">
+        <img src="src/img/checkmark.png" alt="">
+        <p>Saved!</p>
+    </div>
+</body>
+</html>
