@@ -16,8 +16,6 @@ let mainWindow
 //   console.log("started console app", stdout, stderr, error);
 // });
 
-settings.deleteAll();
-
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -83,13 +81,9 @@ ipcMain.on('getAddonInfo', () => {
 var ADDON_IDS = []
 
 // We use this to get the addon IDs from gmpublish.exe
-if (settings.get('gmodDirectory') != null) {
-  sendClientAddonInfo()
-}
 
 function sendClientAddonInfo() {
   const bat = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['list']);
-
   bat.stdout.on('data', (data) => {
     var arrayOfOutput = data.toString().split('\n')
     var fixedArray = arrayOfOutput.slice(4, arrayOfOutput.length - 3)

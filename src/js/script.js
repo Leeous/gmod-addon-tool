@@ -8,10 +8,12 @@ const settings = require('electron-settings');
 let win = remote.getCurrentWindow()
 
 var addon_data = []
+okToProcessAddonList = false
+donePopulatingAddonList = false
 
 $(document).ready(() => {
     ipcRenderer.on('message', (event, message) => {
-
+        
         var arrayOfAddonIds = message;
         
         for (let index = 0; index < arrayOfAddonIds.length; index++) {
@@ -39,28 +41,14 @@ $(document).ready(() => {
                 },
                 dataType: 'json',
             });
-
-
-            for (let i = 0; i < arrayOfAddonIds.length; i++) {
-                if (i < arrayOfAddonIds) {
-                    $('#yourAddons').append("<p><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything.</p>")
-                }
-            }
         }
-        
-        if (0 == addon_data.length) {
-            $('#yourAddons').append("<p><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything.</p>")
-        }
-        
-        for (let i = 0; i < addon_data.length; i++) {
-            console.log('HEY')
-            $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p></div>")
-        }
-
+        okToProcessAddonList = true;
+        $('#update_existing_addon_button').text('Update existing addon')
     });
 
     if (settings.get('gmodDirectory') != null) {
         $('#addon_management').fadeIn()
+        ipcRenderer.send('getAddonInfo')
     } else {
         $('#directory_selection').fadeIn()
     }
@@ -109,9 +97,12 @@ $(document).ready(() => {
     })
 
     $('#update_existing_addon_button').click(() => {
-        $('#addon_management_prompt').fadeOut(() => {
-            $('#update_existing_addon').fadeIn()
-        })
+        if (okToProcessAddonList) {
+            populateAddonList()
+            $('#addon_management_prompt').fadeOut(() => {
+                $('#update_existing_addon').fadeIn()
+            })
+        }
     });
 
     $('.back_button').click((event) => {
@@ -127,6 +118,19 @@ $(document).ready(() => {
         })
     }
 
+    function populateAddonList() {
+        console.log(addon_data)
+        
+        if (!donePopulatingAddonList) {
+            for (let i = 0; i < addon_data.length; i++) {
+                console.log('HEY')
+                $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p></div>")
+                donePopulatingAddonList = true;
+            }
     
-
+            if (0 == addon_data.length) {
+                $('#yourAddons').append("<p><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything.</p>")
+            }
+        }
+    }
 });
