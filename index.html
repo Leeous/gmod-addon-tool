@@ -23,6 +23,7 @@
     <div id="directory_selection">
         <div id="gmodDirSelect">
             <h3 id="dir_select_prompt">Please select your Garry's Mod directory</h3>
+            <h4 style="font-weight: 300; margin: 10px">Steam <b>must</b> be open!</h4>
             <button id="fake_select">Choose Directory</button>
             <input id="real_select" type="file" webkitdirectory />
         </div>
@@ -32,10 +33,22 @@
         </div>
     </div>
     <div id="addon_management">
-        <h3>What would you like to do?</h3>
-        <button>Create a new addon</button>
-        <br/>
-        <button>Update an existing addon</button>
+        <div id="addon_management_prompt">
+            <h3>What would you like to do?</h3>
+            <button>Create a new addon</button>
+            <br/>
+            <button id="update_existing_addon_button">Update an existing addon</button>
+        </div>
+        <div id="update_existing_addon">
+            <div class="top">
+                <button id="back_button_existing_addon" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#update_existing_addon">Back</button>
+                <h3>Your addons</h3>
+            </div>
+            <div id="yourAddons"></div>
+        </div>
+        <div id="create_new_addon">
+
+        </div>
     </div>
     <div id="checkmarkNote">
         <img src="src/img/checkmark.png" alt="">

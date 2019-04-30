@@ -142,16 +142,59 @@ button:hover {
 #addon_management, #directory_selection {
 }
 
-#addon_management {
-    display: none;
-    text-align: center;
-}
-
 #addon_management button {
     font-size: 1.1em;
     margin: 10px;
 }
 
+/* Views */
+
+#addon_management {
+    display: none;
+    text-align: center;
+}
+
 #directory_selection {
     display: none;
 }
+
+#update_existing_addon {
+    display: none;
+}
+
+#update_existing_addon .top {
+    display: flex;
+}
+
+#update_existing_addon .top h3 {
+    align-self: center;    
+    text-align: center;
+}
+
+#back_button_existing_addon {
+    background-color: rgba(0, 0, 0, .2);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    transform: ease 0.8s;
+    margin: 0;
+    display: inline-block;
+}
+
+.addon_existing {
+    font-weight: 500;
+    background-color: #161616;
+    padding: 10px 0;
+    cursor: pointer;
+    transition: ease 0.5s all;
+}
+
+.addon_existing:hover {
+    background-color: #2b2b2b;
+    padding: 15px 0;
+}
+
+.addon_existing p {
+    margin: 0
+}
+
