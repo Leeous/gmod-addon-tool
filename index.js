@@ -12,6 +12,10 @@ const settings = require('electron-settings');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+console.log('\n')
+
+// settings.deleteAll();
+
 // exec("gmad.exe", [], {cwd: 'E:\\SteamLibrary\\steamapps\\common\\GarrysMod\\bin\\gmad.exe', shell: true}, function callback(error, stdout, stderr) {
 //   console.log("started console app", stdout, stderr, error);
 // });
@@ -79,6 +83,8 @@ ipcMain.on('getAddonInfo', () => {
 })
 
 var ADDON_IDS = []
+
+
 
 // We use this to get the addon IDs from gmpublish.exe
 

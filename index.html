@@ -13,7 +13,7 @@
 <body>
     <div id="main_titlebar">
         <div class="main_title">
-            <p>Garry's Mod Addon Tool</p>
+            <p>Garry's Mod Addon Tool <span style="font-size: 0.7em; font-weight: 300; -webkit-app-region: no-drag;">by <a href="https://leeous.github.io" target="_blank" style="text-decoration: underline; color: inherit;">Leeous</a></span></p>
         </div>
         <div class="main_buttons">
             <p id="minApp">—</p>
@@ -23,9 +23,9 @@
     <div id="directory_selection">
         <div id="gmodDirSelect">
             <h3 id="dir_select_prompt">Please select your Garry's Mod directory</h3>
+            <button class="button_normal fake_select" data-buttonclick="#gmod_dir_folder">Choose Directory</button>
+            <input id="gmod_dir_folder" class="real_select" type="file" webkitdirectory />
             <h4 style="font-weight: 300; margin: 10px">Steam <b>must</b> be open!</h4>
-            <button id="fake_select">Choose Directory</button>
-            <input id="real_select" type="file" webkitdirectory />
         </div>
         <p id="status_of_dir"></p>
         <div id="dir_prompt_next">
@@ -35,19 +35,111 @@
     <div id="addon_management">
         <div id="addon_management_prompt">
             <h3>What would you like to do?</h3>
-            <button>Create a new addon</button>
-            <br/>
-            <button id="update_existing_addon_button">Loading...</button>
+            <button id="create_new_addon_button" class="button_normal medium-text" style="margin: 10px;">Create a new addon</button>
+            <button id="update_existing_addon_button" class="button_normal medium-text" style="margin: 10px;">Loading...</button>
         </div>
         <div id="update_existing_addon">
             <div class="top">
-                <button id="back_button_existing_addon" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#update_existing_addon">Back</button>
+                <button id="back_button_existing_addon" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#update_existing_addon">◀ Back</button>
                 <h3>Your addons</h3>
             </div>
             <div id="yourAddons"></div>
         </div>
         <div id="create_new_addon">
-
+            <div class="top">
+                <button id="back_button_addon_creation" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#create_new_addon">◀ Back</button>
+                <h3>Addon creation</h3>
+            </div>
+            <div id="addon_creation">
+                <div id="addonDirPrompt">
+                    <p>Please select your addon's folder</p>
+                    <button class="button_normal fake_select" data-buttonclick="#addon_dir_folder">Choose Directory</button>
+                    <input id="addon_dir_folder" class="real_select" type="file" webkitdirectory />
+                    <p id="addonDir"><b></b></p>
+                    <div class="next_prompt">
+                        <button id="addonDirCheck" class="transition_button" data-divtoshow="#addonjsonPrompt" data-divtohide="#addonDirPrompt" disabled>Next</button>
+                    </div>
+                </div>
+                <div id="addonjsonPrompt">
+                    <p>Do you already have a addon.json?</p>
+                    <div>
+                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#jsonCreator" data-divtohide="#addonjsonPrompt">No</button>
+                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#gmaPrep" data-divtohide="#addonjsonPrompt">Yes</button>
+                    </div>
+                </div>
+                <div id="jsonCreator">
+                    <div id="jsonInfo">
+                        <div id="jsonTitle">
+                            <p class="jsonSectionHeader">Title</p>
+                            <input type="text">
+                        </div>
+                        <div id="jsonType">
+                            <p class="jsonSectionHeader">Type</p>
+                            <select name="" id="">
+                                <option value="">-- Select one --</option>
+                                <option value="">Server Content</option>
+                                <option value="">Gamemode</option>
+                                <option value="">Map</option>
+                                <option value="">Weapon</option>
+                                <option value="">Vehicle</option>
+                                <option value="">NPC</option>
+                                <option value="">Tool</option>
+                                <option value="">Effects</option>
+                                <option value="">Model</option>
+                            </select>
+                        </div>
+                        <div id="jsonTags">
+                            <div class="col">
+                                <p class="jsonSectionHeader">Tags</p>
+                            </div>
+                            <div class="col">
+                                <div class="jsonGrid">
+                                    <div class="type">
+                                        <input type="checkbox" name="fun">
+                                        <p>Fun</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="roleplay">
+                                        <p>Roleplay</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="scenic">
+                                        <p>Scenic</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="movie">
+                                        <p>Movie</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="realism">
+                                        <p>Realism</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="cartoon">
+                                        <p>Cartoon</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="water">
+                                        <p>Water</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="comic">
+                                        <p>Comic</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="build">
+                                        <p>Build</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="transition_button" data-divtohide="#jsonCreator" data-divtoshow="#gmaPrep">Next</button>
+                    </div>
+                </div>
+                <div id="gmaPrep">
+                    <p>GMA creation prep</p>
+                </div>
+            </div>
         </div>
     </div>
     <div id="checkmarkNote">

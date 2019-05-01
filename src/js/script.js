@@ -5,11 +5,21 @@ const {
     files
 } = require('electron')
 const settings = require('electron-settings');
+const shell = require('electron').shell;
 let win = remote.getCurrentWindow()
 
-var addon_data = []
+addon_data = []
 okToProcessAddonList = false
 donePopulatingAddonList = false
+currentNewAddon = "";
+
+
+// assuming $ is jQuery
+$(document).on('click', 'a[href^="http"]', function(event) {
+    event.preventDefault();
+    shell.openExternal(this.href);
+});
+
 
 $(document).ready(() => {
     ipcRenderer.on('message', (event, message) => {
@@ -61,12 +71,14 @@ $(document).ready(() => {
         remote.getCurrentWindow().minimize();
     })
 
-    $('#fake_select').click(() => {
-        $('#real_select').click();
+    $('.fake_select').click((event) => {
+        var foo = event.target
+        var foo2 = $(foo).data('buttonclick')
+        $(foo2).click();
     })
 
-    $('#real_select').change(() => {
-        var filePath = document.getElementById("real_select").files[0].path
+    $('#gmod_dir_folder').change(() => {
+        var filePath = document.getElementById("gmod_dir_folder").files[0].path
         var desName = filePath.substring(filePath.length - 9, filePath.length)
         ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmad.exe")
         ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmpublish.exe")
@@ -90,6 +102,17 @@ $(document).ready(() => {
         }
     })
 
+    $('#addon_dir_folder').change(() => {
+        currentNewAddon = document.getElementById("addon_dir_folder").files[0].path
+        ipcRenderer.send('checkIfDirectoryExists', currentNewAddon)
+        var n = currentNewAddon.lastIndexOf('\\');
+        var result = currentNewAddon.substring(n + 1);
+        $('#addonDir b').text(result);
+        $('#addonDirCheck').css('background-color', '#56bd56')
+        $('#addonDirCheck').prop('disabled', false)
+        $('#addonDirCheck').css('cursor', 'pointer')
+    })
+
     $('#dir_prompt_next button').click(() => {
         $('#directory_selection').fadeOut(() => {
             $('#addon_management').fadeIn()
@@ -105,11 +128,32 @@ $(document).ready(() => {
         }
     });
 
+    $('#create_new_addon_button').click(() => {
+        $('#addon_management_prompt').fadeOut(() => {
+            $('#create_new_addon').fadeIn(() => {
+                // win.setBounds({
+                //     height: 300,
+                // })
+            })
+        })
+    })
+
     $('.back_button').click((event) => {
         var target = event.target
         var divToGoBack = $(target).data('forwards')
         var divToShow = $(target).data('backwards')
         goBack(divToGoBack, divToShow)
+    })
+    
+    $('.transition_button').click((event) => {
+        var target = event.target
+        var divToGoBack = $(target).data('divtohide')
+        var divToShow = $(target).data('divtoshow')
+        goBack(divToGoBack, divToShow)
+    })
+
+    $('.removeBackOption').click(() => {
+        $('#back_button_addon_creation').fadeOut();
     })
 
     function goBack(divToFadeOut, divToFadeIn) {
@@ -119,18 +163,21 @@ $(document).ready(() => {
     }
 
     function populateAddonList() {
-        console.log(addon_data)
-        
         if (!donePopulatingAddonList) {
             for (let i = 0; i < addon_data.length; i++) {
-                console.log('HEY')
                 $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p></div>")
                 donePopulatingAddonList = true;
             }
     
             if (0 == addon_data.length) {
-                $('#yourAddons').append("<p><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything.</p>")
+                $('#yourAddons').append("<p style='background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;'><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything.</p>")
+                donePopulatingAddonList = true;
             }
         }
     }
+
+
+    // $('.type').click((event) => {
+    //     console.log(event)
+    // })
 });
