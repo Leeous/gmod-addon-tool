@@ -63,7 +63,7 @@
                 <div id="addonjsonPrompt">
                     <p>Do you already have a addon.json?</p>
                     <div>
-                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#jsonCreator" data-divtohide="#addonjsonPrompt">No</button>
+                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#jsonCreator" data-divtohide="#addonjsonPrompt" data-resize="500, 300">No</button>
                         <button class="button_normal transition_button removeBackOption" data-divtoshow="#gmaPrep" data-divtohide="#addonjsonPrompt">Yes</button>
                     </div>
                 </div>
@@ -134,12 +134,16 @@
                             </div>
                         </div>
                         <div class="next_prompt">
-                            <button id="jsonAddonValidate" class="transition_button" style="background-color: #56bd56; color: white;" data-divtoshow="" data-divtohide="">Next</button>
+                            <button id="jsonAddonValidate" class="transition_button" style="background-color: #56bd56; color: white;" data-divtoshow="#gmaPrep" data-divtohide="#jsonCreator" data-resize="500, 250">Next</button>
                         </div>
                     </div>
                 </div>
                 <div id="gmaPrep">
-                    <p>GMA creation prep</p>
+                    <p>Created <span style="font-weight: 700">addon.json</span>!</p>
+                    <h3>Create GMA for uploading to the Workshop?</h3>
+                    <button class="button_normal transition_button" data-divtohide="" data-divtoshow="" data-resize="">Yes</button>
+                    <button class="button_normal transition_button" data-divtohide="" data-divtoshow="" data-resize="">No</button>
+                    <!-- <img src="src/img/loading.gif" style="display: block; margin-left: auto; margin-right: auto; width: 64px;" alt=""> -->
                 </div>
             </div>
         </div>

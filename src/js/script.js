@@ -117,9 +117,6 @@ $(document).ready(() => {
         $('#addonDirCheck').css('background-color', '#56bd56')
         $('#addonDirCheck').prop('disabled', false)
         $('#addonDirCheck').css('cursor', 'pointer')
-        win.setBounds({
-            height: 300,
-        })
     })
 
     $('#dir_prompt_next button').click(() => {
@@ -156,7 +153,10 @@ $(document).ready(() => {
         var target = event.target
         var divToGoBack = $(target).data('divtohide')
         var divToShow = $(target).data('divtoshow')
-        goBack(divToGoBack, divToShow)
+        if ($(target).data('resize') != null) {
+            var resizeInfo = JSON.parse("[" + $(target).data('resize') + "]");
+        }
+        goBack(divToGoBack, divToShow, resizeInfo)
     })
 
     $('.removeBackOption').click(() => {
@@ -164,8 +164,14 @@ $(document).ready(() => {
     })
 
     // General function for transitioning between div tags
-    function goBack(divToFadeOut, divToFadeIn) {
+    function goBack(divToFadeOut, divToFadeIn, resizeInfo) {
         $(divToFadeOut).fadeOut(() => {
+            if (resizeInfo != null) {
+                win.setBounds({
+                    width: resizeInfo[0],
+                    height: resizeInfo[1]
+                })
+            }
             $(divToFadeIn).fadeIn();
         })
     }
