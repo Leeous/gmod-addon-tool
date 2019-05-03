@@ -57,13 +57,13 @@
                     <input id="addon_dir_folder" class="real_select" type="file" webkitdirectory />
                     <p id="addonDir"><b></b></p>
                     <div class="next_prompt">
-                        <button id="addonDirCheck" class="transition_button" data-divtoshow="#addonjsonPrompt" data-divtohide="#addonDirPrompt" disabled>Next</button>
+                        <button id="addonDirCheck" class="transition_button" data-divtoshow="#addonjsonPrompt" data-divtohide="#addonDirPrompt" data-resize="500, 175" disabled>Next</button>
                     </div>
                 </div>
                 <div id="addonjsonPrompt">
                     <p>Do you already have a addon.json?</p>
                     <div>
-                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#jsonCreator" data-divtohide="#addonjsonPrompt" data-resize="500, 300">No</button>
+                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#jsonCreator" data-divtohide="#addonjsonPrompt" data-resize="500, 350">No</button>
                         <button class="button_normal transition_button removeBackOption" data-divtoshow="#gmaPrep" data-divtohide="#addonjsonPrompt">Yes</button>
                     </div>
                 </div>
@@ -72,6 +72,7 @@
                         <div id="jsonTitle">
                             <p class="jsonSectionHeader">Title</p>
                             <input name="addonTitle" type="text" placeholder="Crazy cool addon" maxlength="128">
+                            <p><span style="font-size: .7em; color: grey;">(required)</span></p>
                         </div>
                         <div id="jsonType">
                             <p class="jsonSectionHeader">Type</p>
@@ -87,6 +88,7 @@
                                 <option value="effects">Effects</option>
                                 <option value="model">Model</option>
                             </select>
+                            <p><span style="font-size: .7em; color: grey;">(required)</span></p>
                         </div>
                         <div id="jsonTags">
                             <div class="col">
@@ -130,11 +132,19 @@
                                         <input type="checkbox" name="cartoon" class="typeCheckbox">
                                         <p>Cartoon</p>
                                     </div>
+                                    <div class="type">
+                                        <p><span style="font-size: .7em; color: grey;">(max 2)</span></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div id="jsonIgnore">
+                            <p class="jsonSectionHeader">Ignore</p>
+                            <input name="addonIgnore" type="text" placeholder="*.html, README.md, etc">
+                            <p><span style="font-size: .7em; color: grey; font-weight:500;">(folder/file names seprated by a comma)</span></p>
+                        </div>
                         <div class="next_prompt">
-                            <button id="jsonAddonValidate" class="transition_button" style="background-color: #56bd56; color: white;" data-divtoshow="#gmaPrep" data-divtohide="#jsonCreator" data-resize="500, 250">Next</button>
+                            <button id="jsonAddonValidate" class="transition_button" data-divtoshow="#gmaPrep" data-divtohide="#jsonCreator" data-resize="500, 250" disabled>Next</button>
                         </div>
                     </div>
                 </div>

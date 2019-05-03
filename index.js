@@ -24,7 +24,7 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
           width: 500,
-          height: 250,
+          height: 175,
           resizable: false,
           fullscreenable: false,
           backgroundColor: "#262626",
@@ -107,5 +107,7 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
     console.log("An error occured while writing JSON Object to File.\n", err);
   })
 })
+
+// ipcMain.on('createGmaFile', (addonDir))
 
 // function 
