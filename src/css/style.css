@@ -238,7 +238,6 @@ header {
 
 #jsonInfo {
     text-align: left;
-    padding: 0 10px;
 }
 
 #jsonTitle > * {
@@ -247,8 +246,14 @@ header {
 
 #jsonTitle input[type='text'] {
     border-radius: 5px;
+    display: inline-block;
+    width: 350px;
     border: none;
     padding: 5px;
+}
+
+#jsonTags, #jsonTitle, #jsonType {
+    padding: 0 10px;
 }
 
 #jsonTags .type > * {
@@ -256,7 +261,8 @@ header {
 }
 
 #jsonTags .type {
-    margin-right: 10px;
+    margin: 0 5px 10px 0;
+    
 }
 
 #jsonTags .type p {
@@ -271,16 +277,21 @@ header {
     border-radius: 5px;
     border: none;
     padding: 5px;
+    cursor: pointer;
 }
 
 .jsonSectionHeader {
     font-weight: 700;
-    margin-right: 10px;
+    /* margin-top: 0; */
+    padding-right: 15px;
+    letter-spacing: 1px;
+    /* white-space: nowrap; */
 }
 
 .jsonGrid {
     display: grid;
-    grid-template-columns: auto auto auto;
+    margin-left: 7px;
+    grid-template-columns: auto auto auto auto auto;
 }
 
 .next_prompt {

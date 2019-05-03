@@ -71,69 +71,71 @@
                     <div id="jsonInfo">
                         <div id="jsonTitle">
                             <p class="jsonSectionHeader">Title</p>
-                            <input type="text">
+                            <input name="addonTitle" type="text" placeholder="Crazy cool addon" maxlength="128">
                         </div>
                         <div id="jsonType">
                             <p class="jsonSectionHeader">Type</p>
-                            <select name="" id="">
+                            <select name="addonType" id="">
                                 <option value="">-- Select one --</option>
-                                <option value="">Server Content</option>
-                                <option value="">Gamemode</option>
-                                <option value="">Map</option>
-                                <option value="">Weapon</option>
-                                <option value="">Vehicle</option>
-                                <option value="">NPC</option>
-                                <option value="">Tool</option>
-                                <option value="">Effects</option>
-                                <option value="">Model</option>
+                                <option value="serverContent">Server Content</option>
+                                <option value="gamemode">Gamemode</option>
+                                <option value="map">Map</option>
+                                <option value="weapon">Weapon</option>
+                                <option value="vehicle">Vehicle</option>
+                                <option value="npc">NPC</option>
+                                <option value="tool">Tool</option>
+                                <option value="effects">Effects</option>
+                                <option value="model">Model</option>
                             </select>
                         </div>
                         <div id="jsonTags">
                             <div class="col">
-                                <p class="jsonSectionHeader">Tags</p>
+                                <p class="jsonSectionHeader">Tag</p>
                             </div>
                             <div class="col">
                                 <div class="jsonGrid">
                                     <div class="type">
-                                        <input type="checkbox" name="fun">
-                                        <p>Fun</p>
-                                    </div>
-                                    <div class="type">
-                                        <input type="checkbox" name="roleplay">
+                                        <input type="checkbox" name="roleplay" class="typeCheckbox">
                                         <p>Roleplay</p>
                                     </div>
                                     <div class="type">
-                                        <input type="checkbox" name="scenic">
+                                        <input type="checkbox" name="scenic" class="typeCheckbox">
                                         <p>Scenic</p>
                                     </div>
                                     <div class="type">
-                                        <input type="checkbox" name="movie">
+                                        <input type="checkbox" name="movie" class="typeCheckbox">
                                         <p>Movie</p>
                                     </div>
                                     <div class="type">
-                                        <input type="checkbox" name="realism">
+                                        <input type="checkbox" name="realism" class="typeCheckbox">
                                         <p>Realism</p>
                                     </div>
                                     <div class="type">
-                                        <input type="checkbox" name="cartoon">
-                                        <p>Cartoon</p>
+                                        <input type="checkbox" name="fun" class="typeCheckbox">
+                                        <p>Fun</p>
                                     </div>
                                     <div class="type">
-                                        <input type="checkbox" name="water">
+                                        <input type="checkbox" name="water" class="typeCheckbox">
                                         <p>Water</p>
                                     </div>
                                     <div class="type">
-                                        <input type="checkbox" name="comic">
+                                        <input type="checkbox" name="comic" class="typeCheckbox">
                                         <p>Comic</p>
                                     </div>
                                     <div class="type">
-                                        <input type="checkbox" name="build">
+                                        <input type="checkbox" name="build" class="typeCheckbox">
                                         <p>Build</p>
+                                    </div>
+                                    <div class="type">
+                                        <input type="checkbox" name="cartoon" class="typeCheckbox">
+                                        <p>Cartoon</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button class="transition_button" data-divtohide="#jsonCreator" data-divtoshow="#gmaPrep">Next</button>
+                        <div class="next_prompt">
+                            <button id="jsonAddonValidate" class="transition_button" style="background-color: #56bd56; color: white;" data-divtoshow="" data-divtohide="">Next</button>
+                        </div>
                     </div>
                 </div>
                 <div id="gmaPrep">

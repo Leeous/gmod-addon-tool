@@ -3,26 +3,32 @@ const {
     remote,
     ipcRenderer,
     files
-} = require('electron')
-const settings = require('electron-settings');
-const shell = require('electron').shell;
+} = require("electron")
+const settings = require("electron-settings");
+const shell = require("electron").shell;
 let win = remote.getCurrentWindow()
 
 addon_data = []
 okToProcessAddonList = false
 donePopulatingAddonList = false
 currentNewAddon = "";
+jsonCheckboxCount = 0;
+addonToCreateData = {
+    "title": "",
+    "type": "",
+    "tags": [],
+}
 
 
 // assuming $ is jQuery
-$(document).on('click', 'a[href^="http"]', function(event) {
+$(document).on("click", "a[href^='http']", function(event) {
     event.preventDefault();
     shell.openExternal(this.href);
 });
 
 
 $(document).ready(() => {
-    ipcRenderer.on('message', (event, message) => {
+    ipcRenderer.on("message", (event, message) => {
         
         var arrayOfAddonIds = message;
         
@@ -111,6 +117,9 @@ $(document).ready(() => {
         $('#addonDirCheck').css('background-color', '#56bd56')
         $('#addonDirCheck').prop('disabled', false)
         $('#addonDirCheck').css('cursor', 'pointer')
+        win.setBounds({
+            height: 300,
+        })
     })
 
     $('#dir_prompt_next button').click(() => {
@@ -131,9 +140,7 @@ $(document).ready(() => {
     $('#create_new_addon_button').click(() => {
         $('#addon_management_prompt').fadeOut(() => {
             $('#create_new_addon').fadeIn(() => {
-                // win.setBounds({
-                //     height: 300,
-                // })
+
             })
         })
     })
@@ -156,19 +163,23 @@ $(document).ready(() => {
         $('#back_button_addon_creation').fadeOut();
     })
 
+    // General function for transitioning between div tags
     function goBack(divToFadeOut, divToFadeIn) {
         $(divToFadeOut).fadeOut(() => {
             $(divToFadeIn).fadeIn();
         })
     }
 
+    // Get array of addon infomation and append their names to #yourAddons
     function populateAddonList() {
+        // This check is done to make sure this only gets executed once
         if (!donePopulatingAddonList) {
             for (let i = 0; i < addon_data.length; i++) {
                 $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p></div>")
                 donePopulatingAddonList = true;
             }
-    
+            // Make sure if nothing is returned to let the user know
+            // TODO: Allow for multiple error codes such as 429 (too many requests)
             if (0 == addon_data.length) {
                 $('#yourAddons').append("<p style='background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;'><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything.</p>")
                 donePopulatingAddonList = true;
@@ -176,8 +187,55 @@ $(document).ready(() => {
         }
     }
 
+    $('.typeCheckbox').on('click', (event) => {
+        var target = $(event.target);
+        if (jsonCheckboxCount < 2 && target.is(":checked")) {
+            jsonCheckboxCount++
+            console.log(jsonCheckboxCount)
+        } else if (jsonCheckboxCount != 0 && !target.is(":checked")) {
+            jsonCheckboxCount--
+            console.log(jsonCheckboxCount)
+        } else if (jsonCheckboxCount == 2 && target.is(":checked")) {
+            console.log(jsonCheckboxCount)
+            event.preventDefault()
+        }
 
-    // $('.type').click((event) => {
-    //     console.log(event)
-    // })
+        if (jsonCheckboxCount == 2) {
+            var checkboxes = $('.typeCheckbox')
+            console.log(checkboxes.is(":checked"))
+            if (!checkboxes.is(":checked")) {
+                $(checkboxes).prop('disabled', true)
+            }
+        }
+    })
+
+    $('#jsonAddonValidate').click(() => {
+        var checks = [false, false, false]
+
+        if ($("#jsonTitle >  input[name='addonTitle']").val() != "") {
+            var addonTitle = $("#jsonTitle >  input[name='addonTitle']").val()
+            checks[0] = true;
+        }
+
+        if ($('#jsonType > select[name="addonType"]').val() != "") {
+            var addonType = $('#jsonType > select[name="addonType"]').val()
+            checks[1] = true;
+        }
+
+        if ($(".typeCheckbox:checked").val() != null) {
+            var addonTags = $(".typeCheckbox:checked").map(function(){
+                return $(this).attr('name');
+            }).get();
+            checks[2] = true;
+        }
+
+        if (checks[0, 1, 2]) {
+            console.log($('.typeCheckbox:checked').attr('name'))
+            addonToCreateData.title = addonTitle
+            addonToCreateData.type = addonType
+            addonToCreateData.tags = addonTags
+            console.log(addonToCreateData)
+            ipcRenderer.send('createJsonFile', JSON.stringify(addonToCreateData), currentNewAddon)
+        }
+    })
 });

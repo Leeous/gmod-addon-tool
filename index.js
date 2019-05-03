@@ -84,8 +84,6 @@ ipcMain.on('getAddonInfo', () => {
 
 var ADDON_IDS = []
 
-
-
 // We use this to get the addon IDs from gmpublish.exe
 
 function sendClientAddonInfo() {
@@ -102,3 +100,12 @@ function sendClientAddonInfo() {
     mainWindow.webContents.send('message', ADDON_IDS);
   });
 }
+
+ipcMain.on('createJsonFile', (event, json, dir) => {
+  console.log(json, dir)
+  fs.writeFileSync(dir + "\\addon.json", json, 'utf8', (err) => {
+    console.log("An error occured while writing JSON Object to File.\n", err);
+  })
+})
+
+// function 
