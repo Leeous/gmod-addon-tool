@@ -164,7 +164,7 @@ header {
     text-align: center;
 }
 
-#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt {
+#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt {
     display: none;
 }
 

@@ -24,7 +24,7 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
           width: 500,
-          height: 175,
+          height: 250,
           resizable: false,
           fullscreenable: false,
           backgroundColor: "#262626",
@@ -108,6 +108,8 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
   })
 })
 
-// ipcMain.on('createGmaFile', (addonDir))
+// ipcMain.on('createGmaFile', (addonDir) => {
+//   // var gmaLocation = addonDir + 
+// })
 
 // function 

@@ -15,6 +15,9 @@ currentNewAddon = "";
 jsonCheckboxCount = 0;
 jsonChecks = [false, false];
 apiError = 0;
+var addonTitle;
+var addonTags;
+var addonType;
 addonToCreateData = {
     "title": "",
     "type": "",
@@ -24,7 +27,7 @@ addonToCreateData = {
 
 
 
-// assuming $ is jQuery
+// Make links open in enternal browser
 $(document).on("click", "a[href^='http']", function(event) {
     event.preventDefault();
     shell.openExternal(this.href);
@@ -32,14 +35,13 @@ $(document).on("click", "a[href^='http']", function(event) {
 
 
 $(document).ready(() => {
+    // Try and recieve data from gmpublish about user's addons
     ipcRenderer.on("message", (event, message) => {
-        
         var arrayOfAddonIds = message;
-        
         for (let index = 0; index < arrayOfAddonIds.length; index++) {
             $.ajax({
                 type: 'POST',
-                url: 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/1',
+                url: 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
                 data: {
                     'itemcount': 1,
                     'publishedfileids[0]': parseInt(arrayOfAddonIds[index])
@@ -66,8 +68,13 @@ $(document).ready(() => {
         $('#update_existing_addon_button').text('Update existing addon');
     });
 
+    // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get('gmodDirectory') != null) {
         $('#addon_management').fadeIn();
+        $('#addon_management_prompt').fadeIn();
+        win.setBounds({
+            height: 175
+        })
         ipcRenderer.send('getAddonInfo');
     } else {
         $('#directory_selection').fadeIn();
@@ -81,12 +88,14 @@ $(document).ready(() => {
         remote.getCurrentWindow().minimize();
     })
 
+    // Used to "fake click" the input[type="file"]
     $('.fake_select').click((event) => {
-        var foo = event.target;
-        var foo2 = $(foo).data('buttonclick');
-        $(foo2).click();
+        var fakeButton = event.target;
+        var realButton = $(fakeButton).data('buttonclick');
+        $(realButton).click();
     })
 
+    // Validate that we have read/write access to the users Garrysmod directory so we can use gmad & gmpublish
     $('#gmod_dir_folder').change(() => {
         var filePath = document.getElementById("gmod_dir_folder").files[0].path;
         var desName = filePath.substring(filePath.length - 9, filePath.length);
@@ -112,6 +121,7 @@ $(document).ready(() => {
         }
     })
 
+    // If directory exists (and is writable/readable) allow user to procede 
     $('#addon_dir_folder').change(() => {
         currentNewAddon = document.getElementById("addon_dir_folder").files[0].path;
         ipcRenderer.send('checkIfDirectoryExists', currentNewAddon);
@@ -142,7 +152,7 @@ $(document).ready(() => {
     $('#create_new_addon_button').click(() => {
         $('#addon_management_prompt').fadeOut(() => {
             win.setBounds({height: 250})
-            $('#create_new_addon').fadeIn()
+            $('#create_new_addon, #addonDirPrompt').fadeIn()
         })
     })
 
@@ -150,14 +160,17 @@ $(document).ready(() => {
         var target = event.target;
         var divToGoBack = $(target).data('forwards');
         var divToShow = $(target).data('backwards');
-        win.setBounds({height: 175})
-        goBack(divToGoBack, divToShow);
+        if ($(target).data('resize') != null) {
+            var resizeInfo = JSON.parse("[" + $(target).data('resize') + "]");
+        }
+        goBack(divToGoBack, divToShow, resizeInfo);
     })
     
     $('.transition_button').click((event) => {
         var target = event.target;
         var divToGoBack = $(target).data('divtohide');
         var divToShow = $(target).data('divtoshow');
+        console.log(divToGoBack, divToShow)
         if ($(target).data('resize') != null) {
             var resizeInfo = JSON.parse("[" + $(target).data('resize') + "]");
         }
@@ -220,44 +233,38 @@ $(document).ready(() => {
         }
     })
 
+    // Dyamically change boolean based on whether or not string is empty 
     $("#jsonTitle >  input[name='addonTitle']").on('keyup', () => {
         if ($("#jsonTitle >  input[name='addonTitle']").val() != "") {
-            var addonTitle = $("#jsonTitle >  input[name='addonTitle']").val();
+            addonTitle = $("#jsonTitle >  input[name='addonTitle']").val();
             jsonChecks[0] = true;
-            validateJsonForm()
+            validateJsonForm();
         } else {
             jsonChecks[0] = false;
-            validateJsonForm()
+            validateJsonForm();
         }
     })
 
     $("#jsonType > select[name='addonType']").change(() => {
-        if ($('#jsonType > select[name="addonType"]').val() != "") {
-            var addonType = $('#jsonType > select[name="addonType"]').val();
+        if ($('#jsonType > select[name="addonType"]').val() != "null") {
+            addonType = $('#jsonType > select[name="addonType"]').val();
             jsonChecks[1] = true;
-            validateJsonForm()
+            validateJsonForm();
         } else {
             jsonChecks[1] = false;
-            validateJsonForm()
+            validateJsonForm();
         }
     })
 
     $('#jsonAddonValidate').click(() => {
         if ($(".typeCheckbox:checked").val() != null) {
-            var addonTags = $(".typeCheckbox:checked").map(function(){
+            addonTags = $(".typeCheckbox:checked").map(function(){
                 return $(this).attr('name');
             }).get();
         }
 
         var ignoreList = $("#jsonIgnore input[name='addonIgnore']").val().replace(/\s/g,'').split(',');
-
-        console.log(ignoreList)
-
-        // var test = ignoreList);
-
         
-        // console.log(JSON.parse("[" + ignoreList + "]"));
-
         if (jsonChecks[0, 1]) {
             addonToCreateData.title = addonTitle;
             addonToCreateData.type = addonType;
@@ -279,4 +286,40 @@ $(document).ready(() => {
             $('#jsonAddonValidate').css('background-color', "#0f0f0f")
         }
     }
+
+    $("#resetAddonCreation").click(() => {
+
+        jsonCheckboxCount = 0;
+
+        // Clear the old data we used to make addon.json
+        addonToCreateData = {
+            "title": "",
+            "type": "",
+            "tags": [],
+            "ignore": []
+        };
+
+        // Reset all input values & checkboxes
+        $('#jsonTitle > input[name="addonTitle"]').val("");
+        $('select[name="addonType"]').val("null");
+        $('.typeCheckbox').prop('checked', false);
+        $('#jsonIgnore > input[name="addonIgnore"]').val("");
+
+        // Clear the addon name on directory selection
+        $("#addonDir b").text('');
+
+        // Set the input to null
+        $("#addon_dir_folder").val(null);
+
+        // Reset directory validation
+        $('#addonDirCheck').css({backgroundColor: "#0f0f0f", cursor: "not-allowed"});
+        $('#addonDirCheck').prop('disabled', true);
+
+        // Reset validation checks
+        jsonChecks = [false, false];
+        validateJsonForm();
+
+        // Hide any div that may still be displayed
+        $('#addonjsonPrompt, #jsonCreator, #gmaPrep, #createGMA').css('display', 'none');
+    })
 });
