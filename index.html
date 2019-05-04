@@ -57,7 +57,15 @@
                     <input id="addon_dir_folder" class="real_select" type="file" webkitdirectory />
                     <p id="addonDir"><b></b></p>
                     <div class="next_prompt">
-                        <button id="addonDirCheck" class="transition_button" data-divtoshow="#addonjsonPrompt" data-divtohide="#addonDirPrompt" data-resize="500, 175" disabled>Next</button>
+                        <button id="addonDirCheck" class="transition_button" data-divtoshow="#addonIconPrompt" data-divtohide="#addonDirPrompt" data-resize="500, 250" disabled>Next</button>
+                    </div>
+                </div>
+                <div id="addonIconPrompt">
+                    <p>Please select an icon for your addon</p>
+                    <button class="button_normal fake_select" data-buttonclick="#addon_icon">Choose Directory</button>
+                    <input id="addon_icon" class="real_select" type="file"/>
+                    <div class="next_prompt">
+                        <button id="addonIconCheck" class="transition_button" data-divtoshow="#addonjsonPrompt" data-divtohide="#addonIconPrompt" data-resize="500, 175" disabled>Next</button>
                     </div>
                 </div>
                 <div id="addonjsonPrompt">
@@ -151,12 +159,20 @@
                 <div id="gmaPrep">
                     <p>Created <span style="font-weight: 700">addon.json</span>!</p>
                     <h3>Create GMA for uploading to the Workshop?</h3>
-                    <button style="width: 200px;" class="button_normal transition_button" data-divtohide="" data-divtoshow="" data-resize="">Yes</button>
-                    <button style="width: 200px;" class="button_normal transition_button" id="resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 175">No</button>
+                    <button style="width: 150px;" class="button_normal transition_button" id="resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 175">No</button>
+                    <button style="width: 150px;" id="createGMAFile" class="button_normal transition_button">Yes</button>
                     <!-- <img src="src/img/loading.gif" style="display: block; margin-left: auto; margin-right: auto; width: 64px;" alt=""> -->
                 </div>
                 <div id="createGMA">
+                    <p>Creating GMA...</p>
+                    <img src="src/img/loading.gif" style="width: 64px; display: block; margin-left: auto; margin-right: auto; margin-top: 35px;" alt="">
                 </div>
+                <div id="uploadToWorkshopPrompt">
+                    <p>Upload to the Workshop?</p>
+                    <button class="button_normal">No</button>
+                    <button id="uploadCurrentGMA" class="button_normal">Yes</button>
+                </div>
+                
             </div>
         </div>
     </div>

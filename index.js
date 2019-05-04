@@ -108,8 +108,26 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
   })
 })
 
-// ipcMain.on('createGmaFile', (addonDir) => {
-//   // var gmaLocation = addonDir + 
-// })
+ipcMain.on('createGMAFile', (event, addonDir) => {
+  console.log("Addon's Directory: " + addonDir.toString())
+  const gmad = spawn(settings.get('gmodDirectory') + '\\bin\\gmad.exe', ['create', '-folder', addonDir]);
+  gmad.stdout.on('data', (data) => {
+    var arrayOfOutput = data.toString().split('\n')
+    var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1)
+    fixedArray = fixedArray[0].match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "")
+    var addonGMADir = fixedArray;
+    console.log("GMA location: " + addonGMADir);
+    mainWindow.webContents.send('addonGMALocation', addonGMADir);
+  })
+})
 
-// function 
+ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir) => {
+  const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['create', '-icon', iconDir, '-addon', gmaDir]);
+  gmpublish.stdout.on('data', (data) => {
+    console.log(data.toString());
+  })
+})
+
+
+
+// gmpublish.exe create -icon path/to/image512x512.jpg -addon path/to/gma.gma

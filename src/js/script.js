@@ -15,9 +15,11 @@ currentNewAddon = "";
 jsonCheckboxCount = 0;
 jsonChecks = [false, false];
 apiError = 0;
+addonGMADir = "";
 var addonTitle;
 var addonTags;
 var addonType;
+addonIcon = "";
 addonToCreateData = {
     "title": "",
     "type": "",
@@ -131,6 +133,26 @@ $(document).ready(() => {
         $('#addonDirCheck').css('background-color', '#56bd56');
         $('#addonDirCheck').prop('disabled', false);
         $('#addonDirCheck').css('cursor', 'pointer');
+    })
+
+    $('#addon_icon').change(() => {
+        addonIcon = document.getElementById("addon_icon").files[0].path;
+        ipcRenderer.send('checkIfDirectoryExists', addonIcon);
+        var jpegCheck = addonIcon.substring(addonIcon.length - 4);
+        console.log(jpegCheck)
+        if (jpegCheck == "jpeg" || jpegCheck == ".jpg") {
+            $('#addonIconCheck').css('background-color', '#56bd56');
+            $('#addonIconCheck').prop('disabled', false);
+            $('#addonIconCheck').css('cursor', 'pointer');
+            win.setBounds({
+                height: 350
+            })
+        } else {
+            $('#addonIconCheck').css('background-color', '#0f0f0f');
+            $('#addonIconCheck').prop('disabled', true);
+            $('#addonIconCheck').css('cursor', 'not-allowed');
+            alert("Doesn't seem like a JPEG image.")
+        }
     })
 
     $('#dir_prompt_next button').click(() => {
@@ -321,5 +343,24 @@ $(document).ready(() => {
 
         // Hide any div that may still be displayed
         $('#addonjsonPrompt, #jsonCreator, #gmaPrep, #createGMA').css('display', 'none');
+    });
+
+    $("#createGMAFile").click(() => {
+        $('#gmaPrep').fadeOut(() => {
+            $('#createGMA').fadeIn();
+            ipcRenderer.send('createGMAFile', currentNewAddon);  
+        });
     })
+
+    $("#uploadCurrentGMA").click(() => {
+        ipcRenderer.send('uploadToWorkshop', addonGMADir, addonIcon);
+    })
+
+    ipcRenderer.on('addonGMALocation', (event, addonGMA) => {
+        addonGMADir = addonGMA;
+        $('#createGMA').fadeOut(() => {
+            $("#uploadToWorkshopPrompt").fadeIn();
+        })
+    })
+
 });

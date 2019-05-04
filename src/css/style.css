@@ -164,7 +164,7 @@ header {
     text-align: center;
 }
 
-#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt {
+#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt {
     display: none;
 }
 
@@ -250,9 +250,6 @@ header {
     width: 350px;
     border: none;
     padding: 5px;
-}
-
-#jsonTags, #jsonTitle, #jsonType, #jsonIgnore {
 }
 
 #jsonTags .type > * {
