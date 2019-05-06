@@ -30,6 +30,7 @@ function createWindow() {
           backgroundColor: "#262626",
           titleBarStyle: "hidden",
           frame: false,
+          icon: "src/img/icon.png",
           webPreferences: {
               nodeIntegration: true
           }
@@ -77,9 +78,9 @@ ipcMain.on('checkIfDirectoryExists', (event, file) => {
 })
 
 ipcMain.on('getAddonInfo', () => {
-  console.log('trying to get addon info')
+  console.log('Trying to get addon info...')
   sendClientAddonInfo()
-  console.log(settings.get('gmodDirectory'))
+  console.log("User's Gmod Directory:" + settings.get('gmodDirectory'))
 })
 
 var ADDON_IDS = []
@@ -95,8 +96,7 @@ function sendClientAddonInfo() {
         fixedArray[i] = fixedArray[i].replace('/r', '');
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
-  
-    console.log('sent to client!')
+    console.log('Sent to client!')
     mainWindow.webContents.send('message', ADDON_IDS);
   });
 }
@@ -105,6 +105,7 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
   console.log(json, dir)
   fs.writeFileSync(dir + "\\addon.json", json, 'utf8', (err) => {
     console.log("An error occured while writing JSON Object to File.\n", err);
+    mainWindow.webContents.send('error', "Error writing directory.");
   })
 })
 
@@ -118,15 +119,22 @@ ipcMain.on('createGMAFile', (event, addonDir) => {
     var addonGMADir = fixedArray;
     console.log("GMA location: " + addonGMADir);
     mainWindow.webContents.send('addonGMALocation', addonGMADir);
-  })
-})
+  });
+});
 
 ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir) => {
   const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['create', '-icon', iconDir, '-addon', gmaDir]);
   gmpublish.stdout.on('data', (data) => {
-    console.log(data.toString());
+    var arrayOfOutput = data.toString().split('\n')
+    var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7)
+    fixedArray = fixedArray[0].replace(/\D/, '')
+    fixedArray = fixedArray.substr(5, fixedArray.length)
+    console.log(fixedArray)
+    mainWindow.webContents.send('currentAddonID', fixedArray);
   })
 })
+
+
 
 
 

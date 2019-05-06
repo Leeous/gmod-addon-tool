@@ -144,9 +144,6 @@ $(document).ready(() => {
             $('#addonIconCheck').css('background-color', '#56bd56');
             $('#addonIconCheck').prop('disabled', false);
             $('#addonIconCheck').css('cursor', 'pointer');
-            win.setBounds({
-                height: 350
-            })
         } else {
             $('#addonIconCheck').css('background-color', '#0f0f0f');
             $('#addonIconCheck').prop('disabled', true);
@@ -193,6 +190,7 @@ $(document).ready(() => {
         var divToGoBack = $(target).data('divtohide');
         var divToShow = $(target).data('divtoshow');
         console.log(divToGoBack, divToShow)
+        // Checks for resize data, if it exists, pass it to goBack()
         if ($(target).data('resize') != null) {
             var resizeInfo = JSON.parse("[" + $(target).data('resize') + "]");
         }
@@ -203,7 +201,7 @@ $(document).ready(() => {
         $('#back_button_addon_creation').fadeOut();
     })
 
-    // General function for transitioning between div tags
+    // General function for transitioning between div tags (with a shitty name)
     function goBack(divToFadeOut, divToFadeIn, resizeInfo) {
         $(divToFadeOut).fadeOut(() => {
             if (resizeInfo != null) {
@@ -221,7 +219,7 @@ $(document).ready(() => {
         // This check is done to make sure this only gets executed once
         if (!donePopulatingAddonList) {
             for (let i = 0; i < addon_data.length; i++) {
-                $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p></div>");
+                $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p><a href='steam://url/CommunityFilePage/" + addon_data[i].id + "'>View on Steam</a></div>");
                 donePopulatingAddonList = true;
             }
             // Make sure if nothing is returned to let the user know
@@ -236,6 +234,12 @@ $(document).ready(() => {
             }
         }
     }
+
+    // $('.addon_existing').hover((event) => {
+    //     console.log('hello')
+    //     var target = $(event.target);
+    //     $(this).find('a:last').fadeIn();
+    // })
 
     $('.typeCheckbox').on('click', (event) => {
         var target = $(event.target);
@@ -347,18 +351,32 @@ $(document).ready(() => {
 
     $("#createGMAFile").click(() => {
         $('#gmaPrep').fadeOut(() => {
+            win.setBounds({height: 225})
             $('#createGMA').fadeIn();
             ipcRenderer.send('createGMAFile', currentNewAddon);  
         });
     })
-
+    
     $("#uploadCurrentGMA").click(() => {
         ipcRenderer.send('uploadToWorkshop', addonGMADir, addonIcon);
+        $('#uploadToWorkshopPrompt').fadeOut(() => {
+            win.setBounds({height: 225})
+            $('#uploading').fadeIn();
+        })
     })
-
+    
+    ipcRenderer.on('currentAddonID', (event, newAddonID) => {
+        $('#uploading').fadeOut(() => {
+            win.setBounds({height: 200})
+            $('#new_addon_link').attr('href', 'steam://url/CommunityFilePage/' + newAddonID)
+            $('#new_addon').fadeIn()
+        })
+    })
+    
     ipcRenderer.on('addonGMALocation', (event, addonGMA) => {
         addonGMADir = addonGMA;
         $('#createGMA').fadeOut(() => {
+            win.setBounds({height: 200})
             $("#uploadToWorkshopPrompt").fadeIn();
         })
     })
