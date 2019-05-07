@@ -9,6 +9,9 @@ const shell = require("electron").shell;
 let win = remote.getCurrentWindow();
 
 addon_data = [];
+api_data = {
+    "itemcount": "0",
+};
 okToProcessAddonList = false;
 donePopulatingAddonList = false;
 currentNewAddon = "";
@@ -38,37 +41,45 @@ $(document).on("click", "a[href^='http']", function(event) {
 
 $(document).ready(() => {
     // Try and recieve data from gmpublish about user's addons
-    ipcRenderer.on("message", (event, message) => {
-        var arrayOfAddonIds = message;
-        for (let index = 0; index < arrayOfAddonIds.length; index++) {
-            $.ajax({
-                type: 'POST',
-                url: 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
-                data: {
-                    'itemcount': 1,
-                    'publishedfileids[0]': parseInt(arrayOfAddonIds[index])
-                },
-                success: function success(data) {
-                    var addon = data.response.publishedfiledetails["0"];
-                    if (addon.result == 1) {
-                        for (let i = 0; i < Object.keys(data).length; i++) {
-                            var addonObject = {
-                                "title": addon.title,
-                                "id": addon.publishedfileid
-                            }
-                            addon_data.push(addonObject);
-                        }
-                    }
-                },
-                error: function (err) {
-                    console.log(err)
-                },
-                dataType: 'json',
-            });
-        }
-        okToProcessAddonList = true;
-        $('#update_existing_addon_button').text('Update existing addon');
+    ipcRenderer.on("addonInfo", (event, message) => {
+        getAddonInfoFromSteam(message)
     });
+    
+    function getAddonInfoFromSteam(message) {
+        arrayOfAddonIds = message;
+        
+        api_data['itemcount'] = arrayOfAddonIds.length;
+        
+        
+        for (let i = 0; i < arrayOfAddonIds.length; i++) {
+            // const element = arrayOfAddonIds[i];
+            api_data["publishedfileids[" + i + "]"] = parseInt(arrayOfAddonIds[i]);        
+        }
+        $.ajax({
+            type: 'POST',
+            url: 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
+            data: api_data,
+            dataType: 'json',
+        }).done((data) => {
+            var response = data.response;
+            if (response.result == 1) {
+                for (let i = 0; i < response.resultcount; i++) {
+                    if (response.publishedfiledetails[i].result == 1) {
+                        var addon = response.publishedfiledetails[i];
+                        var addonObject = {
+                            "title": addon.title,
+                            "id": addon.publishedfileid
+                        }
+                        addon_data.push(addonObject);
+                    }
+                }
+            }
+            // console.log(data.response);
+            var addon = data.response.publishedfiledetails["0"];
+            okToProcessAddonList = true;
+            $('#update_existing_addon_button').text('Update existing addon');
+        });
+    }
 
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get('gmodDirectory') != null) {
@@ -214,13 +225,24 @@ $(document).ready(() => {
         })
     }
 
+    // Check if user needs to refresh their addons
+    // TODO: Hopefully I can remove this later on as it really isn't needed (except in the case of Steam being down)
+    $('#refresh_addons').click(() => {
+        console.log("Attempting to refresh addons...");
+        $('#yourAddons').children().remove();
+        getAddonInfoFromSteam();
+        populateAddonList();
+
+    });
+
     // Get array of addon infomation and append their names to #yourAddons
     function populateAddonList() {
         // This check is done to make sure this only gets executed once
         if (!donePopulatingAddonList) {
             for (let i = 0; i < addon_data.length; i++) {
-                $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p><a href='steam://url/CommunityFilePage/" + addon_data[i].id + "'>View on Steam</a></div>");
+                $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p><p class='addon_link'><a href='steam://url/CommunityFilePage/" + addon_data[i].id + "'>View</a> <a href='#'>Update</a></p></div>");
                 donePopulatingAddonList = true;
+                
             }
             // Make sure if nothing is returned to let the user know
             // TODO: Allow for multiple error codes such as 429 (too many requests)
@@ -228,18 +250,25 @@ $(document).ready(() => {
             //     $('#yourAddons').append("<p style='background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;'><b>Steam Web API Error!</b><br/><br/>Error 400. Maybe</p>");
             //     donePopulatingAddonList = true;
             // }
+
+            console.log(addon_data, arrayOfAddonIds)
+
+            $('.addon_existing').hover((event) => {
+                var target = $(event.target);
+                var targetLink = $(target).find('.addon_link');
+                $(targetLink).css('opacity', 0).slideDown('fast').animate({ opacity: 1 }, { queue: false, duration: 'slow' });
+            }, (event) => {
+                var target = $(event.target);
+                var targetLink = $(target).find('.addon_link');
+                $(targetLink).slideUp('fast').animate({ opacity: 0 }, { queue: false, duration: 'slow' });
+            });
+            
             if (0 == addon_data.length) {
                 $('#yourAddons').append("<p style='background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;'><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything.</p>");
                 donePopulatingAddonList = true;
             }
         }
     }
-
-    // $('.addon_existing').hover((event) => {
-    //     console.log('hello')
-    //     var target = $(event.target);
-    //     $(this).find('a:last').fadeIn();
-    // })
 
     $('.typeCheckbox').on('click', (event) => {
         var target = $(event.target);
@@ -314,7 +343,10 @@ $(document).ready(() => {
     }
 
     $("#resetAddonCreation").click(() => {
+        resetAddonCreation();
+    });
 
+    function resetAddonCreation() {
         jsonCheckboxCount = 0;
 
         // Clear the old data we used to make addon.json
@@ -347,7 +379,7 @@ $(document).ready(() => {
 
         // Hide any div that may still be displayed
         $('#addonjsonPrompt, #jsonCreator, #gmaPrep, #createGMA').css('display', 'none');
-    });
+    }
 
     $("#createGMAFile").click(() => {
         $('#gmaPrep').fadeOut(() => {
@@ -370,15 +402,15 @@ $(document).ready(() => {
             win.setBounds({height: 200})
             $('#new_addon_link').attr('href', 'steam://url/CommunityFilePage/' + newAddonID)
             $('#new_addon').fadeIn()
-        })
-    })
+        });
+    });
     
     ipcRenderer.on('addonGMALocation', (event, addonGMA) => {
         addonGMADir = addonGMA;
         $('#createGMA').fadeOut(() => {
             win.setBounds({height: 200})
             $("#uploadToWorkshopPrompt").fadeIn();
-        })
-    })
+        });
+    });
 
 });

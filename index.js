@@ -30,7 +30,7 @@ function createWindow() {
           backgroundColor: "#262626",
           titleBarStyle: "hidden",
           frame: false,
-          icon: "src/img/icon.png",
+          icon: "src/img/icon.ico",
           webPreferences: {
               nodeIntegration: true
           }
@@ -96,8 +96,10 @@ function sendClientAddonInfo() {
         fixedArray[i] = fixedArray[i].replace('/r', '');
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
+
+    console.log(ADDON_IDS)
     console.log('Sent to client!')
-    mainWindow.webContents.send('message', ADDON_IDS);
+    mainWindow.webContents.send('addonInfo', ADDON_IDS);
   });
 }
 

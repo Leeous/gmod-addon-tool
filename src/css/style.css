@@ -176,17 +176,47 @@ header {
     padding: 15px 10px;
 }
 
-#update_existing_addon .top h3, #create_new_addon .top h3 {
+#create_new_addon .top h3 {
     display: inline-block;
     margin: 0;
     font-weight: 300;
     transform: translateY(2px)
-}y
+}
 
 #update_existing_addon .top button, #create_new_addon .top button {
     display: inline-block;
     background-color: rgb(219, 68, 68);
     margin-right: 5px;
+}
+
+#update_existing_addon .top {
+    background-color: #0f0f0f;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+}
+
+#update_existing_addon .top h3 {
+    /* display: inline-block; */
+    flex: 1;
+    margin: 0;
+    text-align: left;
+    font-weight: 300;
+}
+
+#update_existing_addon .top button {
+    /* display: inline-block; */
+    background-color: rgb(219, 68, 68);
+    margin-right: 5px;
+}
+
+#refresh_addons {
+    margin-left: auto;
+    padding-right: 15px;
+}
+
+#refresh_addons a {
+    color: white;
 }
 
 #yourAddons {
@@ -219,7 +249,6 @@ header {
     font-weight: 500;
     background-color: #161616;
     padding: 10px 0;
-    cursor: pointer;
     transition: ease 0.5s all;
 }
 
@@ -232,9 +261,12 @@ header {
     margin: 0
 }
 
-.addon_existing a {
-    color: white;
+.addon_link {
     display: none;
+}
+
+.addon_link a {
+    color: white;
 }
 
 .removeBackOption {
