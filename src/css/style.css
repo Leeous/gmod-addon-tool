@@ -191,7 +191,6 @@ header {
 
 #update_existing_addon .top {
     background-color: #0f0f0f;
-    padding: 5px 10px;
     display: flex;
     align-items: center;
 }
@@ -257,15 +256,19 @@ header {
     padding: 15px 0;
 }
 
-.addon_existing p {
-    margin: 0
+.addon_existing .title {
+    margin: 0;
+    cursor: default;
 }
 
 .addon_link {
     display: none;
+    margin-top: 5px;
+    margin-bottom: 0;
 }
 
 .addon_link a {
+    padding: 3px;
     color: white;
 }
 

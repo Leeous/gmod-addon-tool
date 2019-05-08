@@ -19,6 +19,7 @@ jsonCheckboxCount = 0;
 jsonChecks = [false, false];
 apiError = 0;
 addonGMADir = "";
+existingAddonId = null;
 var addonTitle;
 var addonTags;
 var addonType;
@@ -75,7 +76,6 @@ $(document).ready(() => {
                 }
             }
             // console.log(data.response);
-            var addon = data.response.publishedfiledetails["0"];
             okToProcessAddonList = true;
             $('#update_existing_addon_button').text('Update existing addon');
         });
@@ -182,6 +182,7 @@ $(document).ready(() => {
     $('#create_new_addon_button').click(() => {
         $('#addon_management_prompt').fadeOut(() => {
             win.setBounds({height: 250})
+
             $('#create_new_addon, #addonDirPrompt').fadeIn()
         })
     })
@@ -190,6 +191,7 @@ $(document).ready(() => {
         var target = event.target;
         var divToGoBack = $(target).data('forwards');
         var divToShow = $(target).data('backwards');
+        resetAddonCreation()
         if ($(target).data('resize') != null) {
             var resizeInfo = JSON.parse("[" + $(target).data('resize') + "]");
         }
@@ -209,7 +211,7 @@ $(document).ready(() => {
     })
 
     $('.removeBackOption').click(() => {
-        $('#back_button_addon_creation').fadeOut();
+        // $('#back_button_addon_creation').fadeOut();
     })
 
     // General function for transitioning between div tags (with a shitty name)
@@ -225,24 +227,13 @@ $(document).ready(() => {
         })
     }
 
-    // Check if user needs to refresh their addons
-    // TODO: Hopefully I can remove this later on as it really isn't needed (except in the case of Steam being down)
-    $('#refresh_addons').click(() => {
-        console.log("Attempting to refresh addons...");
-        $('#yourAddons').children().remove();
-        getAddonInfoFromSteam();
-        populateAddonList();
-
-    });
-
-    // Get array of addon infomation and append their names to #yourAddons
+    // Get array of addon infomation and append their info to #yourAddons
     function populateAddonList() {
         // This check is done to make sure this only gets executed once
         if (!donePopulatingAddonList) {
             for (let i = 0; i < addon_data.length; i++) {
-                $('#yourAddons').append("<div class='addon_existing'><p>" + addon_data[i].title + "</p><p class='addon_link'><a href='steam://url/CommunityFilePage/" + addon_data[i].id + "'>View</a> <a href='#'>Update</a></p></div>");
+                $('#yourAddons').append("<div class='addon_existing'><p class='title'>" + addon_data[i].title + "</p><p class='addon_link'><a href='steam://url/CommunityFilePage/" + addon_data[i].id + "'>View</a> <a href='#' class='updateAddon' data-id='" + addon_data[i].id + "'>Update</a></p></div>");
                 donePopulatingAddonList = true;
-                
             }
             // Make sure if nothing is returned to let the user know
             // TODO: Allow for multiple error codes such as 429 (too many requests)
@@ -342,7 +333,7 @@ $(document).ready(() => {
         }
     }
 
-    $("#resetAddonCreation").click(() => {
+    $(".resetAddonCreation").click(() => {
         resetAddonCreation();
     });
 
@@ -366,40 +357,57 @@ $(document).ready(() => {
         // Clear the addon name on directory selection
         $("#addonDir b").text('');
 
-        // Set the input to null
+        // Set the file inputs to null
         $("#addon_dir_folder").val(null);
+        $("#addon_icon").val(null);
 
         // Reset directory validation
         $('#addonDirCheck').css({backgroundColor: "#0f0f0f", cursor: "not-allowed"});
         $('#addonDirCheck').prop('disabled', true);
 
+        // Reset icon validation
+        $('#addonIconCheck').css({backgroundColor: "#0f0f0f", cursor: "not-allowed"});
+        $('#addonIconCheck').prop('disabled', true);
+
         // Reset validation checks
         jsonChecks = [false, false];
         validateJsonForm();
 
+        // Reset existingAddonId if user was updating instead of creating
+        existingAddonId = null;
+
         // Hide any div that may still be displayed
-        $('#addonjsonPrompt, #jsonCreator, #gmaPrep, #createGMA').css('display', 'none');
+        $('#addonjsonPrompt, #addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt').css('display', 'none');
     }
+
+    $("#yourAddons").on('click', '.updateAddon', (event) => {
+        var target = event.target;
+        existingAddonId = $(target).data('id');
+        $("#update_existing_addon").fadeOut(() => {
+            $("#create_new_addon .top h3").text('Updating addon');
+            $("#create_new_addon, #addonDirPrompt").fadeIn();
+        });
+    });
 
     $("#createGMAFile").click(() => {
         $('#gmaPrep').fadeOut(() => {
-            win.setBounds({height: 225})
+            win.setBounds({height: 250});
             $('#createGMA').fadeIn();
-            ipcRenderer.send('createGMAFile', currentNewAddon);  
+            ipcRenderer.send('createGMAFile', currentNewAddon);
         });
-    })
+    });
     
     $("#uploadCurrentGMA").click(() => {
-        ipcRenderer.send('uploadToWorkshop', addonGMADir, addonIcon);
+        ipcRenderer.send('uploadToWorkshop', addonGMADir, addonIcon, existingAddonId);
         $('#uploadToWorkshopPrompt').fadeOut(() => {
-            win.setBounds({height: 225})
+            win.setBounds({height: 250})
             $('#uploading').fadeIn();
         })
     })
     
     ipcRenderer.on('currentAddonID', (event, newAddonID) => {
         $('#uploading').fadeOut(() => {
-            win.setBounds({height: 200})
+            win.setBounds({height: 225})
             $('#new_addon_link').attr('href', 'steam://url/CommunityFilePage/' + newAddonID)
             $('#new_addon').fadeIn()
         });

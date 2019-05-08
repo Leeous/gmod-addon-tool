@@ -42,7 +42,6 @@
             <div class="top">
                 <button id="back_button_existing_addon" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#update_existing_addon" data-resize="500, 175">◀ Back</button>
                 <h3>Your addons</h3>
-                <p id="refresh_addons"><a href="#">Refresh</a></p>
             </div>
             <div id="yourAddons"></div>
         </div>
@@ -161,7 +160,7 @@
                 <div id="gmaPrep">
                     <!-- <p>Created <span style="font-weight: 700">addon.json</span>!</p> -->
                     <h3>Create GMA for uploading to the Workshop?</h3>
-                    <button style="width: 100px;" class="button_normal transition_button" id="resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 175">No</button>
+                    <button style="width: 100px;" class="button_normal transition_button resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 175">No</button>
                     <button style="width: 100px;" id="createGMAFile" class="button_normal transition_button">Yes</button>
                     <!-- <img src="src/img/loading.gif" style="display: block; margin-left: auto; margin-right: auto; width: 64px;" alt=""> -->
                 </div>
@@ -179,9 +178,9 @@
                     <img src="src/img/loading.gif" style="width: 64px; display: block; margin-left: auto; margin-right: auto; margin-top: 35px;" alt="">
                 </div>
                 <div id="new_addon">
-                    <p>Uploaded!</p>
+                    <h3>Uploaded!</h3>
                     <p><a id="new_addon_link" style="color: white;" href="#">View on Steam</a></p>
-                    <button class="button_normal" style="width: 100px;">Done</button>
+                    <button class="button_normal transition_button resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 175" style="width: 100px;">Done</button>
                 </div>
             </div>
         </div>

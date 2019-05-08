@@ -124,16 +124,29 @@ ipcMain.on('createGMAFile', (event, addonDir) => {
   });
 });
 
-ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir) => {
-  const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['create', '-icon', iconDir, '-addon', gmaDir]);
-  gmpublish.stdout.on('data', (data) => {
-    var arrayOfOutput = data.toString().split('\n')
-    var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7)
-    fixedArray = fixedArray[0].replace(/\D/, '')
-    fixedArray = fixedArray.substr(5, fixedArray.length)
-    console.log(fixedArray)
-    mainWindow.webContents.send('currentAddonID', fixedArray);
-  })
+ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
+  if (addonId != null) {
+    const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['update', '-id', addonId, '-icon', iconDir, '-addon', gmaDir]);
+    gmpublish.stdout.on('data', (data) => {
+      var arrayOfOutput = data.toString().split('\n')
+      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7)
+      fixedArray = fixedArray[0].replace(/\D/, '')
+      fixedArray = fixedArray.substr(5, fixedArray.length)
+      console.log(fixedArray)
+      mainWindow.webContents.send('currentAddonID', fixedArray);
+    });
+  } else {
+    const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['create', '-icon', iconDir, '-addon', gmaDir]);
+    gmpublish.stdout.on('data', (data) => {
+      var arrayOfOutput = data.toString().split('\n')
+      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7)
+      fixedArray = fixedArray[0].replace(/\D/, '')
+      fixedArray = fixedArray.substr(5, fixedArray.length)
+      console.log(fixedArray)
+      mainWindow.webContents.send('currentAddonID', fixedArray);
+    });
+  };
+
 })
 
 
