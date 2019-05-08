@@ -6,6 +6,7 @@ const {
 } = require("electron");
 const settings = require("electron-settings");
 const shell = require("electron").shell;
+const imageSize = require("image-size");
 let win = remote.getCurrentWindow();
 
 addon_data = [];
@@ -148,19 +149,25 @@ $(document).ready(() => {
 
     $('#addon_icon').change(() => {
         addonIcon = document.getElementById("addon_icon").files[0].path;
+        sizeIsOkay = true;
         ipcRenderer.send('checkIfDirectoryExists', addonIcon);
         var jpegCheck = addonIcon.substring(addonIcon.length - 4);
-        console.log(jpegCheck)
+        var sizeOf = require('image-size');
+        var dimensions = sizeOf(addonIcon);
         if (jpegCheck == "jpeg" || jpegCheck == ".jpg") {
-            $('#addonIconCheck').css('background-color', '#56bd56');
-            $('#addonIconCheck').prop('disabled', false);
-            $('#addonIconCheck').css('cursor', 'pointer');
+            if (dimensions.height == 512 && dimensions.width == 512) {
+                $('#addonIconCheck').css('background-color', '#56bd56');
+                $('#addonIconCheck').prop('disabled', false);
+                $('#addonIconCheck').css('cursor', 'pointer');
+            } else {
+                alert("Image must be 512x512.")
+            }
         } else {
             $('#addonIconCheck').css('background-color', '#0f0f0f');
             $('#addonIconCheck').prop('disabled', true);
             $('#addonIconCheck').css('cursor', 'not-allowed');
-            alert("Doesn't seem like a JPEG image.")
-        }
+            alert("Doesn't seem like a JPEG image.");
+        } 
     })
 
     $('#dir_prompt_next button').click(() => {

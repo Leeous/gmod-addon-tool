@@ -78,12 +78,12 @@ ipcMain.on('checkIfDirectoryExists', (event, file) => {
 })
 
 ipcMain.on('getAddonInfo', () => {
-  console.log('Trying to get addon info...')
-  sendClientAddonInfo()
-  console.log("User's Gmod Directory:" + settings.get('gmodDirectory'))
+  console.log('Trying to get addon info...');
+  sendClientAddonInfo();
+  console.log("User's Gmod Directory:" + settings.get('gmodDirectory'));
 })
 
-var ADDON_IDS = []
+var ADDON_IDS = [];
 
 // We use this to get the addon IDs from gmpublish.exe
 
@@ -108,8 +108,8 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
   fs.writeFileSync(dir + "\\addon.json", json, 'utf8', (err) => {
     console.log("An error occured while writing JSON Object to File.\n", err);
     mainWindow.webContents.send('error', "Error writing directory.");
-  })
-})
+  });
+});
 
 ipcMain.on('createGMAFile', (event, addonDir) => {
   console.log("Addon's Directory: " + addonDir.toString())
@@ -128,21 +128,21 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   if (addonId != null) {
     const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['update', '-id', addonId, '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
-      var arrayOfOutput = data.toString().split('\n')
-      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7)
-      fixedArray = fixedArray[0].replace(/\D/, '')
-      fixedArray = fixedArray.substr(5, fixedArray.length)
-      console.log(fixedArray)
+      var arrayOfOutput = data.toString().split('\n');
+      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7);
+      fixedArray = fixedArray[0].replace(/\D/, '');
+      fixedArray = fixedArray.substr(5, fixedArray.length);
+      console.log(fixedArray);
       mainWindow.webContents.send('currentAddonID', fixedArray);
     });
   } else {
     const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['create', '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
-      var arrayOfOutput = data.toString().split('\n')
-      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7)
-      fixedArray = fixedArray[0].replace(/\D/, '')
-      fixedArray = fixedArray.substr(5, fixedArray.length)
-      console.log(fixedArray)
+      var arrayOfOutput = data.toString().split('\n');
+      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7);
+      fixedArray = fixedArray[0].replace(/\D/, '');
+      fixedArray = fixedArray.substr(5, fixedArray.length);
+      console.log(fixedArray);
       mainWindow.webContents.send('currentAddonID', fixedArray);
     });
   };
