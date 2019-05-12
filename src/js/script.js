@@ -31,6 +31,7 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 }
+currentAppVersion = "v1.1";
 
 
 
@@ -46,6 +47,20 @@ $(document).ready(() => {
     ipcRenderer.on("addonInfo", (event, message) => {
         getAddonInfoFromSteam(message)
     });
+
+    // Check current version, let user know if it differs
+    $.ajax({
+        type: "GET",
+        url: "https://api.github.com/repos/Leeous/gmod-addon-tool/releases/latest",
+        dataType: "json"
+    }).done((data) => {
+        if (data.tag_name != currentAppVersion) {
+            var open = confirm("Update " + data.tag_name + " available.");
+            if (open) {
+                shell.openExternal("https://github.com/Leeous/gmod-addon-tool/releases");
+            }
+        }
+    })
     
     function getAddonInfoFromSteam(message) {
         arrayOfAddonIds = message;
@@ -173,6 +188,10 @@ $(document).ready(() => {
     $('#dir_prompt_next button').click(() => {
         $('#directory_selection').fadeOut(() => {
             $('#addon_management').fadeIn();
+            $('#addon_management_prompt').fadeIn();
+            win.setBounds({
+                height: 175,
+            })
         });
     })
 
@@ -189,7 +208,6 @@ $(document).ready(() => {
     $('#create_new_addon_button').click(() => {
         $('#addon_management_prompt').fadeOut(() => {
             win.setBounds({height: 250})
-
             $('#create_new_addon, #addonDirPrompt').fadeIn()
         })
     })
