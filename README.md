@@ -9,3 +9,6 @@ Creates GMAs, addon.json, and uploads it to the Workshop.
 
 ## Instructions
 Download a [release](https://github.com/Leeous/gmod-addon-tool/releases) and run `gmod-addon-tool.exe`.
+
+### Have an issue?
+[Create an issue](https://github.com/Leeous/gmod-addon-tool/issues/new) or send me a tweet/DM [@LeeTheCoder](https://twitter.com/LeeTheCoder).
