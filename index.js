@@ -91,7 +91,8 @@ function sendClientAddonInfo() {
   const bat = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['list']);
   bat.stdout.on('data', (data) => {
     var arrayOfOutput = data.toString().split('\n')
-    var fixedArray = arrayOfOutput.slice(4, arrayOfOutput.length - 3)
+    var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3)
+    console.log(fixedArray)
     for (var i = 0; i < fixedArray.length; i++) {
         fixedArray[i] = fixedArray[i].replace('/r', '');
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
@@ -139,6 +140,7 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['create', '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
+      console.log(data.toString);
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);

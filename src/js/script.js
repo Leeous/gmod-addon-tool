@@ -31,7 +31,7 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 }
-currentAppVersion = "v1.1";
+currentAppVersion = "v1.2";
 
 
 
