@@ -2,7 +2,7 @@
   "name": "gmod-addon-tool",
   "version": "1.0.0",
   "description": "A simple tool to update workshop addons.",
-  "main": "index.js",
+  "main": "app.js",
   "dependencies": {
     "cross-spawn": "^6.0.5",
     "electron-settings": "^3.2.0",

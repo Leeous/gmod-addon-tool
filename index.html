@@ -35,26 +35,30 @@
     <div id="addon_management">
         <div id="addon_management_prompt">
             <h3>What would you like to do?</h3>
-            <button id="create_new_addon_button" class="button_normal medium-text" style="margin: 10px;">Create a new addon</button>
-            <button id="update_existing_addon_button" class="button_normal medium-text" style="margin: 10px;">Loading...</button>
+            <div id="addon_mgt_btn_grid">
+                <button id="create_new_addon_button" class="button_normal medium-text" style="margin: 10px;">Create a new addon</button>
+                <button id="update_existing_addon_button" class="button_normal medium-text" style="margin: 10px;">Loading...</button>
+                <button class="button_normal medium-text" style="margin: 10px;">Extract Addon</button>
+                <button class="button_normal medium-text" style="margin: 10px;">Download Addon</button>
+            </div>
         </div>
         <div id="update_existing_addon">
             <div class="top">
-                <button id="back_button_existing_addon" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#update_existing_addon" data-resize="500, 175">◀ Back</button>
+                <button id="back_button_existing_addon" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#update_existing_addon" data-resize="500, 200">◀ Back</button>
                 <h3>Your addons</h3>
             </div>
             <div id="yourAddons"></div>
         </div>
         <div id="create_new_addon">
             <div class="top">
-                <button id="back_button_addon_creation" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#create_new_addon" data-resize="500, 175">◀ Back</button>
+                <button id="back_button_addon_creation" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#create_new_addon" data-resize="500, 200">◀ Back</button>
                 <h3>Addon creation</h3>
             </div>
             <div id="addon_creation">
                 <div id="addonDirPrompt">
                     <p>Please select your addon's folder</p>
                     <button class="button_normal fake_select" data-buttonclick="#addon_dir_folder">Choose Directory</button>
-                    <input id="addon_dir_folder" class="real_select" type="file" webkitdirectory />
+                    <input id="addon_dir_folder" class="real_select" type="button"/>
                     <p id="addonDir"><b></b></p>
                     <div class="next_prompt">
                         <button id="addonDirCheck" class="transition_button" data-divtoshow="#addonIconPrompt" data-divtohide="#addonDirPrompt" data-resize="500, 250" disabled>Next</button>
@@ -160,7 +164,7 @@
                 <div id="gmaPrep">
                     <!-- <p>Created <span style="font-weight: 700">addon.json</span>!</p> -->
                     <h3>Create GMA for uploading to the Workshop?</h3>
-                    <button style="width: 100px;" class="button_normal transition_button resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 175">No</button>
+                    <button style="width: 100px;" class="button_normal transition_button resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 200">No</button>
                     <button style="width: 100px;" id="createGMAFile" class="button_normal transition_button">Yes</button>
                     <!-- <img src="src/img/loading.gif" style="display: block; margin-left: auto; margin-right: auto; width: 64px;" alt=""> -->
                 </div>
@@ -180,8 +184,13 @@
                 <div id="new_addon">
                     <h3>Uploaded!</h3>
                     <p><a id="new_addon_link" style="color: white;" href="#">View on Steam</a></p>
-                    <button class="button_normal transition_button resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 175" style="width: 100px;">Done</button>
+                    <button class="button_normal transition_button resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 200" style="width: 100px;">Done</button>
                 </div>
+            </div>
+        </div>
+        <div id="extract_addon">
+            <div class="top">
+                <h3>Addon Extraction</h3>
             </div>
         </div>
     </div>

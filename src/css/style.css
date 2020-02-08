@@ -40,11 +40,17 @@ header {
 }
 
 /* IDs */
+#addon_mgt_btn_grid {
+    display: grid;
+    grid-row: 2;
+    grid-template-columns: auto auto;
+}
 
 #addon_management_prompt .button_normal {
     margin: 15px 0;
     box-shadow: 0 5px #797979;
     transition: none;
+    display: inline-block;
 }
 
 #addon_management_prompt .button_normal:active {
@@ -164,7 +170,12 @@ header {
     text-align: center;
 }
 
-#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #errorNote {
+#addon_management {
+    display: none;
+    text-align: center;
+}
+
+#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #errorNote, #extract_addon {
     display: none;
 }
 

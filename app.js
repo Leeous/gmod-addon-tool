@@ -2,12 +2,12 @@
 const {
   app,
   BrowserWindow,
-  ipcMain
+  ipcMain,
+  dialog
 } = require('electron')
 const fs = require('fs')
 const { spawn } = require('child_process');
 const settings = require('electron-settings');
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -98,8 +98,9 @@ function sendClientAddonInfo() {
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
 
-    console.log(ADDON_IDS)
-    console.log('Sent to client!')
+    if (fixedArray == "Couldn't initialize Steam!\r") {
+      mainWindow.webContents.send('errorAlert', ADDON_IDS);
+    }
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
   });
 }
@@ -107,11 +108,12 @@ function sendClientAddonInfo() {
 ipcMain.on('createJsonFile', (event, json, dir) => {
   console.log(json, dir)
   fs.writeFileSync(dir + "\\addon.json", json, 'utf8', (err) => {
-    console.log("An error occured while writing JSON Object to File.\n", err);
+    console.log("An error occured while writing JSON object to File.\n", err);
     mainWindow.webContents.send('error', "Error writing directory.");
   });
 });
 
+// This is ran once the client requests to create an addon
 ipcMain.on('createGMAFile', (event, addonDir) => {
   console.log("Addon's Directory: " + addonDir.toString())
   const gmad = spawn(settings.get('gmodDirectory') + '\\bin\\gmad.exe', ['create', '-folder', addonDir]);
@@ -125,6 +127,7 @@ ipcMain.on('createGMAFile', (event, addonDir) => {
   });
 });
 
+// This block will upload the GMA file to the Steam Workshop
 ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   if (addonId != null) {
     const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['update', '-id', addonId, '-icon', iconDir, '-addon', gmaDir]);
@@ -133,26 +136,24 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);
-      console.log(fixedArray);
       mainWindow.webContents.send('currentAddonID', fixedArray);
     });
   } else {
+    // Passes all the info needed to publish a Garry's Mod addon
     const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['create', '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
-      console.log(data.toString);
-      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7);
+      console.log(arrayOfOutput)
+      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);
-      console.log(fixedArray);
-      mainWindow.webContents.send('currentAddonID', fixedArray);
+      var stringArray = fixedArray.toString()
+      var addonURLIndex = stringArray.indexOf("?id=")
+      var addonURL = stringArray.slice(addonURLIndex + 4, addonURLIndex + 14)
+      console.log(addonURL)
+      mainWindow.webContents.send('currentAddonID', addonURL);
     });
   };
-
-})
-
-
-
-
+});
 
 // gmpublish.exe create -icon path/to/image512x512.jpg -addon path/to/gma.gma

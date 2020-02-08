@@ -7,8 +7,8 @@ const {
 const settings = require("electron-settings");
 const shell = require("electron").shell;
 const imageSize = require("image-size");
+const { dialog } = require('electron').remote
 let win = remote.getCurrentWindow();
-
 addon_data = [];
 api_data = {
     "itemcount": "0",
@@ -31,9 +31,16 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 }
-currentAppVersion = "v1.2";
+currentAppVersion = "v1.3";
 
-
+let dirDialogOptions = {
+    title : "Select your addon's folder", 
+    buttonLabel : "Select Folder",
+    filters :[
+     {name: 'All Folders', extensions: ['*']}
+    ],
+    properties: ['openDirectory']
+}
 
 // Make links open in enternal browser
 $(document).on("click", "a[href^='http']", function(event) {
@@ -46,6 +53,11 @@ $(document).ready(() => {
     // Try and recieve data from gmpublish about user's addons
     ipcRenderer.on("addonInfo", (event, message) => {
         getAddonInfoFromSteam(message)
+    });
+
+    // Sends an alert if Steam doesn't initialize 
+    ipcRenderer.on("errorAlert", (event, message) => {
+        alert("Steam doesn't seem open!\nOpen Steam and restart. ")
     });
 
     // Check current version, let user know if it differs
@@ -65,8 +77,7 @@ $(document).ready(() => {
     function getAddonInfoFromSteam(message) {
         arrayOfAddonIds = message;
         
-        api_data['itemcount'] = arrayOfAddonIds.length;
-        
+        api_data['itemcount'] = arrayOfAddonIds.length;  
         
         for (let i = 0; i < arrayOfAddonIds.length; i++) {
             // const element = arrayOfAddonIds[i];
@@ -102,7 +113,7 @@ $(document).ready(() => {
         $('#addon_management').fadeIn();
         $('#addon_management_prompt').fadeIn();
         win.setBounds({
-            height: 175
+            height: 200
         })
         ipcRenderer.send('getAddonInfo');
     } else {
@@ -151,16 +162,22 @@ $(document).ready(() => {
     })
 
     // If directory exists (and is writable/readable) allow user to procede 
-    $('#addon_dir_folder').change(() => {
-        currentNewAddon = document.getElementById("addon_dir_folder").files[0].path;
-        ipcRenderer.send('checkIfDirectoryExists', currentNewAddon);
-        var n = currentNewAddon.lastIndexOf('\\');
-        var result = currentNewAddon.substring(n + 1);
-        $('#addonDir b').text(result);
-        $('#addonDirCheck').css('background-color', '#56bd56');
-        $('#addonDirCheck').prop('disabled', false);
-        $('#addonDirCheck').css('cursor', 'pointer');
-    })
+    $('#addon_dir_folder').click(() => {
+        dialog.showOpenDialog(win, dirDialogOptions).then(result => {
+            if (!result.canceled) {
+                currentNewAddon = result.filePaths[0];
+                ipcRenderer.send('checkIfDirectoryExists', currentNewAddon);
+                var n = currentNewAddon.lastIndexOf('\\');
+                var result = currentNewAddon.substring(n + 1);
+                $('#addonDir b').text(result);
+                $('#addonDirCheck').css('background-color', '#56bd56');
+                $('#addonDirCheck').prop('disabled', false);
+                $('#addonDirCheck').css('cursor', 'pointer');
+            }
+        }).catch(err => {
+            console.log("dialog error")
+        });
+    });
 
     $('#addon_icon').change(() => {
         addonIcon = document.getElementById("addon_icon").files[0].path;
@@ -190,7 +207,7 @@ $(document).ready(() => {
             $('#addon_management').fadeIn();
             $('#addon_management_prompt').fadeIn();
             win.setBounds({
-                height: 175,
+                height: 200,
             })
         });
     })
@@ -418,6 +435,7 @@ $(document).ready(() => {
         $('#gmaPrep').fadeOut(() => {
             win.setBounds({height: 250});
             $('#createGMA').fadeIn();
+            console.log(currentNewAddon)
             ipcRenderer.send('createGMAFile', currentNewAddon);
         });
     });
