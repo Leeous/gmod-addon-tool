@@ -24,7 +24,7 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
           width: 500,
-          height: 250,
+          height: 225,
           resizable: false,
           fullscreenable: false,
           backgroundColor: "#262626",
@@ -39,7 +39,7 @@ function createWindow() {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {

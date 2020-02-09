@@ -11,9 +11,9 @@ Creates GMAs, addon.json, and uploads it to the Workshop.
 Download a [release](https://github.com/Leeous/gmod-addon-tool/releases) and run `gmod-addon-tool.exe`.
 
 ### Have an issue?
-Make sure you [follow the wiki's directions](https://wiki.garrysmod.com/page/Workshop_Addon_Creation), this tool doesn't tell you if you did something incorrectly.
+Make sure you [follow the wiki's directions](https://wiki.garrysmod.com/page/Workshop_Addon_Creation). 
 
-Even if it's as simple as trying to upload a `.png` as your addon's icon instead of a `.jpg` image, it will fail. Maybe I'll add error checking in the future, but honestly it's more work that what's it's worth.
+Settings are saved at `%APPDATA%/gmod-addon-tool`, delete this folder to reset any settings created. 
 
 Otherwise,
 [create an issue](https://github.com/Leeous/gmod-addon-tool/issues/new) or send me a tweet/DM [@LeeTheCoder](https://twitter.com/LeeTheCoder).

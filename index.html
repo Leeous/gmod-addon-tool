@@ -23,8 +23,7 @@
     <div id="directory_selection">
         <div id="gmodDirSelect">
             <h3 id="dir_select_prompt">Please select your Garry's Mod directory</h3>
-            <button class="button_normal fake_select" data-buttonclick="#gmod_dir_folder">Choose Directory</button>
-            <input id="gmod_dir_folder" class="real_select" type="file" webkitdirectory />
+            <button id="gmod_dir_folder" class="button_normal">Choose Directory</button>
             <h4 style="font-weight: 300; margin: 10px">Steam <b>must</b> be open!</h4>
         </div>
         <p id="status_of_dir"></p>
@@ -36,20 +35,20 @@
         <div id="addon_management_prompt">
             <h3>What would you like to do?</h3>
             <div id="addon_mgt_btn_grid">
-                <button id="create_new_addon_button" class="button_normal medium-text" style="margin: 10px;">Create a new addon</button>
-                <button id="update_existing_addon_button" class="button_normal medium-text" style="margin: 10px;">Loading...</button>
-                <button class="button_normal medium-text" style="margin: 10px;">Extract Addon</button>
-                <button class="button_normal medium-text" style="margin: 10px;">Download Addon</button>
+                <button class="button_normal medium-text transition_button" data-divtoshow="#create_new_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Create a new addon</button>
+                <button id="update_existing_addon_button" class="button_normal medium-text transition_button" data-divtoshow="#update_existing_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Loading... </button>
+                <button class="button_normal medium-text transition_button" data-divtoshow="#extract_addon" data-divtohide="#addon_management_prompt" data-resize="500, 200" style="margin: 10px;">Extract Addon</button>
+                <button class="button_normal medium-text transition_button" data-divtoshow="#download_addon" data-divtohide="#addon_management_prompt" style="margin: 10px;">Download Addon</button>
             </div>
         </div>
-        <div id="update_existing_addon">
+        <div id="update_existing_addon" class="path_div">
             <div class="top">
-                <button id="back_button_existing_addon" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#update_existing_addon" data-resize="500, 200">◀ Back</button>
+                <button class="back_button transition_button" data-divtoshow="#addon_management_prompt" data-divtohide="#update_existing_addon" data-resize="500, 200">◀ Back</button>
                 <h3>Your addons</h3>
             </div>
             <div id="yourAddons"></div>
         </div>
-        <div id="create_new_addon">
+        <div id="create_new_addon" class="path_div">
             <div class="top">
                 <button id="back_button_addon_creation" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#create_new_addon" data-resize="500, 200">◀ Back</button>
                 <h3>Addon creation</h3>
@@ -57,8 +56,7 @@
             <div id="addon_creation">
                 <div id="addonDirPrompt">
                     <p>Please select your addon's folder</p>
-                    <button class="button_normal fake_select" data-buttonclick="#addon_dir_folder">Choose Directory</button>
-                    <input id="addon_dir_folder" class="real_select" type="button"/>
+                    <button id="addon_dir_folder" class="button_normal">Choose Directory</button>
                     <p id="addonDir"><b></b></p>
                     <div class="next_prompt">
                         <button id="addonDirCheck" class="transition_button" data-divtoshow="#addonIconPrompt" data-divtohide="#addonDirPrompt" data-resize="500, 250" disabled>Next</button>
@@ -67,8 +65,7 @@
                 <div id="addonIconPrompt">
                     <p>Please select an icon for your addon</p>
                     <p style="font-size: 0.8em">Must be a JPEG/JPG</p>
-                    <button class="button_normal fake_select" data-buttonclick="#addon_icon">Choose Directory</button>
-                    <input id="addon_icon" class="real_select" type="file"/>
+                    <button id="addon_icon" class="button_normal">Choose Directory</button>
                     <div class="next_prompt">
                         <button id="addonIconCheck" class="transition_button" data-divtoshow="#addonjsonPrompt" data-divtohide="#addonIconPrompt" data-resize="500, 175" disabled>Next</button>
                     </div>
@@ -188,15 +185,18 @@
                 </div>
             </div>
         </div>
-        <div id="extract_addon">
+        <div id="extract_addon" class="path_div">
             <div class="top">
+                <button class="back_button transition_button" data-divtoshow="#addon_management_prompt" data-divtohide="#extract_addon" data-resize="500, 200">◀ Back</button>
                 <h3>Addon Extraction</h3>
             </div>
         </div>
-    </div>
-    <div id="errorNote">
-        <p>Error: <span id="error"></span></p>
-        <button class="button_normal">Okay</button>
+        <div id="download_addon" class="path_div">
+            <div class="top">
+                <button class="back_button transition_button" data-divtoshow="#addon_management_prompt" data-divtohide="#download_addon" data-resize="500, 200">◀ Back</button>
+                <h3>Addon Extraction</h3>
+            </div>
+        </div>
     </div>
     <div id="checkmarkNote">
         <img src="src/img/checkmark.png" alt="">

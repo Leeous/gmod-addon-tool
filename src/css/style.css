@@ -42,8 +42,8 @@ header {
 /* IDs */
 #addon_mgt_btn_grid {
     display: grid;
-    grid-row: 2;
     grid-template-columns: auto auto;
+    margin: 10px 20px;
 }
 
 #addon_management_prompt .button_normal {
@@ -170,31 +170,26 @@ header {
     text-align: center;
 }
 
-#addon_management {
-    display: none;
-    text-align: center;
-}
-
-#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #errorNote, #extract_addon {
+#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #errorNote, #extract_addon, #download_addon {
     display: none;
 }
 
 /* Views styles */
 
-#update_existing_addon .top, #create_new_addon .top {
+.path_div .top {
     background-color: #0f0f0f;
     text-align: left;
     padding: 15px 10px;
 }
 
-#create_new_addon .top h3 {
+.path_div .top h3 {
     display: inline-block;
     margin: 0;
     font-weight: 300;
     transform: translateY(2px)
 }
 
-#update_existing_addon .top button, #create_new_addon .top button {
+.path_div .top button {
     display: inline-block;
     background-color: rgb(219, 68, 68);
     margin-right: 5px;
@@ -214,11 +209,7 @@ header {
     font-weight: 300;
 }
 
-#update_existing_addon .top button {
-    /* display: inline-block; */
-    background-color: rgb(219, 68, 68);
-    margin-right: 5px;
-}
+
 
 #refresh_addons {
     margin-left: auto;

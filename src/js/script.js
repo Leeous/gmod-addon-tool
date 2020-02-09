@@ -42,6 +42,17 @@ let dirDialogOptions = {
     properties: ['openDirectory']
 }
 
+let fileDialogOptions = {
+    title : "Select your addon's icon", 
+    buttonLabel : "Select icon",
+    filters :[
+     {name: 'Image', extensions: ['jpeg', 'jpg']}
+    ],
+    properties: ['openFile']
+}
+
+
+
 // Make links open in enternal browser
 $(document).on("click", "a[href^='http']", function(event) {
     event.preventDefault();
@@ -67,12 +78,33 @@ $(document).ready(() => {
         dataType: "json"
     }).done((data) => {
         if (data.tag_name != currentAppVersion) {
-            var open = confirm("Update " + data.tag_name + " available.");
-            if (open) {
-                shell.openExternal("https://github.com/Leeous/gmod-addon-tool/releases");
-            }
+            newUpdate(data.tag_name);
+            // var open = confirm("Update " + data.tag_name + " available.");
+            // if (open) {
+            //     shell.openExternal("https://github.com/Leeous/gmod-addon-tool/releases");
+            // }
         }
     })
+
+    function newUpdate(ver) {
+        if (settings.get('remindUpdate') == null || settings.get('remindUpdate')) {
+            dialog.showMessageBox(win, {
+                type: "info",
+                buttons: ['Cancel', 'Open'],
+                message: "Update " + ver + " is available for download.",
+                title: "New update available!",
+                checkboxLabel: "Don't remind me again",
+            }).then(response => {
+                if (response.response == 1) {
+                    shell.openExternal("https://github.com/Leeous/gmod-addon-tool/releases");
+                }
+                if (response.checkboxChecked) {
+                    console.log("Will no longer remind user about updates.")
+                    settings.set('remindUpdate', false);
+                }
+            }).catch(err => {});
+        }
+    }
     
     function getAddonInfoFromSteam(message) {
         arrayOfAddonIds = message;
@@ -128,37 +160,45 @@ $(document).ready(() => {
         remote.getCurrentWindow().minimize();
     })
 
-    // Used to "fake click" the input[type="file"]
-    $('.fake_select').click((event) => {
-        var fakeButton = event.target;
-        var realButton = $(fakeButton).data('buttonclick');
-        $(realButton).click();
+    $('#helpApp').click(() => {
+        alert('no')
     })
 
+    // Used to "fake click" the input[type="file"]
+    // $('.fake_select').click((event) => {
+    //     var fakeButton = event.target;
+    //     var realButton = $(fakeButton).data('buttonclick');
+    //     $(realButton).click();
+    // })
+
     // Validate that we have read/write access to the users Garrysmod directory so we can use gmad & gmpublish
-    $('#gmod_dir_folder').change(() => {
-        var filePath = document.getElementById("gmod_dir_folder").files[0].path;
-        var desName = filePath.substring(filePath.length - 9, filePath.length);
-        ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmad.exe");
-        ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmpublish.exe");
-        if (desName == "GarrysMod") {
-            $('#status_of_dir').css('color', 'lightgreen');
-            $('#status_of_dir').text('Found gmad.exe and gmpublish.exe!');
-            $('#dir_prompt_next button').css('background-color', '#56bd56');
-            $('#dir_prompt_next button').prop('disabled', false);
-            $('#dir_prompt_next button').css('cursor', 'pointer');
-            $('#checkmarkNote').fadeIn(() => {
-                $('#checkmarkNote').delay(1000).fadeOut();
-            })
-            settings.set('gmodDirectory', filePath);
-            ipcRenderer.send('getAddonInfo');
-        } else {
-            $('#status_of_dir').css('color', 'red');
-            $('#status_of_dir').text("Can't find gmad.exe or gmpublish.exe!");
-            console.log(filePath);
-            $('#dir_prompt_next button').prop('disabled', true);
-            $('#dir_prompt_next button').css('cursor', 'not-allowed');
-        }
+    $('#gmod_dir_folder').click(() => {
+            dialog.showOpenDialog(win, dirDialogOptions).then(result => {
+            var filePath = result.filePaths[0]
+            var desName = filePath.substring(filePath.length - 9, filePath.length);
+            ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmad.exe");
+            ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmpublish.exe");
+            if (desName == "GarrysMod") {
+                $('#status_of_dir').css('color', 'lightgreen');
+                $('#status_of_dir').text('Found gmad.exe and gmpublish.exe!');
+                $('#dir_prompt_next button').css('background-color', '#56bd56');
+                $('#dir_prompt_next button').prop('disabled', false);
+                $('#dir_prompt_next button').css('cursor', 'pointer');
+                $('#checkmarkNote').fadeIn(() => {
+                    $('#checkmarkNote').delay(1000).fadeOut();
+                })
+                settings.set('gmodDirectory', filePath);
+                ipcRenderer.send('getAddonInfo');
+            } else {
+                $('#status_of_dir').css('color', 'red');
+                $('#status_of_dir').text("Can't find gmad.exe or gmpublish.exe!");
+                console.log(filePath);
+                $('#dir_prompt_next button').prop('disabled', true);
+                $('#dir_prompt_next button').css('cursor', 'not-allowed');
+            }
+        }).catch(err => {
+            console.log("dialog error")
+        });
     })
 
     // If directory exists (and is writable/readable) allow user to procede 
@@ -179,27 +219,30 @@ $(document).ready(() => {
         });
     });
 
-    $('#addon_icon').change(() => {
-        addonIcon = document.getElementById("addon_icon").files[0].path;
-        sizeIsOkay = true;
-        ipcRenderer.send('checkIfDirectoryExists', addonIcon);
-        var jpegCheck = addonIcon.substring(addonIcon.length - 4);
-        var sizeOf = require('image-size');
-        var dimensions = sizeOf(addonIcon);
-        if (jpegCheck == "jpeg" || jpegCheck == ".jpg") {
-            if (dimensions.height == 512 && dimensions.width == 512) {
-                $('#addonIconCheck').css('background-color', '#56bd56');
-                $('#addonIconCheck').prop('disabled', false);
-                $('#addonIconCheck').css('cursor', 'pointer');
+    $('#addon_icon').click(() => {
+        dialog.showOpenDialog(win, fileDialogOptions).then(result => {
+            addonIcon = result.filePaths[0];
+            ipcRenderer.send('checkIfDirectoryExists', addonIcon);
+            var jpegCheck = addonIcon.substring(addonIcon.length - 4);
+            var sizeOf = require('image-size');
+            var dimensions = sizeOf(addonIcon);
+            if (jpegCheck == "jpeg" || jpegCheck == ".jpg") {
+                if (dimensions.height == 512 && dimensions.width == 512) {
+                    $('#addonIconCheck').css('background-color', '#56bd56');
+                    $('#addonIconCheck').prop('disabled', false);
+                    $('#addonIconCheck').css('cursor', 'pointer');
+                } else {
+                    alert("Image must be 512x512.")
+                }
             } else {
-                alert("Image must be 512x512.")
+                $('#addonIconCheck').css('background-color', '#0f0f0f');
+                $('#addonIconCheck').prop('disabled', true);
+                $('#addonIconCheck').css('cursor', 'not-allowed');
+                alert("Doesn't seem like a JPEG image.");
             }
-        } else {
-            $('#addonIconCheck').css('background-color', '#0f0f0f');
-            $('#addonIconCheck').prop('disabled', true);
-            $('#addonIconCheck').css('cursor', 'not-allowed');
-            alert("Doesn't seem like a JPEG image.");
-        } 
+        }).catch(err => {
+
+        });
     })
 
     $('#dir_prompt_next button').click(() => {
