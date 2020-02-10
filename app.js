@@ -3,7 +3,7 @@ const {
   app,
   BrowserWindow,
   ipcMain,
-  dialog
+  shell
 } = require('electron')
 const fs = require('fs')
 const { spawn } = require('child_process');
@@ -154,6 +154,13 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
       mainWindow.webContents.send('currentAddonID', addonURL);
     });
   };
+});
+
+ipcMain.on("extractAddon", (e, path) => {
+  console.log(e, path);
+  const gmad = spawn(settings.get('gmodDirectory') + '\\bin\\gmad.exe', ['extract', '-file', path]);
+  mainWindow.webContents.send("finishExtraction");
+  // shell.openItem('folderpath')
 });
 
 // gmpublish.exe create -icon path/to/image512x512.jpg -addon path/to/gma.gma

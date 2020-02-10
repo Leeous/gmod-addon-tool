@@ -35,10 +35,9 @@
         <div id="addon_management_prompt">
             <h3>What would you like to do?</h3>
             <div id="addon_mgt_btn_grid">
-                <button class="button_normal medium-text transition_button" data-divtoshow="#create_new_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Create a new addon</button>
-                <button id="update_existing_addon_button" class="button_normal medium-text transition_button" data-divtoshow="#update_existing_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Loading... </button>
-                <button class="button_normal medium-text transition_button" data-divtoshow="#extract_addon" data-divtohide="#addon_management_prompt" data-resize="500, 200" style="margin: 10px;">Extract Addon</button>
-                <button class="button_normal medium-text transition_button" data-divtoshow="#download_addon" data-divtohide="#addon_management_prompt" style="margin: 10px;">Download Addon</button>
+                <button id="create_addon_button" class="button_normal medium-text transition_button" data-divtoshow="#create_new_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Create a new addon</button>
+                <button id="update_existing_addon_button" class="button_normal medium-text transition_button rowtwo" data-divtoshow="#update_existing_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Loading... </button>
+                <button class="button_normal medium-text transition_button rowtwo" data-divtoshow="#extract_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Extract Addon</button>
             </div>
         </div>
         <div id="update_existing_addon" class="path_div">
@@ -187,14 +186,27 @@
         </div>
         <div id="extract_addon" class="path_div">
             <div class="top">
-                <button class="back_button transition_button" data-divtoshow="#addon_management_prompt" data-divtohide="#extract_addon" data-resize="500, 200">◀ Back</button>
+                <button id="extraction_back" class="back_button transition_button" data-divtoshow="#addon_management_prompt" data-divtohide="#extract_addon" data-resize="500, 200">◀ Back</button>
                 <h3>Addon Extraction</h3>
             </div>
-        </div>
-        <div id="download_addon" class="path_div">
-            <div class="top">
-                <button class="back_button transition_button" data-divtoshow="#addon_management_prompt" data-divtohide="#download_addon" data-resize="500, 200">◀ Back</button>
-                <h3>Addon Extraction</h3>
+            <div id="addon_extraction">
+                <div id="extract_addon_select">
+                    <p>Select the GMA file you'd like to extract</p>
+                    <button id="gmaFileSelection" class="button_normal">Choose GMA file</button>
+                    <p id="currentGMAFile"></p>
+                    <div id="addon_extract_next" class="bottom_btn">
+                        <button disabled class="button_normal" data-divtohide="#extract_addon_select" data-divtoshow="#extracting_addon">Extract</button>
+                    </div>
+                </div>
+                <div id="extracting_addon">
+                    <p>Extracting addon...</p>
+                    <img src="src/img/loading.gif" style="width: 64px; display: block; margin-left: auto; margin-right: auto; margin-top: 35px;" alt="">
+                </div>
+                <div id="extraction_done">
+                    <h3>Extracted!</h3>
+                    <a id="extractedGMALocation" style="color: white;" href="#">View</a>
+                    <button class="button_normal transition_button" data-divtohide="#extract_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 200" style="width: 100px;">Done</button>
+                </div>
             </div>
         </div>
     </div>

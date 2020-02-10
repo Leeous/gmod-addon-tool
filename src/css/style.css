@@ -39,11 +39,20 @@ header {
     color: white;
 }
 
+.rowtwo {
+    grid-row: 2;
+}
+
 /* IDs */
 #addon_mgt_btn_grid {
     display: grid;
-    grid-template-columns: auto auto;
-    margin: 10px 20px;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto auto;
+    margin-top: 10px;
+}
+
+#create_addon_button {
+    grid-column-end: span 2;
 }
 
 #addon_management_prompt .button_normal {
@@ -56,6 +65,14 @@ header {
 #addon_management_prompt .button_normal:active {
     box-shadow: 0 2px #797979;
     transform: translateY(3px);
+}
+
+#addon_management_prompt h3 {
+    margin-bottom: 0px;
+}
+
+#gmaFileSelection {
+    padding: 5px 20px;
 }
 
 #main_titlebar {
@@ -135,6 +152,25 @@ header {
     font-weight: 700;
 }
 
+.bottom_btn {
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.bottom_btn button {
+    width: 100%;
+    border-radius: 0;
+    background-color: #0f0f0f;
+    color: white;
+    cursor: not-allowed;
+    border: none;
+    padding: 10px 0;
+    transform: ease 0.8s;
+    font-weight: 700;
+}
+
 #gmodDirSelect {
     text-align: center;
 }
@@ -170,7 +206,7 @@ header {
     text-align: center;
 }
 
-#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #errorNote, #extract_addon, #download_addon {
+#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #errorNote, #extract_addon, #extracting_addon, #extraction_done {
     display: none;
 }
 

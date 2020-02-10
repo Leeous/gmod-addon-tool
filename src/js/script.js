@@ -42,7 +42,7 @@ let dirDialogOptions = {
     properties: ['openDirectory']
 }
 
-let fileDialogOptions = {
+let imgDialogOptions = {
     title : "Select your addon's icon", 
     buttonLabel : "Select icon",
     filters :[
@@ -50,6 +50,16 @@ let fileDialogOptions = {
     ],
     properties: ['openFile']
 }
+
+let fileDialogOptions = {
+    title : "Select your GMA file", 
+    buttonLabel : "Select GMA",
+    filters :[
+     {name: 'Garry\'s Mod Addon File', extensions: ['gma']}
+    ],
+    properties: ['openFile']
+}
+
 
 
 
@@ -176,43 +186,79 @@ $(document).ready(() => {
             dialog.showOpenDialog(win, dirDialogOptions).then(result => {
             var filePath = result.filePaths[0]
             var desName = filePath.substring(filePath.length - 9, filePath.length);
-            ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmad.exe");
-            ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmpublish.exe");
-            if (desName == "GarrysMod") {
-                $('#status_of_dir').css('color', 'lightgreen');
-                $('#status_of_dir').text('Found gmad.exe and gmpublish.exe!');
-                $('#dir_prompt_next button').css('background-color', '#56bd56');
-                $('#dir_prompt_next button').prop('disabled', false);
-                $('#dir_prompt_next button').css('cursor', 'pointer');
-                $('#checkmarkNote').fadeIn(() => {
-                    $('#checkmarkNote').delay(1000).fadeOut();
-                })
-                settings.set('gmodDirectory', filePath);
-                ipcRenderer.send('getAddonInfo');
-            } else {
-                $('#status_of_dir').css('color', 'red');
-                $('#status_of_dir').text("Can't find gmad.exe or gmpublish.exe!");
-                console.log(filePath);
-                $('#dir_prompt_next button').prop('disabled', true);
-                $('#dir_prompt_next button').css('cursor', 'not-allowed');
+            if (filePath != null) {
+                ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmad.exe");
+                ipcRenderer.send('checkIfDirectoryExists', filePath + "\\bin\\gmpublish.exe");
+                if (desName == "GarrysMod") {
+                    $('#status_of_dir').css('color', 'lightgreen');
+                    $('#status_of_dir').text('Found gmad.exe and gmpublish.exe!');
+                    $('#dir_prompt_next button').css('background-color', '#56bd56');
+                    $('#dir_prompt_next button').prop('disabled', false);
+                    $('#dir_prompt_next button').css('cursor', 'pointer');
+                    $('#checkmarkNote').fadeIn(() => {
+                        $('#checkmarkNote').delay(1000).fadeOut();
+                    })
+                    settings.set('gmodDirectory', filePath);
+                    ipcRenderer.send('getAddonInfo');
+                } else {
+                    $('#status_of_dir').css('color', 'red');
+                    $('#status_of_dir').text("Can't find gmad.exe or gmpublish.exe!");
+                    console.log(filePath);
+                    $('#dir_prompt_next button').prop('disabled', true);
+                    $('#dir_prompt_next button').css('cursor', 'not-allowed');
+                }
             }
         }).catch(err => {
             console.log("dialog error")
         });
-    })
+    });
+
+    $("#gmaFileSelection").click(() => {
+        dialog.showOpenDialog(win, fileDialogOptions).then(r => {
+            let addonGMA = r.filePaths[0];
+            addonPath = r.filePaths[0];
+            if (addonGMA != null) {
+                ipcRenderer.send('checkIfDirectoryExists', addonGMA);
+                var n = addonGMA.lastIndexOf('\\');
+                var result = addonGMA.substring(n + 1, addonGMA.length);
+                $("#currentGMAFile").text(result);
+                $("#addon_extract_next button").prop('disabled', false);
+                $('#addon_extract_next button').css('background-color', '#56bd56');
+                $('#addon_extract_next button').css('cursor', 'pointer');  
+            }
+        }).catch(err => {});
+    });
+
+    $("#addon_extract_next button").click(() => {
+        $("#extract_addon_select").fadeOut(() => {
+            $("#extracting_addon").fadeIn(() => {
+                ipcRenderer.send('extractAddon', addonPath);
+            });
+        });
+    });
+
+    ipcRenderer.on('finishExtraction', (e) => {
+        $('#extracting_addon').fadeOut(() => {
+            win.setBounds({height: 225})
+            // $('#extractedGMALocation').attr('href', 'steam://url/CommunityFilePage/' + newAddonID)
+            $('#extraction_done').fadeIn()
+        });
+    });
 
     // If directory exists (and is writable/readable) allow user to procede 
     $('#addon_dir_folder').click(() => {
         dialog.showOpenDialog(win, dirDialogOptions).then(result => {
             if (!result.canceled) {
                 currentNewAddon = result.filePaths[0];
-                ipcRenderer.send('checkIfDirectoryExists', currentNewAddon);
-                var n = currentNewAddon.lastIndexOf('\\');
-                var result = currentNewAddon.substring(n + 1);
-                $('#addonDir b').text(result);
-                $('#addonDirCheck').css('background-color', '#56bd56');
-                $('#addonDirCheck').prop('disabled', false);
-                $('#addonDirCheck').css('cursor', 'pointer');
+                if (currentNewAddon != null) {
+                    ipcRenderer.send('checkIfDirectoryExists', currentNewAddon);
+                    var n = currentNewAddon.lastIndexOf('\\');
+                    var result = currentNewAddon.substring(n + 1);
+                    $('#addonDir b').text(result);
+                    $('#addonDirCheck').css('background-color', '#56bd56');
+                    $('#addonDirCheck').prop('disabled', false);
+                    $('#addonDirCheck').css('cursor', 'pointer');
+                }
             }
         }).catch(err => {
             console.log("dialog error")
@@ -220,9 +266,11 @@ $(document).ready(() => {
     });
 
     $('#addon_icon').click(() => {
-        dialog.showOpenDialog(win, fileDialogOptions).then(result => {
+        dialog.showOpenDialog(win, imgDialogOptions).then(result => {
             addonIcon = result.filePaths[0];
-            ipcRenderer.send('checkIfDirectoryExists', addonIcon);
+            if (addonIcon != null) {
+                ipcRenderer.send('checkIfDirectoryExists', addonIcon);
+            }
             var jpegCheck = addonIcon.substring(addonIcon.length - 4);
             var sizeOf = require('image-size');
             var dimensions = sizeOf(addonIcon);
@@ -296,7 +344,7 @@ $(document).ready(() => {
     })
 
     $('.removeBackOption').click(() => {
-        // $('#back_button_addon_creation').fadeOut();
+        // $('#extraction_back').fadeOut();
     })
 
     // General function for transitioning between div tags (with a shitty name)
