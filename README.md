@@ -20,5 +20,7 @@ Otherwise,
 
 ### Social
 [Trello](https://trello.com/b/nKkmOv2U)
+
 [@LeeTheCoder](https://twitter.com/LeeTheCoder)
+
 [Website](https://leeous.com)
