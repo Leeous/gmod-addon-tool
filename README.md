@@ -16,4 +16,9 @@ Make sure you [follow the wiki's directions](https://wiki.garrysmod.com/page/Wor
 Settings are saved at `%APPDATA%/gmod-addon-tool`, delete this folder to reset any settings created. 
 
 Otherwise,
-[create an issue](https://github.com/Leeous/gmod-addon-tool/issues/new) or send me a tweet/DM [@LeeTheCoder](https://twitter.com/LeeTheCoder).
+[create an issue](https://github.com/Leeous/gmod-addon-tool/issues/new) or send me a tweet/DM.
+
+### Social
+[Trello](https://trello.com/b/nKkmOv2U)
+[@LeeTheCoder](https://twitter.com/LeeTheCoder)
+[Website](https://leeous.com)

@@ -12,13 +12,7 @@ const settings = require('electron-settings');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-console.log('\n')
-
-// settings.deleteAll();
-
-// exec("gmad.exe", [], {cwd: 'E:\\SteamLibrary\\steamapps\\common\\GarrysMod\\bin\\gmad.exe', shell: true}, function callback(error, stdout, stderr) {
-//   console.log("started console app", stdout, stderr, error);
-// });
+console.log('\n');
 
 function createWindow() {
   // Create the browser window.
@@ -71,12 +65,14 @@ app.on('activate', function() {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+// Checks to see if the directory the user chooses is writeable 
 ipcMain.on('checkIfDirectoryExists', (event, file) => {
   fs.access(file, fs.constants.R_OK, (err) => {
     console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
   });
 })
 
+// This will send the client the IDs of their addons
 ipcMain.on('getAddonInfo', () => {
   console.log('Trying to get addon info...');
   sendClientAddonInfo();
@@ -86,7 +82,6 @@ ipcMain.on('getAddonInfo', () => {
 var ADDON_IDS = [];
 
 // We use this to get the addon IDs from gmpublish.exe
-
 function sendClientAddonInfo() {
   const bat = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['list']);
   bat.stdout.on('data', (data) => {
@@ -105,6 +100,7 @@ function sendClientAddonInfo() {
   });
 }
 
+// This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
   console.log(json, dir)
   fs.writeFileSync(dir + "\\addon.json", json, 'utf8', (err) => {
@@ -156,11 +152,10 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   };
 });
 
+// This will extract a GMA file to GarrysMod/garrysmod/addons/[addon_name]
 ipcMain.on("extractAddon", (e, path) => {
   console.log(e, path);
   const gmad = spawn(settings.get('gmodDirectory') + '\\bin\\gmad.exe', ['extract', '-file', path]);
   mainWindow.webContents.send("finishExtraction");
   // shell.openItem('folderpath')
 });
-
-// gmpublish.exe create -icon path/to/image512x512.jpg -addon path/to/gma.gma

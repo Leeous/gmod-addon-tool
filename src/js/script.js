@@ -245,6 +245,11 @@ $(document).ready(() => {
         });
     });
 
+    $("#extractedGMALocation").click(() => {
+        console.log(addonPath.substring(0, addonPath.length - 4) + "\\")
+        shell.openItem(addonPath.substring(0, addonPath.length - 4));
+    })
+
     // If directory exists (and is writable/readable) allow user to procede 
     $('#addon_dir_folder').click(() => {
         dialog.showOpenDialog(win, dirDialogOptions).then(result => {
