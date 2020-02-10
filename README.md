@@ -1,5 +1,5 @@
 # Garry's Mod Addon Tool
-A light-weight application that allows you to create/update Garry's Mod addons very easily. 
+A light-weight application that allows you to create/update/extract Garry's Mod addons very easily. 
 
 Meant for the crowd who aren't good with using terminals.
 Should work with any type of addon.
