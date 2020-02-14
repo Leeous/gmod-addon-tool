@@ -1,5 +1,6 @@
 # Garry's Mod Addon Tool
 ![Build/release](https://github.com/Leeous/gmod-addon-tool/workflows/Build/release/badge.svg?branch=master)
+
 A light-weight application that allows you to create/update/extract Garry's Mod addons very easily. 
 
 Meant for the crowd who aren't good with using terminals.
