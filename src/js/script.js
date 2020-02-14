@@ -170,7 +170,7 @@ $(document).ready(() => {
             }
         }).catch(err => {
             console.log("dialog error")
-        });
+        })
     });
 
     $("#addon_icon").click(() => {
