@@ -90,12 +90,14 @@ function sendClientAddonInfo() {
     console.log(fixedArray)
     for (var i = 0; i < fixedArray.length; i++) {
         fixedArray[i] = fixedArray[i].replace('/r', '');
+        console.log(fixedArray)
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
 
     if (fixedArray == "Couldn't initialize Steam!\r") {
       mainWindow.webContents.send('errorAlert', ADDON_IDS);
     }
+    console.log(ADDON_IDS);
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
   });
 }
@@ -129,7 +131,8 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['update', '-id', addonId, '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
-      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 8, arrayOfOutput.length - 7);
+      console.log(arrayOfOutput)
+      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);
       mainWindow.webContents.send('currentAddonID', fixedArray);

@@ -1,6 +1,6 @@
 {
   "name": "gmod-addon-tool",
-  "version": "1.0.0",
+  "version": "1.3",
   "description": "A simple tool to update workshop addons.",
   "main": "app.js",
   "dependencies": {
@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "electron": "^5.0.0",
+    "electron-builder": "^22.3.2",
     "electron-connect": "^0.6.3",
     "electron-packager": "^13.1.1"
   },
@@ -19,5 +20,6 @@
     "start": "electron ."
   },
   "author": "Leeous <contact@leeous.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": "git@github.com:Leeous/gmod-addon-tool.git"
 }

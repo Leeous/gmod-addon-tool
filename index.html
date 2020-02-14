@@ -35,7 +35,7 @@
         <div id="addon_management_prompt">
             <h3>What would you like to do?</h3>
             <div id="addon_mgt_btn_grid">
-                <button id="create_addon_button" class="button_normal medium-text transition_button" data-divtoshow="#create_new_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Create a new addon</button>
+                <button id="create_addon_button" class="button_normal medium-text transition_button" data-divtoshow="#create_new_addon, #addonDirPrompt" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Create a new addon</button>
                 <button id="update_existing_addon_button" class="button_normal medium-text transition_button rowtwo" data-divtoshow="#update_existing_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Loading... </button>
                 <button class="button_normal medium-text transition_button rowtwo" data-divtoshow="#extract_addon" data-divtohide="#addon_management_prompt" data-resize="500, 250" style="margin: 10px;">Extract Addon</button>
             </div>
@@ -204,7 +204,7 @@
                 </div>
                 <div id="extraction_done">
                     <h3>Extracted!</h3>
-                    <a id="extractedGMALocation" style="color: white;" href="#">View</a>
+                    <p><a id="extractedGMALocation" style="color: white;" href="#">View</a></p>
                     <button class="button_normal transition_button" data-divtohide="#extract_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 200" style="width: 100px;">Done</button>
                 </div>
             </div>
