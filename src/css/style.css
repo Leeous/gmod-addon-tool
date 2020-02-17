@@ -101,6 +101,7 @@ header {
     display: inline-block;
     margin: 0;
     padding: 5px 5px;
+    transition: ease all 0.5s;
 }
 
 #dir_select_prompt {

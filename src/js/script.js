@@ -30,6 +30,8 @@ addonToCreateData = {
     "ignore": []
 };
 currentAppVersion = "v1.3";
+let defaultMenuTitle = ""
+
 
 // Dialog properties
 let dirDialogOptions = {
@@ -173,6 +175,7 @@ $(document).ready(() => {
         })
     });
 
+    // Prompts user for an icon for their addon
     $("#addon_icon").click(() => {
         dialog.showOpenDialog(win, imgDialogOptions).then(result => {
             addonIcon = result.filePaths[0];
@@ -201,15 +204,9 @@ $(document).ready(() => {
         });
     });
 
-    $("#dir_prompt_next button").click(() => {
-        $("#directory_selection").fadeOut(() => {
-            $("#addon_management").fadeIn();
-            $("#addon_management_prompt").fadeIn();
-            win.setBounds({
-                height: 200,
-            })
-        });
-    })
+    $(".resetAddonCreation").click(() => {
+        resetAddonCreation();
+    });
 
     $("#update_existing_addon_button").click(() => {
         if (okToProcessAddonList) {
@@ -221,18 +218,11 @@ $(document).ready(() => {
         }
     });
 
-    $("#create_new_addon_button").click(() => {
-        $("#addon_management_prompt").fadeOut(() => {
-            win.setBounds({height: 250})
-            $("#create_new_addon, #addonDirPrompt").fadeIn()
-        })
-    });
-
     $(".back_button").click((event) => {
         var target = event.target;
         var divToGoBack = $(target).data("forwards");
         var divToShow = $(target).data("backwards");
-        resetAddonCreation()
+        resetAddonCreation();
         if ($(target).data("resize") != null) {
             var resizeInfo = JSON.parse("[" + $(target).data("resize") + "]");
         }
@@ -320,6 +310,10 @@ $(document).ready(() => {
         }
     });
 
+    $(".resetAddonExtraction, #extraction_back").click(() => {
+        resetAddonExtraction()
+    });
+
     // =============
     // AJAX Requests
     // =============
@@ -393,8 +387,8 @@ $(document).ready(() => {
                     }
                 }
             }
-            // console.log(data.response);
             okToProcessAddonList = true;
+            // Change button text and allow user to view/update thier addons
             $("#update_existing_addon_button").text("Update existing addon");
         });
     }
@@ -446,6 +440,7 @@ $(document).ready(() => {
         }
     }
 
+    // Resets any data we've gotten from the user for the new addon
     function resetAddonCreation() {
         jsonCheckboxCount = 0;
 
@@ -487,6 +482,14 @@ $(document).ready(() => {
 
         // Hide any div that may still be displayed
         $("#addonjsonPrompt, #addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt").css("display", "none");
+    }
+
+    function resetAddonExtraction() {
+        $("#extracting_addon, #extraction_done").css("display", "none");
+
+        $("#currentGMAFile").text("");
+        $("#addon_extract_next button").css({backgroundColor: "#0f0f0f", cursor: "not-allowed"});
+        $("#addon_extract_next button").prop("disabled", true);
     }
 
     // Ensure all options that are required are checked
