@@ -33,7 +33,7 @@ function createWindow() {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -43,8 +43,6 @@ function createWindow() {
       mainWindow = null
   })
 }
-
-// settings.deleteAll();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -162,5 +160,4 @@ ipcMain.on("extractAddon", (e, path) => {
   console.log(e, path);
   const gmad = spawn(settings.get('gmodDirectory') + '\\bin\\gmad.exe', ['extract', '-file', path]);
   mainWindow.webContents.send("finishExtraction");
-  // shell.openItem('folderpath')
 });

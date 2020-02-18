@@ -287,6 +287,24 @@ $(document).ready(() => {
         })
     });
 
+    $('.typeCheckbox').on('click', (event) => {
+        var target = $(event.target);
+        if (jsonCheckboxCount < 2 && target.is(":checked")) {
+            jsonCheckboxCount++;
+        } else if (jsonCheckboxCount != 0 && !target.is(":checked")) {
+            jsonCheckboxCount--;
+        } else if (jsonCheckboxCount == 2 && target.is(":checked")) {
+            event.preventDefault();
+        }
+
+        if (jsonCheckboxCount == 2) {
+            var checkboxes = $('.typeCheckbox');
+            if (!checkboxes.is(":checked")) {
+                $(checkboxes).prop('disabled', true);
+            }
+        }
+    })
+
     // Dyamically change boolean based on whether or not string is empty 
     $("#jsonTitle >  input[name='addonTitle']").on("keyup", () => {
         if ($("#jsonTitle >  input[name='addonTitle']").val() != "") {
