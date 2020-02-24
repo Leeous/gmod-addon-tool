@@ -47,7 +47,7 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
@@ -68,7 +68,7 @@ app.on('activate', function() {
 // Checks to see if the directory the user chooses is writeable 
 ipcMain.on('checkIfDirectoryExists', (event, file) => {
   fs.access(file, fs.constants.R_OK, (err) => {
-    console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
+    // console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
   });
 })
 
@@ -87,24 +87,24 @@ function sendClientAddonInfo() {
   bat.stdout.on('data', (data) => {
     var arrayOfOutput = data.toString().split('\n')
     var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3)
-    console.log(fixedArray)
+    // console.log(fixedArray)
     for (var i = 0; i < fixedArray.length; i++) {
         fixedArray[i] = fixedArray[i].replace('/r', '');
-        console.log(fixedArray)
+        // console.log(fixedArray)
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
 
     if (fixedArray == "Couldn't initialize Steam!\r") {
       mainWindow.webContents.send('errorAlert', ADDON_IDS);
     }
-    console.log(ADDON_IDS);
+    // console.log(ADDON_IDS);
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
   });
 }
 
 // This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
-  console.log(json, dir)
+  // console.log(json, dir)
   fs.writeFileSync(dir + "\\addon.json", json, 'utf8', (err) => {
     console.log("An error occured while writing JSON object to File.\n", err);
     mainWindow.webContents.send('error', "Error writing directory.");
@@ -131,7 +131,7 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['update', '-id', addonId, '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
-      console.log(arrayOfOutput)
+      // console.log(arrayOfOutput)
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);
@@ -142,14 +142,14 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     const gmpublish = spawn(settings.get('gmodDirectory') + '\\bin\\gmpublish.exe', ['create', '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
-      console.log(arrayOfOutput)
+      // console.log(arrayOfOutput)
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);
       var stringArray = fixedArray.toString()
       var addonURLIndex = stringArray.indexOf("?id=")
       var addonURL = stringArray.slice(addonURLIndex + 4, addonURLIndex + 14)
-      console.log(addonURL)
+      // console.log(addonURL)
       mainWindow.webContents.send('currentAddonID', addonURL);
     });
   };
@@ -157,7 +157,7 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
 
 // This will extract a GMA file to GarrysMod/garrysmod/addons/[addon_name]
 ipcMain.on("extractAddon", (e, path) => {
-  console.log(e, path);
+  // console.log(e, path);
   const gmad = spawn(settings.get('gmodDirectory') + '\\bin\\gmad.exe', ['extract', '-file', path]);
   mainWindow.webContents.send("finishExtraction");
 });

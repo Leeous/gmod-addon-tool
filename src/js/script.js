@@ -93,6 +93,10 @@ $(document).ready(() => {
         remote.getCurrentWindow().minimize();
     });
 
+    $("#coffeeApp").click(() => {
+        shell.openExternal("https://www.buymeacoffee.com/Leeous");
+    });
+
     // Validate that we have read/write access to the users Garrysmod directory so we can use gmad & gmpublish
     $("#gmod_dir_folder").click(() => {
         dialog.showOpenDialog(win, dirDialogOptions).then(result => {
@@ -210,7 +214,7 @@ $(document).ready(() => {
 
     $("#update_existing_addon_button").click(() => {
         if (okToProcessAddonList) {
-            populateAddonList();
+            populateAddonList(addon_data);
             $("#addon_management_prompt").fadeOut(() => {
                 win.setBounds({height: 250})
                 $("#update_existing_addon").fadeIn();
@@ -239,6 +243,10 @@ $(document).ready(() => {
             var resizeInfo = JSON.parse("[" + $(target).data("resize") + "]");
         }
         goBack(divToGoBack, divToShow, resizeInfo);
+    });
+
+    $("#create_addon_button").click(() => {
+        $("#create_new_addon .top h3").text("Addon creation");
     });
 
     $("#jsonAddonValidate").click(() => {
@@ -303,7 +311,7 @@ $(document).ready(() => {
                 $(checkboxes).prop('disabled', true);
             }
         }
-    })
+    });
 
     // Dyamically change boolean based on whether or not string is empty 
     $("#jsonTitle >  input[name='addonTitle']").on("keyup", () => {
@@ -378,13 +386,23 @@ $(document).ready(() => {
     // Request JSON infomation on addons based on ID (this cannot read from private addons)
     function getAddonInfoFromSteam(message) {
         arrayOfAddonIds = message;
-        
-        api_data["itemcount"] = arrayOfAddonIds.length;  
-        
+        arrayOfAddonIds = arrayOfAddonIds.chunk(13)
         for (let i = 0; i < arrayOfAddonIds.length; i++) {
-            // const element = arrayOfAddonIds[i];
-            api_data["publishedfileids[" + i + "]"] = parseInt(arrayOfAddonIds[i]);        
+            sendAPIRequest(arrayOfAddonIds[i], arrayOfAddonIds[i].length, arrayOfAddonIds.length);
         }
+    }
+
+    function sendAPIRequest(array, length, amtOfArrays) {
+
+        let queuePosition = 0
+
+        for (let i = 0; i < array.length; i++) {
+            // const element = arrayOfAddonIds[i];
+            api_data["publishedfileids[" + i + "]"] = parseInt(array[i]);
+        }
+        
+        api_data["itemcount"] = array.length;
+
         $.ajax({
             type: "POST",
             url: "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/",
@@ -392,7 +410,7 @@ $(document).ready(() => {
             dataType: "json",
         }).done((data) => {
             var response = data.response;
-            console.log(response)
+            console.log(response);
             if (response.result == 1) {
                 for (let i = 0; i < response.resultcount; i++) {
                     if (response.publishedfiledetails[i].result == 1) {
@@ -401,15 +419,31 @@ $(document).ready(() => {
                             "title": addon.title,
                             "id": addon.publishedfileid
                         }
+                        queuePosition++;
                         addon_data.push(addonObject);
                     }
                 }
             }
-            okToProcessAddonList = true;
+
+            if (queuePosition != amtOfArrays) {
+                okToProcessAddonList = true;
+                $("#update_existing_addon_button").text("Update existing addon");
+            }
             // Change button text and allow user to view/update thier addons
-            $("#update_existing_addon_button").text("Update existing addon");
         });
     }
+
+    Object.defineProperty(Array.prototype, 'chunk', {
+        value: function(chunkSize){
+            var temporal = [];
+            
+            for (var i = 0; i < this.length; i+= chunkSize){
+                temporal.push(this.slice(i,i+chunkSize));
+            }
+                    
+            return temporal;
+        }
+    });
 
     // General function for transitioning between div tags (with a shitty name)
     function goBack(divToFadeOut, divToFadeIn, resizeInfo) {
@@ -425,11 +459,12 @@ $(document).ready(() => {
     }
 
     // Get array of addon infomation and append their info to #yourAddons
-    function populateAddonList() {
+    function populateAddonList(array) {
+        console.log(array)
         // This check is done to make sure this only gets executed once
         if (!donePopulatingAddonList) {
-            for (let i = 0; i < addon_data.length; i++) {
-                $("#yourAddons").append("<div class='addon_existing'><p class='title'>" + addon_data[i].title + "</p><p class='addon_link'><a href='steam://url/CommunityFilePage/" + addon_data[i].id + "'>View</a><a href='#' class='updateAddon' data-id='" + addon_data[i].id + "'>Update</a></p></div>");
+            for (let i = 0; i < array.length; i++) {
+                $("#yourAddons").append("<div class='addon_existing'><p class='title'>" + array[i].title + "</p><p class='addon_link'><a href='steam://url/CommunityFilePage/" + array[i].id + "'>View</a><a href='#' class='updateAddon' data-id='" + array[i].id + "'>Update</a></p></div>");
                 donePopulatingAddonList = true;
             }
             // Make sure if nothing is returned to let the user know
@@ -452,7 +487,7 @@ $(document).ready(() => {
             });
             
             if (0 == addon_data.length) {
-                $("#yourAddons").append("<p style='background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;'><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything.</p>");
+                $("#yourAddons").append("<p style='background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;'><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything public.</p>");
                 donePopulatingAddonList = true;
             }
         }
