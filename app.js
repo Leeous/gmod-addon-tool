@@ -24,7 +24,7 @@ function createWindow() {
           backgroundColor: "#262626",
           titleBarStyle: "hidden",
           frame: false,
-          icon: "src/img/icon.ico",
+          icon: __dirname + "/src/img/icon.ico",
           webPreferences: {
               nodeIntegration: true
           }

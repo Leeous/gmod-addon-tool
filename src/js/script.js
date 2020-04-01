@@ -13,6 +13,8 @@ addon_data = [];
 api_data = {"itemcount": "0"};
 okToProcessAddonList = false;
 donePopulatingAddonList = false;
+
+// These are addon related variables, most are reset on back or completition 
 currentNewAddon = "";
 jsonCheckboxCount = 0;
 jsonChecks = [false, false];
@@ -31,6 +33,7 @@ addonToCreateData = {
 };
 currentAppVersion = "v1.3";
 let defaultMenuTitle = ""
+let onlyCreate = null; // This tells us
 
 
 // Dialog properties
@@ -129,6 +132,10 @@ $(document).ready(() => {
         });
     });
 
+    $("#gmaLocation").click(() => {
+        shell.openItem(addonGMADir.substring(0, addonGMADir.lastIndexOf("/")));
+    })
+
     // Let user select a GMA to extract
     $("#gmaFileSelection").click(() => {
         dialog.showOpenDialog(win, fileDialogOptions).then(r => {
@@ -155,7 +162,6 @@ $(document).ready(() => {
     });
 
     $("#extractedGMALocation").click(() => {
-        console.log(addonPath.substring(0, addonPath.length - 4) + "\\")
         shell.openItem(addonPath.substring(0, addonPath.length - 4));
     });
 
@@ -278,22 +284,13 @@ $(document).ready(() => {
     });
 
     // Tells server to create the GMA
-    $("#createGMAFile").click(() => {
-        $("#gmaPrep").fadeOut(() => {
-            win.setBounds({height: 250});
-            $("#createGMA").fadeIn();
-            ipcRenderer.send("createGMAFile", currentNewAddon);
-        });
-    });
-    
-    // Tells the server to upload current GMA
-    $("#uploadCurrentGMA").click(() => {
-        ipcRenderer.send("uploadToWorkshop", addonGMADir, addonIcon, existingAddonId);
-        $("#uploadToWorkshopPrompt").fadeOut(() => {
-            win.setBounds({height: 250})
-            $("#uploading").fadeIn();
-        })
-    });
+    // $("#createGMAFile").click(() => {
+    //     $("#gmaPrep").fadeOut(() => {
+    //         win.setBounds({height: 250});
+    //         $("#createGMA").fadeIn();
+    //         ipcRenderer.send("createGMAFile", currentNewAddon);
+    //     });
+    // });
 
     $('.typeCheckbox').on('click', (event) => {
         var target = $(event.target);
@@ -340,6 +337,23 @@ $(document).ready(() => {
         resetAddonExtraction()
     });
 
+    $("#createOnly").click(() => {
+        onlyCreate = true;
+        $("#gmaPrep").fadeOut(() => {
+            win.setBounds({height: 250});
+            $("#createGMA").fadeIn();
+            ipcRenderer.send("createGMAFile", currentNewAddon);
+        });
+    });
+
+    $("#createAndUpload").click(() => {
+        onlyCreate = false;
+        $("#gmaPrep").fadeOut(() => {
+            win.setBounds({height: 250});
+            $("#createGMA").fadeIn();
+            ipcRenderer.send("createGMAFile", currentNewAddon);
+        });
+    });
     // =============
     // AJAX Requests
     // =============
@@ -436,11 +450,9 @@ $(document).ready(() => {
     Object.defineProperty(Array.prototype, 'chunk', {
         value: function(chunkSize){
             var temporal = [];
-            
             for (var i = 0; i < this.length; i+= chunkSize){
                 temporal.push(this.slice(i,i+chunkSize));
             }
-                    
             return temporal;
         }
     });
@@ -496,6 +508,7 @@ $(document).ready(() => {
     // Resets any data we've gotten from the user for the new addon
     function resetAddonCreation() {
         jsonCheckboxCount = 0;
+        onlyCreate = null;
 
         // Clear the old data we used to make addon.json
         addonToCreateData = {
@@ -534,7 +547,7 @@ $(document).ready(() => {
         existingAddonId = null;
 
         // Hide any div that may still be displayed
-        $("#addonjsonPrompt, #addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt").css("display", "none");
+        $("#addonjsonPrompt, #addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").css("display", "none");
     }
 
     function resetAddonExtraction() {
@@ -594,8 +607,14 @@ $(document).ready(() => {
     ipcRenderer.on("addonGMALocation", (event, addonGMA) => {
         addonGMADir = addonGMA;
         $("#createGMA").fadeOut(() => {
-            win.setBounds({height: 200})
-            $("#uploadToWorkshopPrompt").fadeIn();
+            win.setBounds({height: 225});
+            if (onlyCreate) {
+                $("#newAddonLocation").fadeIn();
+            } else {
+                ipcRenderer.send("uploadToWorkshop", addonGMADir, addonIcon, existingAddonId);
+                $("#uploading").fadeIn();
+                win.setBounds({height: 250});
+            }
         });
     });
 });

@@ -71,10 +71,10 @@
                     </div>
                 </div>
                 <div id="addonjsonPrompt">
-                    <h3>Do you already have an <i>addon.json</i> file?</h3>
+                    <h4>Do you already have an <i>addon.json</i> file?</h4>
                     <div>
                         <button class="button_normal transition_button removeBackOption" data-divtoshow="#jsonCreator" data-divtohide="#addonjsonPrompt" data-resize="500, 350">No</button>
-                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#gmaPrep" data-divtohide="#addonjsonPrompt" data-resize="500, 200">Yes</button>
+                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#gmaPrep" data-divtohide="#addonjsonPrompt" data-resize="500, 225">Yes</button>
                     </div>
                 </div>
                 <div id="jsonCreator">
@@ -160,23 +160,22 @@
                 </div>
                 <div id="gmaPrep">
                     <!-- <p>Created <span style="font-weight: 700">addon.json</span>!</p> -->
-                    <h3>Create GMA for uploading to the Workshop?</h3>
-                    <button style="width: 100px;" class="button_normal transition_button resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 200">No</button>
-                    <button style="width: 100px;" id="createGMAFile" class="button_normal transition_button">Yes</button>
-                    <!-- <img src="src/img/loading.gif" style="display: block; margin-left: auto; margin-right: auto; width: 64px;" alt=""> -->
+                    <h4>What would you like to do?</h4>
+                    <button id="createOnly" class="button_normal">Create GMA only</button>
+                    <button id="createAndUpload" class="button_normal">Create GMA <b>and</b> upload</button>
                 </div>
                 <div id="createGMA">
-                    <p>Creating GMA...</p>
+                    <h4>Creating GMA...</h4>
                     <img src="src/img/loading.gif" style="width: 64px; display: block; margin-left: auto; margin-right: auto; margin-top: 35px;" alt="">
-                </div>
-                <div id="uploadToWorkshopPrompt">
-                    <h3>Upload to the Workshop?</h3>
-                    <button style="width: 100px;" class="button_normal">No</button>
-                    <button style="width: 100px;" id="uploadCurrentGMA" class="button_normal">Yes</button>
                 </div>
                 <div id="uploading">
                     <p>Uploading to the workshop...</p>
                     <img src="src/img/loading.gif" style="width: 64px; display: block; margin-left: auto; margin-right: auto; margin-top: 35px;" alt="">
+                </div>
+                <div id="newAddonLocation">
+                    <h3>Finished!</h3>
+                    <p><a id="gmaLocation" style="color: white;" href="#">View</a></p>
+                    <button class="button_normal transition_button resetAddonCreation" data-divtohide="#create_new_addon" data-divtoshow="#addon_management_prompt" data-resize="500, 200" style="width: 100px;">Done</button>
                 </div>
                 <div id="new_addon">
                     <h3>Uploaded!</h3>
