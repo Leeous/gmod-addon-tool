@@ -110,6 +110,12 @@ header {
     margin-bottom: 10px;
 }
 
+#settings {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 .real_select {
     display: none;
 }

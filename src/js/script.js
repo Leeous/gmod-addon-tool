@@ -100,6 +100,10 @@ $(document).ready(() => {
         shell.openExternal("https://www.buymeacoffee.com/Leeous");
     });
 
+    $("#consoleOutput").click(() => {
+        ipcRenderer.send("openSettings");
+    })
+
     // Validate that we have read/write access to the users Garrysmod directory so we can use gmad & gmpublish
     $("#gmod_dir_folder").click(() => {
         dialog.showOpenDialog(win, dirDialogOptions).then(result => {

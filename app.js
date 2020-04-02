@@ -3,7 +3,8 @@ const {
   app,
   BrowserWindow,
   ipcMain,
-  shell
+  shell,
+  remote,
 } = require('electron')
 const fs = require('fs')
 const { spawn } = require('child_process');
@@ -11,6 +12,8 @@ const settings = require('electron-settings');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+let promptWindow;
+let promptOptions;
 
 console.log('\n');
 
@@ -160,4 +163,42 @@ ipcMain.on("extractAddon", (e, path) => {
   // console.log(e, path);
   const gmad = spawn(settings.get('gmodDirectory') + '\\bin\\gmad.exe', ['extract', '-file', path]);
   mainWindow.webContents.send("finishExtraction");
+});
+
+
+// Settings Modal
+
+// Creating the dialog
+
+function promptModal(callback) {
+  promptWindow = new BrowserWindow({
+    width:360, height: 500, 
+    'parent': mainWindow,
+    'show': false,
+    'modal': true,
+    'alwaysOnTop' : true, 
+    'title' : "Settings",
+    'autoHideMenuBar': true,
+    'resizable': false,
+    'fullscreenable': false,
+    'backgroundColor': "#262626",
+    'titleBarStyle': "hidden",
+    'frame': false,
+    'webPreferences' : { 
+      "nodeIntegration":true,
+      "sandbox" : false 
+    }
+  });
+
+  promptWindow.on('closed', () => { 
+    promptWindow = null 
+  });
+
+  // Load the HTML dialog box
+  promptWindow.loadFile("settings.html")
+  promptWindow.once('ready-to-show', () => { promptWindow.show() })
+}
+
+ipcMain.on("openSettings", (e) => {
+  promptModal();
 });

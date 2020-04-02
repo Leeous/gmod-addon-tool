@@ -1,0 +1,34 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script>require('electron-connect').client.create()</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+    <script src="src/js/script.js"></script>
+    <title>Garry's Mod Addon Tool</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <div id="main_titlebar">
+        <div class="main_title">
+            <p>Settings</p>
+        </div>
+        <div class="main_buttons"">
+            <p id="closeApp" title="Exit">X</p>
+        </div>
+    </div>
+    <div id="settings">
+        <section>
+            <form action="#">
+                <input type="checkbox" id="firstname" name="firstname">
+                <input type="checkbox" id="firstname" name="firstname">
+            </form>
+        </section>
+        <footer>
+            <p>1.3v</p>
+        </footer>
+    </div>
+</body>
+</html>
