@@ -172,7 +172,8 @@ ipcMain.on("extractAddon", (e, path) => {
 
 function promptModal(callback) {
   promptWindow = new BrowserWindow({
-    width:360, height: 500, 
+    'width':360, 
+    'height': 1000, 
     'parent': mainWindow,
     'show': false,
     'modal': true,

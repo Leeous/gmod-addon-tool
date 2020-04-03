@@ -114,6 +114,17 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding: 10px;
+}
+
+#settings main {
+    display: flex;
+    flex-direction: column;
+}
+
+#settings main button {
+    padding: 5px 0;
+    margin: 5px 0;
 }
 
 .real_select {
