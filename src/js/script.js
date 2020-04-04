@@ -110,8 +110,8 @@ $(document).ready(() => {
         var filePath = result.filePaths[0]
         var desName = filePath.substring(filePath.length - 9, filePath.length);
         if (filePath != null) {
-            ipcRenderer.send("checkIfDirectoryExists", filePath + "\\bin\\gmad.exe");
-            ipcRenderer.send("checkIfDirectoryExists", filePath + "\\bin\\gmpublish.exe");
+            ipcRenderer.send("checkIfDirectoryExists", filePath + "/bin/gmad.exe");
+            ipcRenderer.send("checkIfDirectoryExists", filePath + "/bin/gmpublish.exe");
             if (desName == "GarrysMod") {
                 $("#status_of_dir").css("color", "lightgreen");
                 $("#status_of_dir").text("Found gmad.exe and gmpublish.exe!");
@@ -147,7 +147,7 @@ $(document).ready(() => {
             addonPath = r.filePaths[0];
             if (addonGMA != null) {
                 ipcRenderer.send("checkIfDirectoryExists", addonGMA);
-                var n = addonGMA.lastIndexOf("\\");
+                var n = addonGMA.lastIndexOf("/");
                 var result = addonGMA.substring(n + 1, addonGMA.length);
                 $("#currentGMAFile").text(result);
                 $("#addon_extract_next button").prop("disabled", false);
@@ -176,7 +176,7 @@ $(document).ready(() => {
                 currentNewAddon = result.filePaths[0];
                 if (currentNewAddon != null) {
                     ipcRenderer.send("checkIfDirectoryExists", currentNewAddon);
-                    var n = currentNewAddon.lastIndexOf("\\");
+                    var n = currentNewAddon.lastIndexOf("/");
                     var result = currentNewAddon.substring(n + 1);
                     $("#addonDir b").text(result);
                     $("#addonDirCheck").css("background-color", "#56bd56");
