@@ -5,35 +5,40 @@ const {
   ipcMain,
   shell,
   remote,
-} = require('electron')
-const fs = require('fs')
+} = require('electron');
+const fs = require('fs');
 const { spawn } = require('cross-spawn');
 const settings = require('electron-settings');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 let promptWindow;
-let promptOptions;
 
 console.log('\n');
+
+let isWin = process.platform === "win32";
+
+if (isWin) {ext = ".ico"} else {ext = ".png"};
 
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-          width: 500,
-          height: 225,
-          resizable: false,
-          fullscreenable: false,
-          backgroundColor: "#262626",
-          titleBarStyle: "hidden",
-          frame: false,
-          icon: __dirname + "/src/img/icon.ico",
-          webPreferences: {
-              nodeIntegration: true
-          }
-      })
-      // and load the index.html of the app.
+    width: 500,
+    height: 225,
+    resizable: false,
+    fullscreenable: false,
+    backgroundColor: "#262626",
+    titleBarStyle: "hidden",
+    frame: false,
+    icon: __dirname + "/src/img/icon" + ext,
+    webPreferences: {
+        nodeIntegration: true
+    }
+  });
+      
+  // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -172,22 +177,22 @@ ipcMain.on("extractAddon", (e, path) => {
 
 function promptModal(callback) {
   promptWindow = new BrowserWindow({
-    'width':360, 
-    'height': 1000, 
-    'parent': mainWindow,
-    'show': false,
-    'modal': true,
-    'alwaysOnTop' : true, 
-    'title' : "Settings",
-    'autoHideMenuBar': true,
-    'resizable': false,
-    'fullscreenable': false,
-    'backgroundColor': "#262626",
-    'titleBarStyle': "hidden",
-    'frame': false,
-    'webPreferences' : { 
-      "nodeIntegration":true,
-      "sandbox" : false 
+    width: 360, 
+    height: 100,
+    parent: mainWindow,
+    show: false,
+    modal: true,
+    alwaysOnTop : true, 
+    title : "Settings",
+    autoHideMenuBar: true,
+    resizable: false,
+    fullscreenable: false,
+    backgroundColor: "#262626",
+    titleBarStyle: "hidden",
+    frame: false,
+    webPreferences: { 
+      nodeIntegration:true,
+      sandbox: false 
     }
   });
 

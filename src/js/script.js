@@ -100,7 +100,7 @@ $(document).ready(() => {
         shell.openExternal("https://www.buymeacoffee.com/Leeous");
     });
 
-    $("#consoleOutput").click(() => {
+    $("#settingsModal").click(() => {
         ipcRenderer.send("openSettings");
     })
 
@@ -139,6 +139,10 @@ $(document).ready(() => {
     $("#gmaLocation").click(() => {
         shell.openItem(addonGMADir.substring(0, addonGMADir.lastIndexOf("/")));
     })
+
+    $("#settings footer p a").click(() => {
+        shell.openExternal("https://leeous.com");
+    });
 
     // Let user select a GMA to extract
     $("#gmaFileSelection").click(() => {
@@ -358,6 +362,11 @@ $(document).ready(() => {
             ipcRenderer.send("createGMAFile", currentNewAddon);
         });
     });
+
+    $("#resetSettings").click(() => {
+        settings.deleteAll();
+    });
+
     // =============
     // AJAX Requests
     // =============
@@ -371,7 +380,7 @@ $(document).ready(() => {
         if (data.tag_name != currentAppVersion) {
             newUpdate(data.tag_name);
         }
-    })
+    });
 
     // =========
     // Functions

@@ -117,6 +117,17 @@ header {
     padding: 10px;
 }
 
+#settings footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#settings footer p a {
+    text-decoration: underline;
+    color: white;
+}
+
 #settings main {
     display: flex;
     flex-direction: column;
