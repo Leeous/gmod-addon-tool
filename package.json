@@ -3,6 +3,7 @@
   "version": "1.4.0",
   "description": "A simple tool to update Garry's Mod workshop addons.",
   "main": "app.js",
+  "homepage": "https://leeous.com",
   "dependencies": {
     "cross-spawn": "^7.0.1",
     "electron-settings": "^3.2.0",
