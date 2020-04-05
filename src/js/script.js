@@ -33,7 +33,8 @@ addonToCreateData = {
 };
 currentAppVersion = "v1.3";
 let defaultMenuTitle = ""
-let onlyCreate = null; // This tells us
+let onlyCreate = null; // This tells us if the user is only wanting to create a GMA
+let consoleData = new Array;
 
 
 // Dialog properties
@@ -75,9 +76,11 @@ $(document).ready(() => {
     if (settings.get("gmodDirectory") != null) {
         $("#addon_management").fadeIn();
         $("#addon_management_prompt").fadeIn();
-        win.setBounds({
-            height: 200
-        })
+        if (win.getBounds().height == 225) {
+            win.setBounds({
+                height: 200
+            });
+        }
         ipcRenderer.send("getAddonInfo");
     } else {
         $("#directory_selection").fadeIn();
@@ -102,7 +105,20 @@ $(document).ready(() => {
 
     $("#settingsModal").click(() => {
         ipcRenderer.send("openSettings");
-    })
+    });
+
+    $("#openConsole").click(() => {
+        shell.openExternal(__dirname + "/log.txt");
+    });
+
+    $("#resetSettings").click(() => {
+        $("#resetSettings").text("Settings erased!");
+        $("#resetSettings").css({
+            backgroundColor: "#ff4343",
+            color: "white"
+        });
+        settings.deleteAll();
+    });
 
     // Validate that we have read/write access to the users Garrysmod directory so we can use gmad & gmpublish
     $("#gmod_dir_folder").click(() => {
@@ -363,10 +379,6 @@ $(document).ready(() => {
         });
     });
 
-    $("#resetSettings").click(() => {
-        settings.deleteAll();
-    });
-
     // =============
     // AJAX Requests
     // =============
@@ -591,9 +603,9 @@ $(document).ready(() => {
     // Transition screen after we've extracted the GMA
     ipcRenderer.on("finishExtraction", (e) => {
         $("#extracting_addon").fadeOut(() => {
-            win.setBounds({height: 225})
+            win.setBounds({height: 225});
             // $("#extractedGMALocation").attr("href", "steam://url/CommunityFilePage/" + newAddonID)
-            $("#extraction_done").fadeIn()
+            $("#extraction_done").fadeIn();
         });
     });
     

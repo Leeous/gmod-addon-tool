@@ -11,14 +11,15 @@ const { spawn } = require('cross-spawn');
 const settings = require('electron-settings');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow;
 let promptWindow;
+var time = new Date();
 
 console.log('\n');
 
 let isWin = process.platform === "win32";
 
-if (isWin) {ext = ".ico"} else {ext = ".png"};
+if (isWin) {ext = ".ico"; gmpublishFile = "gmpublish.exe"; gmadFile = "gmad.exe"} else {ext = ".png"; gmpublishFile = "gmpublish_linux"; gmadFile = "gmad_linux"};
 
 function createWindow() {
   // Create the browser window.
@@ -91,9 +92,10 @@ var ADDON_IDS = [];
 
 // We use this to get the addon IDs from gmpublish.exe
 function sendClientAddonInfo() {
-  const bat = spawn(settings.get('gmodDirectory') + '/bin/gmpublish_linux', ['list']);
+  const bat = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['list']);
   bat.stdout.on('data', (data) => {
     var arrayOfOutput = data.toString().split('\n')
+    sendConsoleData(arrayOfOutput);
     var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3)
     // console.log(fixedArray)
     for (var i = 0; i < fixedArray.length; i++) {
@@ -121,10 +123,11 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
 
 // This is ran once the client requests to create an addon
 ipcMain.on('createGMAFile', (event, addonDir) => {
-  console.log("Addon's Directory: " + addonDir.toString())
-  const gmad = spawn(settings.get('gmodDirectory') + '/bin/gmad_linux', ['create', '-folder', addonDir]);
+  console.log("Addon's Directory: " + addonDir.toString());
+  const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['create', '-folder', addonDir]);
   gmad.stdout.on('data', (data) => {
-    var arrayOfOutput = data.toString().split('\n')
+    var arrayOfOutput = data.toString().split('\n');
+    sendConsoleData(arrayOfOutput)
     var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1)
     fixedArray = fixedArray[0].match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "")
     var addonGMADir = fixedArray;
@@ -136,9 +139,10 @@ ipcMain.on('createGMAFile', (event, addonDir) => {
 // This block will upload the GMA file to the Steam Workshop
 ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   if (addonId != null) {
-    const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/gmpublish_linux', ['update', '-id', addonId, '-icon', iconDir, '-addon', gmaDir]);
+    const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['update', '-id', addonId, '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
+      sendConsoleData(arrayOfOutput)
       // console.log(arrayOfOutput)
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
@@ -147,10 +151,11 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     });
   } else {
     // Passes all the info needed to publish a Garry's Mod addon
-    const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/gmpublish_linux', ['create', '-icon', iconDir, '-addon', gmaDir]);
+    const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['create', '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
       // console.log(arrayOfOutput)
+      sendConsoleData(arrayOfOutput)
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);
@@ -166,23 +171,28 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
 // This will extract a GMA file to GarrysMod/garrysmod/addons/[addon_name]
 ipcMain.on("extractAddon", (e, path) => {
   // console.log(e, path);
-  const gmad = spawn(settings.get('gmodDirectory') + '/bin/gmad_linux', ['extract', '-file', path]);
+  const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['extract', '-file', path]);
   mainWindow.webContents.send("finishExtraction");
 });
 
+function sendConsoleData(dataArray) {
+  timestamp = time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  dataArray.forEach(data => {
+    fs.appendFile(__dirname + "/log.txt", "[" + timestamp + "] " + data, 'utf8', (err) => {});
+  });
+}
 
 // Settings Modal
 
 // Creating the dialog
 
-function promptModal(callback) {
+function openSettings(callback) {
   promptWindow = new BrowserWindow({
-    width: 360, 
-    height: 100,
+    width: 200, 
+    height: 150,
     parent: mainWindow,
     show: false,
     modal: true,
-    alwaysOnTop : true, 
     title : "Settings",
     autoHideMenuBar: true,
     resizable: false,
@@ -191,8 +201,7 @@ function promptModal(callback) {
     titleBarStyle: "hidden",
     frame: false,
     webPreferences: { 
-      nodeIntegration:true,
-      sandbox: false 
+      nodeIntegration: true,
     }
   });
 
@@ -205,6 +214,41 @@ function promptModal(callback) {
   promptWindow.once('ready-to-show', () => { promptWindow.show() })
 }
 
+function openConsole(callback) {
+  consoleWindow = new BrowserWindow({
+    width: 375, 
+    height: 275,
+    x: 1250,
+    y: 400,
+    parent: mainWindow,
+    show: false,
+    modal: false,
+    title : "Console",
+    autoHideMenuBar: true,
+    resizable: false,
+    fullscreenable: false,
+    backgroundColor: "black",
+    titleBarStyle: "hidden",
+    frame: false,
+    webPreferences: { 
+      nodeIntegration: true,
+    }
+  });
+
+  consoleWindow.on('closed', () => { 
+    consoleWindow = null 
+  });
+
+  // Load the HTML dialog box
+  consoleWindow.loadFile("console.html")
+  consoleWindow.once('ready-to-show', () => { consoleWindow.show() })
+}
+
 ipcMain.on("openSettings", (e) => {
-  promptModal();
+  openSettings();
+});
+
+
+ipcMain.on("openConsole", (e) => {
+  openConsole();
 });
