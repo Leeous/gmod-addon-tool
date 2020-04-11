@@ -1,6 +1,7 @@
 # Garry's Mod Addon Tool
 ![Build](https://img.shields.io/github/workflow/status/actions/gmod-addon-tool/build)
 ![Downloads](https://img.shields.io/github/downloads/Leeous/gmod-addon-tool/total?style=flat-square)
+![CommitsSinceRelease](https://img.shields.io/github/commits-since/Leeous/gmod-addon-tool/latest)
 
 
 A light-weight application that allows you to create/update/extract Garry's Mod addons very easily. 
