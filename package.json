@@ -19,13 +19,24 @@
   "build": {
     "appId": "com.gmodaddontool.app",
     "icon": "src/img/icon.png",
-    "productName": "Garry's Mod Addon Tool"
+    "productName": "Garry's Mod Addon Tool",
+    "linux": {
+      "target": "deb",
+      "icon": "src/img/icon.png",
+      "synopsis": "A simple tool to update Garry's Mod workshop addons.",
+      "description": "A simple tool to update Garry's Mod workshop addons.",
+      "category": "Utility"
+    },
+    "win": {
+      "icon": "src/img/icon.ico",
+      "target": [{ "target": "nsis", "arch": ["x64", "ia32"] }, { "target": "portable", "arch": ["x64", "ia32"] }]
+    }
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
-    "build": "electron-builder --windows"
+    "build": "electron-builder -wl"
   },
   "author": "Leeous <contact@leeous.com>",
   "license": "ISC",
