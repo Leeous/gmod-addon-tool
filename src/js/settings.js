@@ -13,7 +13,7 @@ $(document).ready(() => {
     });
     
     $("#openConsole").click(() => {
-        shell.openExternal(__dirname + "/log.txt");
+        shell.openItem(__dirname + "/log.txt");
     });
 
     $("#closeApp").click(() => {
