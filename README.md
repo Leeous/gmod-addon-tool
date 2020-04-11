@@ -2,7 +2,7 @@
 ![Version](https://img.shields.io/github/package-json/v/Leeous/gmod-addon-tool?style=flat-square)
 ![Build](https://img.shields.io/github/workflow/status/Leeous/gmod-addon-tool/Build?style=flat-square)
 ![Downloads](https://img.shields.io/github/downloads/Leeous/gmod-addon-tool/total?style=flat-square)
-![CommitsSinceRelease](https://img.shields.io/github/commits-since/Leeous/gmod-addon-tool/latest)
+![CommitsSinceRelease](https://img.shields.io/github/commits-since/Leeous/gmod-addon-tool/latest?style=flat-square)
 
 
 A light-weight application that allows you to create/update/extract Garry's Mod addons very easily. 
