@@ -1,5 +1,5 @@
 # Garry's Mod Addon Tool
-![Build](https://github.com/Leeous/gmod-addon-tool/workflows/Build/release/badge.svg?branch=master)
+![Build](https://img.shields.io/github/workflow/status/actions/gmod-addon-tool/build)
 ![Downloads](https://img.shields.io/github/downloads/Leeous/gmod-addon-tool/total?style=flat-square)
 
 
