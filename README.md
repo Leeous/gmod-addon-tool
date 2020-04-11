@@ -1,5 +1,6 @@
 # Garry's Mod Addon Tool
-![Build](https://img.shields.io/github/workflow/status/actions/gmod-addon-tool/build)
+![Version](https://img.shields.io/github/package-json/v/Leeous/gmod-addon-tool?style=flat-square)
+![Build](https://img.shields.io/github/workflow/status/Leeous/gmod-addon-tool/Build?style=flat-square)
 ![Downloads](https://img.shields.io/github/downloads/Leeous/gmod-addon-tool/total?style=flat-square)
 ![CommitsSinceRelease](https://img.shields.io/github/commits-since/Leeous/gmod-addon-tool/latest)
 
