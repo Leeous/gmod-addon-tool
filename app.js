@@ -13,15 +13,34 @@ const settings = require('electron-settings');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 let promptWindow;
-var time = new Date();
+var dtObj = new Date();
+var hours = dtObj.getHours();
+var minutes = dtObj.getMinutes();
+var finalTime = hours + ":" + minutes;
 
 console.log('\n');
 
+// Create log file if it doesn't exist
+fs.stat(__dirname + "/log.txt", function(err, stats) {
+  if (err) {
+    fs.access("log.txt", fs.constants.F_OK, (err) => {
+      console.log("Created log.txt");
+      fs.appendFile('log.txt', "--- Beginning of log --- \n", 'utf8', (err) => {
+        if (err != null) { console.log(err); }
+      });
+    });
+  }
+});
+
+// Changes extensions to appropriate endings for Linux or Windows 
 let isWin = process.platform === "win32";
 
 if (isWin) {ext = ".ico"; gmpublishFile = "gmpublish.exe"; gmadFile = "gmad.exe"} else {ext = ".png"; gmpublishFile = "gmpublish_linux"; gmadFile = "gmad_linux"};
 
 function createWindow() {
+  // 
+  app.allowRendererProcessReuse = true;
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 500,
@@ -176,9 +195,8 @@ ipcMain.on("extractAddon", (e, path) => {
 });
 
 function sendConsoleData(dataArray) {
-  timestamp = time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   dataArray.forEach(data => {
-    fs.appendFile(__dirname + "/log.txt", "[" + timestamp + "] " + data, 'utf8', (err) => {});
+    fs.appendFile(__dirname + "/log.txt", "[" + finalTime + "] " + data, 'utf8', (err) => {});
   });
 }
 

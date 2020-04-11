@@ -1,4 +1,5 @@
-general.todo
 dist/
+.vscode/
+/build
 node_modules
 log.txt

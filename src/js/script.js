@@ -31,7 +31,7 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 };
-currentAppVersion = "v1.3";
+currentAppVersion = "v1.4";
 let defaultMenuTitle = ""
 let onlyCreate = null; // This tells us if the user is only wanting to create a GMA
 let consoleData = new Array;
@@ -105,19 +105,6 @@ $(document).ready(() => {
 
     $("#settingsModal").click(() => {
         ipcRenderer.send("openSettings");
-    });
-
-    $("#openConsole").click(() => {
-        shell.openExternal(__dirname + "/log.txt");
-    });
-
-    $("#resetSettings").click(() => {
-        $("#resetSettings").text("Settings erased!");
-        $("#resetSettings").css({
-            backgroundColor: "#ff4343",
-            color: "white"
-        });
-        settings.deleteAll();
     });
 
     // Validate that we have read/write access to the users Garrysmod directory so we can use gmad & gmpublish
