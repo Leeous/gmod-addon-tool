@@ -609,8 +609,12 @@ $(document).ready(() => {
     // Get ID of new addon so we can open it in Steam
     ipcRenderer.on("currentAddonID", (event, newAddonID) => {
         $("#uploading").fadeOut(() => {
-            win.setBounds({height: 225})
-            $("#new_addon_link").attr("href", "steam://url/CommunityFilePage/" + newAddonID)
+            win.setBounds({height: 225});
+            if (existingAddonId == null) {
+                $("#new_addon_link").attr("href", "steam://url/CommunityFilePage/" + newAddonID)
+            } else {
+                $("#new_addon_link").attr("href", "steam://url/CommunityFilePage/" + existingAddonId)
+            }
             $("#new_addon").fadeIn()
         });
     });
