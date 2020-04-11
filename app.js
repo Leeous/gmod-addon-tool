@@ -196,7 +196,7 @@ ipcMain.on("extractAddon", (e, path) => {
 
 function sendConsoleData(dataArray) {
   dataArray.forEach(data => {
-    fs.appendFile(__dirname + "/log.txt", "[" + finalTime + "] " + data, 'utf8', (err) => {});
+    fs.appendFile(__dirname + "/log.txt", "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
   });
 }
 

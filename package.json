@@ -18,18 +18,14 @@
   },
   "build": {
     "appId": "com.gmodaddontool.app",
-    "icon": "src/img/icon.ico",
-    "productName": "Garry's Mod Addon Tool",
-    "directories": {
-      "output": "build"
-    }
+    "icon": "src/img/icon.png",
+    "productName": "Garry's Mod Addon Tool"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
-    "build": "electron-builder --windows",
-    "release": "electron-builder --windows --publish always"
+    "build": "electron-builder --windows"
   },
   "author": "Leeous <contact@leeous.com>",
   "license": "ISC",
