@@ -47,7 +47,7 @@ function createWindow() {
     height: 225,
     resizable: false,
     fullscreenable: false,
-    backgroundColor: "#262626",
+    backgroundColor: "#048CEC",
     titleBarStyle: "hidden",
     frame: false,
     icon: __dirname + "/src/img/icon" + ext,
@@ -96,9 +96,24 @@ app.on('activate', function() {
 // Checks to see if the directory the user chooses is writeable 
 ipcMain.on('checkIfDirectoryExists', (event, file) => {
   fs.access(file, fs.constants.R_OK, (err) => {
-    // console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
+    console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
   });
-})
+  checkIfAddonJSONExist(file);
+});
+
+function checkIfAddonJSONExist (file) {
+  fs.stat(file + "/addon.json", function(err, stats) {
+    console.log(file)
+    if (err) {
+      mainWindow.webContents.send('addonJSONCheck', false);
+    } else {
+      mainWindow.webContents.send('addonJSONCheck', true);
+    }
+  });
+}
+
+// ipcMain.on('checkIfFileExists', (event, file) => {
+// });
 
 // This will send the client the IDs of their addons
 ipcMain.on('getAddonInfo', () => {
@@ -131,9 +146,14 @@ function sendClientAddonInfo() {
   });
 }
 
+// Checks to see if addon.json already exists
+// ipcMain.on("checkForJSON", (event) => {
+//   fs.stat(__dirname + "/log.txt", function(err, stats) {
+// });
+
 // This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
-  // console.log(json, dir)
+  // console.log(json, dir);
   fs.writeFileSync(dir + "/addon.json", json, 'utf8', (err) => {
     console.log("An error occured while writing JSON object to File.\n", err);
     mainWindow.webContents.send('error', "Error writing directory.");

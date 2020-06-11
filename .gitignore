@@ -4,3 +4,5 @@ dist/
 node_modules
 log.txt
 yarn-error.log
+*.ttf
+prepros.config

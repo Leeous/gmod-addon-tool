@@ -14,7 +14,7 @@ api_data = {"itemcount": "0"};
 okToProcessAddonList = false;
 donePopulatingAddonList = false;
 
-// These are addon related variables, most are reset on back or completition 
+// These are addon related variables, most are reset on completion/fail/abort
 currentNewAddon = "";
 jsonCheckboxCount = 0;
 jsonChecks = [false, false];
@@ -24,7 +24,7 @@ existingAddonId = null;
 let addonTitle;
 let addonTags;
 let addonType;
-addonIcon = "";
+addonIcon = ""; // Directory of current addon's icon
 addonToCreateData = {
     "title": "",
     "type": "",
@@ -176,6 +176,10 @@ $(document).ready(() => {
         shell.openItem(addonPath.substring(0, addonPath.length - 4));
     });
 
+    $(".popCurrentAddonInfo").click(() => {
+        
+    });
+
     // If directory exists (and is writable/readable) allow user to procede 
     $("#addon_dir_folder").click(() => {
         dialog.showOpenDialog(win, dirDialogOptions).then(result => {
@@ -189,6 +193,7 @@ $(document).ready(() => {
                     $("#addonDirCheck").css("background-color", "#56bd56");
                     $("#addonDirCheck").prop("disabled", false);
                     $("#addonDirCheck").css("cursor", "pointer");
+                    // Check to see if addon.json already exists                
                 }
             }
         }).catch(err => {
@@ -212,7 +217,7 @@ $(document).ready(() => {
                     $("#addonIconCheck").prop("disabled", false);
                     $("#addonIconCheck").css("cursor", "pointer");
                 } else {
-                    alert("Image must be 512x512.")
+                    alert("Image must be 512x512.");
                 }
             } else {
                 $("#addonIconCheck").css("background-color", "#0f0f0f");
@@ -221,7 +226,7 @@ $(document).ready(() => {
                 alert("Doesn't seem like a JPEG image.");
             }
         }).catch(err => {
-
+            console.error("Dailog failed to open!");
         });
     });
 
@@ -345,7 +350,7 @@ $(document).ready(() => {
     });
 
     $(".resetAddonExtraction, #extraction_back").click(() => {
-        resetAddonExtraction()
+        resetAddonExtraction();
     });
 
     $("#createOnly").click(() => {
@@ -419,7 +424,6 @@ $(document).ready(() => {
     }
 
     function sendAPIRequest(array, length, amtOfArrays) {
-
         let queuePosition = 0
 
         for (let i = 0; i < array.length; i++) {
@@ -497,9 +501,6 @@ $(document).ready(() => {
             //     $("#yourAddons").append("<p style="background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;"><b>Steam Web API Error!</b><br/><br/>Error 400. Maybe</p>");
             //     donePopulatingAddonList = true;
             // }
-
-            console.log(addon_data, arrayOfAddonIds)
-
             $(".addon_existing").hover((event) => {
                 var target = $(event.target);
                 var targetLink = $(target).find(".addon_link");
@@ -521,6 +522,7 @@ $(document).ready(() => {
     function resetAddonCreation() {
         jsonCheckboxCount = 0;
         onlyCreate = null;
+        jsonExists =null
 
         // Clear the old data we used to make addon.json
         addonToCreateData = {
@@ -586,6 +588,15 @@ $(document).ready(() => {
     // ========================
     // app.js related functions
     // ========================
+
+    // Changes attributes depending on if addon.json exists
+    ipcRenderer.on("addonJSONCheck", (e, exists) => {
+        console.log(exists);
+        if (exists) {
+            $("#addonIconCheck").data("divtoshow", "#gmaPrep");
+            $("#addonIconCheck").data("resize", "500, 500");
+        }
+    });
 
     // Transition screen after we've extracted the GMA
     ipcRenderer.on("finishExtraction", (e) => {

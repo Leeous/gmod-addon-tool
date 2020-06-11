@@ -68,22 +68,24 @@
                     <p style="font-size: 0.8em">Must be a JPEG/JPG</p>
                     <button id="addon_icon" class="button_normal">Choose Directory</button>
                     <div class="next_prompt">
-                        <button id="addonIconCheck" class="transition_button" data-divtoshow="#addonjsonPrompt" data-divtohide="#addonIconPrompt" data-resize="500, 200" disabled>Next</button>
+                        <button id="addonIconCheck" class="transition_button" data-divtoshow="#jsonCreator" data-divtohide="#addonIconPrompt" data-resize="500, 350" disabled>Next</button>
                     </div>
                 </div>
-                <div id="addonjsonPrompt">
+                <div id="addonjsonPrompt"> 
+                    <p>Checking for addon.json...</p>
+                    <img src="src/img/loading.gif" style="width: 64px; display: block; margin-left: auto; margin-right: auto; margin-top: 35px;" alt="">
+                    <!-- <div>
                     <h4>Do you already have an <i>addon.json</i> file?</h4>
-                    <div>
                         <button class="button_normal transition_button removeBackOption" data-divtoshow="#jsonCreator" data-divtohide="#addonjsonPrompt" data-resize="500, 350">No</button>
-                        <button class="button_normal transition_button removeBackOption" data-divtoshow="#gmaPrep" data-divtohide="#addonjsonPrompt" data-resize="500, 225">Yes</button>
-                    </div>
+                        <button class="button_normal transition_button removeBackOption popCurrentAddonInfo" data-divtoshow="#gmaPrep" data-divtohide="#addonjsonPrompt" data-resize="500, 500">Yes</button>
+                    </div> -->
                 </div>
                 <div id="jsonCreator">
                     <div id="jsonInfo">
                         <div id="jsonTitle">
                             <p class="jsonSectionHeader">Title</p>
                             <input name="addonTitle" type="text" placeholder="Crazy cool addon" maxlength="128">
-                            <p><span style="font-size: .7em; color: grey;">(required)</span></p>
+                            <p><span style="font-size: .7em; color: white;">(required)</span></p>
                         </div>
                         <div id="jsonType">
                             <p class="jsonSectionHeader">Type</p>
@@ -99,7 +101,7 @@
                                 <option value="effects">Effects</option>
                                 <option value="model">Model</option>
                             </select>
-                            <p><span style="font-size: .7em; color: grey;">(required)</span></p>
+                            <p><span style="font-size: .7em; color: white;">(required)</span></p>
                         </div>
                         <div id="jsonTags">
                             <div class="col">
@@ -144,7 +146,7 @@
                                         <p>Cartoon</p>
                                     </div>
                                     <div class="type">
-                                        <p><span style="font-size: .7em; color: grey;">(max 2)</span></p>
+                                        <p><span style="font-size: .7em; color: white;">(max 2)</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -152,16 +154,21 @@
                         <div id="jsonIgnore">
                             <p class="jsonSectionHeader">Ignore</p>
                             <input name="addonIgnore" type="text" placeholder="*.html, README.md, etc">
-                            <p><span style="font-size: .7em; color: grey; font-weight:500;">(file names seprated by a comma)</span></p>
+                            <p><span style="font-size: .7em; color: white; font-weight:500;">(file names seprated by a comma)</span></p>
                         </div>
                         <div class="next_prompt">
-                            <button id="jsonAddonValidate" class="transition_button" data-divtoshow="#gmaPrep" data-divtohide="#jsonCreator" data-resize="500, 225" disabled>Next</button>
+                            <button id="jsonAddonValidate" class="transition_button" data-divtoshow="#gmaPrep" data-divtohide="#jsonCreator" data-resize="500, 500" disabled>Next</button>
                         </div>
                     </div>
                 </div>
                 <div id="gmaPrep">
                     <!-- <p>Created <span style="font-weight: 700">addon.json</span>!</p> -->
                     <h4>What would you like to do?</h4>
+                    <div>
+                        <img id="addonIconPreview" src="" alt="Addon Icon">
+                        <h1></h1>
+                        <h2></h2>
+                    </div>
                     <button id="createOnly" class="button_normal">Create GMA only</button>
                     <button id="createAndUpload" class="button_normal">Create GMA <b>and</b> upload</button>
                 </div>
