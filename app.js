@@ -13,10 +13,12 @@ const settings = require('electron-settings');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 let promptWindow;
+let addonJSON;
 var dtObj = new Date();
 var hours = dtObj.getHours();
 var minutes = dtObj.getMinutes();
 var finalTime = hours + ":" + minutes;
+
 
 console.log('\n');
 
@@ -103,11 +105,16 @@ ipcMain.on('checkIfDirectoryExists', (event, file) => {
 
 function checkIfAddonJSONExist (file) {
   fs.stat(file + "/addon.json", function(err, stats) {
-    console.log(file)
     if (err) {
       mainWindow.webContents.send('addonJSONCheck', false);
     } else {
-      mainWindow.webContents.send('addonJSONCheck', true);
+      fs.readFile(file + '/addon.json', function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        const content = data.toString("utf-8");
+        mainWindow.webContents.send('addonJSONCheck', true, content);
+      });
     }
   });
 }

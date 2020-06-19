@@ -193,11 +193,10 @@ $(document).ready(() => {
                     $("#addonDirCheck").css("background-color", "#56bd56");
                     $("#addonDirCheck").prop("disabled", false);
                     $("#addonDirCheck").css("cursor", "pointer");
-                    // Check to see if addon.json already exists                
                 }
             }
         }).catch(err => {
-            console.log("dialog error")
+            console.log("dialog error");
         })
     });
 
@@ -216,6 +215,7 @@ $(document).ready(() => {
                     $("#addonIconCheck").css("background-color", "#56bd56");
                     $("#addonIconCheck").prop("disabled", false);
                     $("#addonIconCheck").css("cursor", "pointer");
+                    $("#gmaPrep div img").attr("src", addonIcon);
                 } else {
                     alert("Image must be 512x512.");
                 }
@@ -561,12 +561,11 @@ $(document).ready(() => {
         existingAddonId = null;
 
         // Hide any div that may still be displayed
-        $("#addonjsonPrompt, #addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").css("display", "none");
+        $("#addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").css("display", "none");
     }
 
     function resetAddonExtraction() {
         $("#extracting_addon, #extraction_done").css("display", "none");
-
         $("#currentGMAFile").text("");
         $("#addon_extract_next button").css({backgroundColor: "#0f0f0f", cursor: "not-allowed"});
         $("#addon_extract_next button").prop("disabled", true);
@@ -590,11 +589,13 @@ $(document).ready(() => {
     // ========================
 
     // Changes attributes depending on if addon.json exists
-    ipcRenderer.on("addonJSONCheck", (e, exists) => {
-        console.log(exists);
+    ipcRenderer.on("addonJSONCheck", (e, exists, json) => { 
+        json = JSON.parse(JSON.stringify(eval('('+ json +')')));
         if (exists) {
+            $("#gmaPrep div h1").text(json.title);
+            $("#gmaPrep div h2").text(json.type);
             $("#addonIconCheck").data("divtoshow", "#gmaPrep");
-            $("#addonIconCheck").data("resize", "500, 500");
+            $("#addonIconCheck").data("resize", "500, 420");
         }
     });
 
@@ -608,13 +609,18 @@ $(document).ready(() => {
     });
     
     // Try and recieve data from gmpublish about user"s addons
-    ipcRenderer.on("addonInfo", (event, message) => {
+    ipcRenderer.on("addonInfo", (e, message) => {
         getAddonInfoFromSteam(message)
     });
 
     // Sends an alert if Steam doesn"t initialize 
-    ipcRenderer.on("errorAlert", (event, message) => {
-        alert("Steam doesn't seem open!\nOpen Steam and restart. ")
+    ipcRenderer.on("errorAlert", (e, message) => {
+        alert("Steam doesn't seem open!\nOpen Steam and restart. ");
+    });
+
+    ipcRenderer.on("errorNote", (e, message) => {
+        $("#alertModal").fadeIn();
+        $("#alertModal").text(message);
     });
 
     // Get ID of new addon so we can open it in Steam

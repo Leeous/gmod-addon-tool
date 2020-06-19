@@ -233,12 +233,20 @@ header {
     text-align: center;
 }
 
-#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addonjsonPrompt, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #errorNote, #extract_addon, #extracting_addon, #extraction_done, #newAddonLocation {
+#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #errorNote, #extract_addon, #extracting_addon, #extraction_done, #newAddonLocation {
     display: none;
 }
 
 #gmaPrep h4 {
     margin-bottom: 10px;
+}
+
+#gmaPrep div h1 {
+    margin: 0;
+}
+
+#gmaPrep div h2 {
+    margin: 0;
 }
 
 #createOnly, #createAndUpload {
@@ -430,7 +438,7 @@ header {
 .next_prompt button {
     width: 100%;
     border-radius: 0;
-    background-color: #0f0f0f;
+    background-color: #002a48;
     color: white;
     cursor: not-allowed;
     border: none;
