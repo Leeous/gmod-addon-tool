@@ -220,7 +220,7 @@ $(document).ready(() => {
                     alert("Image must be 512x512.");
                 }
             } else {
-                $("#addonIconCheck").css("background-color", "#0f0f0f");
+                $("#addonIconCheck").css("background-color", "#0261A5");
                 $("#addonIconCheck").prop("disabled", true);
                 $("#addonIconCheck").css("cursor", "not-allowed");
                 alert("Doesn't seem like a JPEG image.");
@@ -268,7 +268,7 @@ $(document).ready(() => {
     });
 
     $("#create_addon_button").click(() => {
-        $("#create_new_addon .top h3").text("Addon creation");
+        $("#create_new_addon .top div h3").text("Addon creation");
     });
 
     $("#jsonAddonValidate").click(() => {
@@ -294,7 +294,7 @@ $(document).ready(() => {
         var target = event.target;
         existingAddonId = $(target).data("id");
         $("#update_existing_addon").fadeOut(() => {
-            $("#create_new_addon .top h3").text("Updating addon");
+            $("#create_new_addon .top div h3").text("Updating addon");
             $("#create_new_addon, #addonDirPrompt").fadeIn();
         });
     });
@@ -546,11 +546,11 @@ $(document).ready(() => {
         $("#addon_icon").val(null);
 
         // Reset directory validation
-        $("#addonDirCheck").css({backgroundColor: "#0f0f0f", cursor: "not-allowed"});
+        $("#addonDirCheck").css({backgroundColor: "#0261A5", cursor: "not-allowed"});
         $("#addonDirCheck").prop("disabled", true);
 
         // Reset icon validation
-        $("#addonIconCheck").css({backgroundColor: "#0f0f0f", cursor: "not-allowed"});
+        $("#addonIconCheck").css({backgroundColor: "#0261A5", cursor: "not-allowed"});
         $("#addonIconCheck").prop("disabled", true);
 
         // Reset validation checks
@@ -590,14 +590,21 @@ $(document).ready(() => {
 
     // Changes attributes depending on if addon.json exists
     ipcRenderer.on("addonJSONCheck", (e, exists, json) => { 
+        populateAddonJSONInfo(e, exists, json);
+    });
+
+    function populateAddonJSONInfo(e, exists, json) {
         json = JSON.parse(JSON.stringify(eval('('+ json +')')));
         if (exists) {
-            $("#gmaPrep div h1").text(json.title);
-            $("#gmaPrep div h2").text(json.type);
+            if (json.type === "serverContent") { json.type = "Server Content" }
+            if (json.tags !== "") { $("#gmaPreview table tr .addonTags").text(json.tags[0] + ", " + json.tags[1]); } else { $("#gmaPreview table tr .addonTags").text("None"); }
+            $("#gmaPreview table tr .addonTitle").text(json.title);
+            $("#gmaPreview table tr .addonType").text(json.type);
+            
             $("#addonIconCheck").data("divtoshow", "#gmaPrep");
-            $("#addonIconCheck").data("resize", "500, 420");
+            $("#addonIconCheck").data("resize", "500, 510");
         }
-    });
+    }
 
     // Transition screen after we've extracted the GMA
     ipcRenderer.on("finishExtraction", (e) => {

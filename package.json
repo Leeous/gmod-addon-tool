@@ -8,7 +8,8 @@
     "cross-spawn": "^7.0.1",
     "electron-settings": "^3.2.0",
     "image-size": "^0.8.3",
-    "jquery": "^3.5.0"
+    "jquery": "^3.5.0",
+    "yarn": "^1.22.4"
   },
   "devDependencies": {
     "electron": "^8.0.0",
@@ -29,7 +30,22 @@
     },
     "win": {
       "icon": "src/img/icon.ico",
-      "target": [{ "target": "nsis", "arch": ["x64", "ia32"] }, { "target": "portable", "arch": ["x64", "ia32"] }]
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
     }
   },
   "scripts": {

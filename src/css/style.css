@@ -241,61 +241,62 @@ header {
     margin-bottom: 10px;
 }
 
-#gmaPrep div h1 {
-    margin: 0;
+/* Previews the selected addon image before uploading */
+#addonIconPreview {
+    width: 128px;
+    border-radius: 10px;
 }
 
-#gmaPrep div h2 {
-    margin: 0;
-}
-
-#createOnly, #createAndUpload {
-    width: 50%;
+#gmaPreview h1, #gmaPreview h2 {
     margin: 5px;
+}
+
+#gmaPreview td::first-letter {
+    text-transform: capitalize;
 }
 
 /* Views styles */
 
 .path_div .top {
     background-color: #024B7F;
-    text-align: left;
-    padding: 15px 10px;
+    padding: 15px 0;
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
 }
 
 .path_div .top h3 {
-    display: inline-block;
-    margin: 0;
     font-weight: 300;
-    transform: translateY(2px)
+    margin: 5px;
+    display: inline-block;
 }
 
-.path_div .top button {
-    display: inline-block;
+.back_button {
     background-color: rgb(219, 68, 68);
-    margin-right: 5px;
-}
-
-#update_existing_addon .top {
-    background-color: #024B7F;
-    display: flex;
-    align-items: center;
-}
-
-#update_existing_addon .top h3 {
-    /* display: inline-block; */
-    flex: 1;
-    margin: 0;
-    text-align: left;
-    font-weight: 300;
-}
-
-#refresh_addons {
-    margin-left: auto;
-    padding-right: 15px;
-}
-
-#refresh_addons a {
     color: white;
+    border: none;
+    cursor: pointer;
+    font-size: .9em;
+    padding: 5px 20px;
+    transform: ease 0.8s all;
+    outline: none;
+    border-radius: 0 5px 5px 0;
+    margin: 0;
+    display: block;
+}
+
+#addonPreviewDetails {
+    margin: 10px auto;
+}
+
+#addonPreviewDetails th {
+    padding: 5px;
+    background-color: #024B7F;
+}
+
+#addonPreviewDetails td {
+    padding: 5px 15px;
+    background-color: #0261A5;
+    max-width: 250px;
 }
 
 #yourAddons {
@@ -310,18 +311,6 @@ header {
 
 #jsonTags .col:last-child {
     padding-top: 15px;
-}
-
-.back_button {
-    background-color: rgb(219, 68, 68);
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: .9em;
-    padding: 5px 20px;
-    transform: ease 0.8s;
-    border-radius: 5px;
-    outline: none;
 }
 
 .addon_existing {
@@ -438,7 +427,7 @@ header {
 .next_prompt button {
     width: 100%;
     border-radius: 0;
-    background-color: #002a48;
+    background-color: #0261A5;
     color: white;
     cursor: not-allowed;
     border: none;
@@ -448,7 +437,13 @@ header {
     font-weight: 700;
 }
 
-/* Previews the selected addon image before uploading */
-#addonIconPreview {
-    width: 128px;
+.buttonListTemplate {
+    display: flex;
+    flex-direction: column;
+}
+
+.buttonListTemplate button {
+    border-radius: 0;
+    padding: 10px;
+    font-size: 1.1em;
 }
