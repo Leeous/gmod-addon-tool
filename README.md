@@ -11,7 +11,7 @@ Meant for the crowd who aren't good with using terminals.
 Should work with any type of addon.
 Creates GMAs, addon.json, and uploads it to the Workshop.
 
-![](https://i.imgur.com/ZBGoRUL.png)
+![](https://i.imgur.com/UYD6q0x.png)
 
 ## Instructions
 Download a [release](https://github.com/Leeous/gmod-addon-tool/releases) and run `gmod-addon-tool.exe`.
