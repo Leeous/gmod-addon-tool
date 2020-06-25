@@ -141,7 +141,7 @@ $(document).ready(() => {
 
     $("#gmaLocation").click(() => {
         shell.openItem(addonGMADir.substring(0, addonGMADir.lastIndexOf("/")));
-    })
+    });
 
     $("#settings footer p a").click(() => {
         shell.openExternal("https://leeous.com");
@@ -176,10 +176,6 @@ $(document).ready(() => {
         shell.openItem(addonPath.substring(0, addonPath.length - 4));
     });
 
-    $(".popCurrentAddonInfo").click(() => {
-        
-    });
-
     // If directory exists (and is writable/readable) allow user to procede 
     $("#addon_dir_folder").click(() => {
         dialog.showOpenDialog(win, dirDialogOptions).then(result => {
@@ -187,7 +183,8 @@ $(document).ready(() => {
                 currentNewAddon = result.filePaths[0];
                 if (currentNewAddon != null) {
                     ipcRenderer.send("checkIfDirectoryExists", currentNewAddon);
-                    var n = currentNewAddon.lastIndexOf("/");
+                    var n = currentNewAddon.lastIndexOf("\\");
+                    console.log(n);
                     var result = currentNewAddon.substring(n + 1);
                     $("#addonDir b").text(result);
                     $("#addonDirCheck").css("background-color", "#56bd56");
@@ -285,8 +282,14 @@ $(document).ready(() => {
             addonToCreateData.type = addonType;
             addonToCreateData.tags = addonTags;
             addonToCreateData.ignore = ignoreList;
-            console.log(addonToCreateData);
             ipcRenderer.send("createJsonFile", JSON.stringify(addonToCreateData), currentNewAddon);
+            if (addonToCreateData.type === "serverContent") { addonToCreateData.type = "Server Content" }
+            if (addonToCreateData.tags !== "") { $("#gmaPreview table tr .addonTags").text(addonToCreateData.tags[0] + ", " + addonToCreateData.tags[1]); } else { $("#gmaPreview table tr .addonTags").text("None"); }
+            $("#gmaPreview table tr .addonTitle").text(addonToCreateData.title);
+            $("#gmaPreview table tr .addonType").text(addonToCreateData.type);
+            
+            $("#addonIconCheck").data("divtoshow", "#gmaPrep");
+            $("#addonIconCheck").data("resize", "500, 510");
         }
     });
 
@@ -307,6 +310,10 @@ $(document).ready(() => {
     //         ipcRenderer.send("createGMAFile", currentNewAddon);
     //     });
     // });
+
+    $(".closeError").click((e) => {
+        $("#errorNote").fadeOut();
+    })
 
     $('.typeCheckbox').on('click', (event) => {
         var target = $(event.target);
@@ -417,14 +424,14 @@ $(document).ready(() => {
     // Request JSON infomation on addons based on ID (this cannot read from private addons)
     function getAddonInfoFromSteam(message) {
         arrayOfAddonIds = message;
-        arrayOfAddonIds = arrayOfAddonIds.chunk(13)
+        arrayOfAddonIds = arrayOfAddonIds.chunk(13);
         for (let i = 0; i < arrayOfAddonIds.length; i++) {
             sendAPIRequest(arrayOfAddonIds[i], arrayOfAddonIds[i].length, arrayOfAddonIds.length);
         }
     }
 
     function sendAPIRequest(array, length, amtOfArrays) {
-        let queuePosition = 0
+        let queuePosition = 0;
 
         for (let i = 0; i < array.length; i++) {
             // const element = arrayOfAddonIds[i];
@@ -495,12 +502,16 @@ $(document).ready(() => {
                 $("#yourAddons").append("<div class='addon_existing'><p class='title'>" + array[i].title + "</p><p class='addon_link'><a href='steam://url/CommunityFilePage/" + array[i].id + "'>View</a><a href='#' class='updateAddon' data-id='" + array[i].id + "'>Update</a></p></div>");
                 donePopulatingAddonList = true;
             }
+
             // Make sure if nothing is returned to let the user know
-            // TODO: Allow for multiple error codes such as 429 (too many requests)
-            // if (apiError == 400) {
-            //     $("#yourAddons").append("<p style="background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;"><b>Steam Web API Error!</b><br/><br/>Error 400. Maybe</p>");
-            //     donePopulatingAddonList = true;
-            // }
+            if (apiError == 400) {
+                donePopulatingAddonList = true;
+                errorNote("Steam API: HTTP 400 error.");
+            } else if (apiError == 429) {
+                donePopulatingAddonList = true;
+                errorNote("Steam API: HTTP 429 error. Try again later.");
+            }
+
             $(".addon_existing").hover((event) => {
                 var target = $(event.target);
                 var targetLink = $(target).find(".addon_link");
@@ -577,11 +588,19 @@ $(document).ready(() => {
             $("#jsonAddonValidate").css("background-color", "#56bd56");
             $("#jsonAddonValidate").prop("disabled", false);
             $("#jsonAddonValidate").css("cursor", "pointer");
+            populateAddonJSONInfo()
         } else {
             $("#jsonAddonValidate").prop("disabled", true);
             $("#jsonAddonValidate").css("cursor", "not-allowed");
-            $("#jsonAddonValidate").css("background-color", "#0f0f0f")
+            $("#jsonAddonValidate").css("background-color", "#0261A5")
         }
+    }
+
+    function errorNote(message, fatal) {
+        $("#errorNote .errorText").text(message);
+        ipcRenderer.send("logError", [message]);
+        $("#errorNote").fadeIn().css('display', 'flex').delay(5000).fadeOut();
+        if (fatal) { resetAddonCreation(); $("#gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").fadeOut() } // Kills addon flow if something fucks up
     }
 
     // ========================
@@ -617,17 +636,16 @@ $(document).ready(() => {
     
     // Try and recieve data from gmpublish about user"s addons
     ipcRenderer.on("addonInfo", (e, message) => {
-        getAddonInfoFromSteam(message)
+        getAddonInfoFromSteam(message);
     });
 
     // Sends an alert if Steam doesn"t initialize 
     ipcRenderer.on("errorAlert", (e, message) => {
-        alert("Steam doesn't seem open!\nOpen Steam and restart. ");
+        alert("Steam doesn't seem open!\nOpen Steam and restart.");
     });
 
-    ipcRenderer.on("errorNote", (e, message) => {
-        $("#alertModal").fadeIn();
-        $("#alertModal").text(message);
+    ipcRenderer.on("errorNote", (e, message, fatal) => {
+        errorNote(message, fatal);
     });
 
     // Get ID of new addon so we can open it in Steam

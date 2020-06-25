@@ -9,6 +9,7 @@ const {
 const fs = require('fs');
 const { spawn } = require('cross-spawn');
 const settings = require('electron-settings');
+const { type } = require('jquery');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -63,7 +64,7 @@ function createWindow() {
 
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -127,7 +128,7 @@ ipcMain.on('getAddonInfo', () => {
   console.log('Trying to get addon info...');
   sendClientAddonInfo();
   console.log("User's Gmod Directory:" + settings.get('gmodDirectory'));
-})
+});
 
 var ADDON_IDS = [];
 
@@ -148,7 +149,7 @@ function sendClientAddonInfo() {
     if (fixedArray == "Couldn't initialize Steam!\r") {
       mainWindow.webContents.send('errorAlert', ADDON_IDS);
     }
-    // console.log(ADDON_IDS);
+    console.log(ADDON_IDS);
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
   });
 }
@@ -160,6 +161,8 @@ function sendClientAddonInfo() {
 
 // This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
+  mainWindow.webContents.send('errorNote', "Hello World!");
+
   // console.log(json, dir);
   fs.writeFileSync(dir + "/addon.json", json, 'utf8', (err) => {
     console.log("An error occured while writing JSON object to File.\n", err);
@@ -173,7 +176,9 @@ ipcMain.on('createGMAFile', (event, addonDir) => {
   const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['create', '-folder', addonDir]);
   gmad.stdout.on('data', (data) => {
     var arrayOfOutput = data.toString().split('\n');
-    sendConsoleData(arrayOfOutput)
+    if (data.includes('File list verification failed')) {
+      mainWindow.webContents.send("errorNote", "File list verification failed - check your addon for unallowed files.", true);
+    }
     var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1)
     fixedArray = fixedArray[0].match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "")
     var addonGMADir = fixedArray;
@@ -296,4 +301,8 @@ ipcMain.on("openSettings", (e) => {
 
 ipcMain.on("openConsole", (e) => {
   openConsole();
+});
+
+ipcMain.on("logError", (e, error) => {
+  sendConsoleData(error);
 });
