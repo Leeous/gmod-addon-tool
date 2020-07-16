@@ -22,12 +22,11 @@ As of `v2.0`, you can upload and update your addons, as well as extract GMA file
 ## Instructions
 
 Download a [release](https://github.com/Leeous/gmod-addon-tool/releases) and run `gmod-addon-tool.exe`.
-
-### Have an issue?
-
-Make sure you [follow the wiki's directions](https://wiki.garrysmod.com/page/Workshop_Addon_Creation).
   
 ### Troubleshooting
+
+Make sure you [follow the wiki's directions](https://wiki.garrysmod.com/page/Workshop_Addon_Creation) to the _letter_.
+
 Common mistakes you should be aware of,
 * your addon icon not being a baseline JPG will cause your upload to fail, which can usually be fixed by exporting your icon in Paint (Windows), Gimp, or Photoshop.
 
