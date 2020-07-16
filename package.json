@@ -52,7 +52,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
-    "build": "electron-builder --windows"
+    "build": "electron-builder -wl"
   },
   "author": "Leeous <contact@leeous.com>",
   "license": "ISC",

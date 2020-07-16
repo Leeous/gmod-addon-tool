@@ -31,7 +31,7 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 };
-currentAppVersion = "v1.4";
+currentAppVersion = "v2.0";
 let defaultMenuTitle = ""
 let onlyCreate = null; // This tells us if the user is only wanting to create a GMA
 let consoleData = new Array;
@@ -154,7 +154,7 @@ $(document).ready(() => {
             addonPath = r.filePaths[0];
             if (addonGMA != null) {
                 ipcRenderer.send("checkIfDirectoryExists", addonGMA);
-                var n = addonGMA.lastIndexOf("/");
+                var n = addonGMA.lastIndexOf("\\");
                 var result = addonGMA.substring(n + 1, addonGMA.length);
                 $("#currentGMAFile").text(result);
                 $("#addon_extract_next button").prop("disabled", false);
@@ -578,7 +578,7 @@ $(document).ready(() => {
     function resetAddonExtraction() {
         $("#extracting_addon, #extraction_done").css("display", "none");
         $("#currentGMAFile").text("");
-        $("#addon_extract_next button").css({backgroundColor: "#0f0f0f", cursor: "not-allowed"});
+        $("#addon_extract_next button").css({backgroundColor: "#0261A5", cursor: "not-allowed"});
         $("#addon_extract_next button").prop("disabled", true);
     }
 
@@ -599,8 +599,10 @@ $(document).ready(() => {
     function errorNote(message, fatal) {
         $("#errorNote .errorText").text(message);
         ipcRenderer.send("logError", [message]);
-        $("#errorNote").fadeIn().css('display', 'flex').delay(5000).fadeOut();
-        if (fatal) { resetAddonCreation(); $("#gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").fadeOut() } // Kills addon flow if something fucks up
+        $("#errorNote").fadeIn().delay(5000);
+        setTimeout(() => {
+            if (fatal) { resetAddonCreation(); remote.app.relaunch(); remote.app.exit(0); } // Kills addon flow if something fucks up
+        }, 5000);
     }
 
     // ========================
@@ -657,7 +659,7 @@ $(document).ready(() => {
             } else {
                 $("#new_addon_link").attr("href", "steam://url/CommunityFilePage/" + existingAddonId)
             }
-            $("#new_addon").fadeIn()
+            $("#new_addon").fadeIn();
         });
     });
     
@@ -669,6 +671,7 @@ $(document).ready(() => {
             if (onlyCreate) {
                 $("#newAddonLocation").fadeIn();
             } else {
+                console.log(addonGMADir, addonIcon, existingAddonId);
                 ipcRenderer.send("uploadToWorkshop", addonGMADir, addonIcon, existingAddonId);
                 $("#uploading").fadeIn();
                 win.setBounds({height: 250});

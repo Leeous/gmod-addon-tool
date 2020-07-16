@@ -20,7 +20,6 @@ var hours = dtObj.getHours();
 var minutes = dtObj.getMinutes();
 var finalTime = hours + ":" + minutes;
 
-
 console.log('\n');
 
 // Create log file if it doesn't exist
@@ -64,7 +63,7 @@ function createWindow() {
 
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -161,9 +160,6 @@ function sendClientAddonInfo() {
 
 // This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
-  mainWindow.webContents.send('errorNote', "Hello World!");
-
-  // console.log(json, dir);
   fs.writeFileSync(dir + "/addon.json", json, 'utf8', (err) => {
     console.log("An error occured while writing JSON object to File.\n", err);
     mainWindow.webContents.send('error', "Error writing directory.");
@@ -194,7 +190,9 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
       sendConsoleData(arrayOfOutput)
-      // console.log(arrayOfOutput)
+      if (data.includes('512x512')) {
+        mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", true);
+      }
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);
@@ -205,15 +203,16 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['create', '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
-      // console.log(arrayOfOutput)
       sendConsoleData(arrayOfOutput)
+      if (data.includes('512x512')) {
+        mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", true);
+      }
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
       fixedArray = fixedArray.substr(5, fixedArray.length);
       var stringArray = fixedArray.toString()
       var addonURLIndex = stringArray.indexOf("?id=")
       var addonURL = stringArray.slice(addonURLIndex + 4, addonURLIndex + 14)
-      // console.log(addonURL)
       mainWindow.webContents.send('currentAddonID', addonURL);
     });
   };

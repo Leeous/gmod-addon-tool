@@ -123,11 +123,13 @@ header {
 #settings footer {
     display: flex;
     flex-direction: row;
+    margin-bottom: 5px;
     justify-content: space-between;
 }
 
 #settings footer p a {
     text-decoration: underline;
+    margin: 5px;
     color: white;
 }
 
@@ -297,6 +299,10 @@ header {
     padding: 5px 15px;
     background-color: #0261A5;
     max-width: 250px;
+    max-height: 75px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
 }
 
 #yourAddons {
@@ -471,7 +477,7 @@ header {
     z-index: 2;
 }
 
-#errorNote p {
+#errorNote p, #errorNote h6 {
     margin: 10px;
 }
 
