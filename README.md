@@ -25,9 +25,9 @@ Make sure you [follow the wiki's directions](https://wiki.garrysmod.com/page/Wor
 Common mistakes you should be aware of,
 * your addon icon not being a baseline JPG will cause your upload to fail, which can usually be fixed by exporting your icon in Paint (Windows), Gimp, or Photoshop.
 
-* Having an unallowed file (or an incorrect folder structure) in your addon's directory will cause your upload to fail, [here's a list](https://github.com/Facepunch/gmad/blob/master/include/AddonWhiteList.h) of allowed files which should also give you an idea of where to place things
+* having an unallowed file (or an incorrect folder structure) in your addon's directory will cause your upload to fail, [here's a list](https://github.com/Facepunch/gmad/blob/master/include/AddonWhiteList.h) of allowed files which should also give you an idea of where to place things
 
-* Not being logged into Steam will obviously cause uploads to fail
+* not being logged into Steam will obviously cause uploads to fail
 
 Otherwise, [create an issue](https://github.com/Leeous/gmod-addon-tool/issues/new) or send me a tweet/DM.
 
