@@ -29,6 +29,8 @@ Common mistakes you should be aware of,
 
 * not being logged into Steam will obviously cause uploads to fail
 
+* you **must** have Garry's Mod installed to use this tool, since it utilizes `gmat.exe` and `gmpublish.exe` which can be found in `/GarrysMod/bin/` 
+
 Otherwise, [create an issue](https://github.com/Leeous/gmod-addon-tool/issues/new) or send me a tweet/DM.
 
 ### Social

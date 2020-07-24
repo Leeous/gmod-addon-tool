@@ -241,6 +241,10 @@ $(document).ready(() => {
         }
     });
 
+    $(".viewAddon").click((e) => {
+        console.log($(e.target).data("viewAddon"));
+    });
+
     $(".back_button").click((event) => {
         var target = event.target;
         var divToGoBack = $(target).data("forwards");
@@ -256,7 +260,6 @@ $(document).ready(() => {
         var target = event.target;
         var divToGoBack = $(target).data("divtohide");
         var divToShow = $(target).data("divtoshow");
-        console.log(divToGoBack, divToShow)
         // Checks for resize data, if it exists, pass it to goBack()
         if ($(target).data("resize") != null) {
             var resizeInfo = JSON.parse("[" + $(target).data("resize") + "]");
@@ -296,10 +299,8 @@ $(document).ready(() => {
     $("#yourAddons").on("click", ".updateAddon", (event) => {
         var target = event.target;
         existingAddonId = $(target).data("id");
-        $("#update_existing_addon").fadeOut(() => {
-            $("#create_new_addon .top div h3").text("Updating addon");
-            $("#create_new_addon, #addonDirPrompt").fadeIn();
-        });
+        $("#create_new_addon .top div h3").text("Updating addon");
+        goBack("#update_existing_addon", "#create_new_addon, #addonDirPrompt", [500, 250] )
     });
 
     // Tells server to create the GMA
@@ -454,7 +455,11 @@ $(document).ready(() => {
                         var addon = response.publishedfiledetails[i];
                         var addonObject = {
                             "title": addon.title,
-                            "id": addon.publishedfileid
+                            "id": addon.publishedfileid,
+                            "icon": addon.preview_url,
+                            "views": addon.views,
+                            "lifesubs": addon.lifetime_subscriptions,
+                            "favs": addon.favorited
                         }
                         queuePosition++;
                         addon_data.push(addonObject);
@@ -488,6 +493,7 @@ $(document).ready(() => {
                     width: resizeInfo[0],
                     height: resizeInfo[1]
                 });
+                // if (resizeInfo[2] != null) {win.setResizable(resizeInfo[2])}
             }
             $(divToFadeIn).fadeIn();
         })
@@ -499,7 +505,32 @@ $(document).ready(() => {
         // This check is done to make sure this only gets executed once
         if (!donePopulatingAddonList) {
             for (let i = 0; i < array.length; i++) {
-                $("#yourAddons").append("<div class='addon_existing'><p class='title'>" + array[i].title + "</p><p class='addon_link'><a href='steam://url/CommunityFilePage/" + array[i].id + "'>View</a><a href='#' class='updateAddon' data-id='" + array[i].id + "'>Update</a></p></div>");
+                console.log(array)
+                $("#yourAddons").append(`
+                <section class="publishedAddon">
+                    <aside class="publishedTitle">
+                        <h1>${array[i].title}</h1>
+                    </aside>
+                    <aside class="publishedStats">
+                        <div>
+                            <img src="src/img/views.png" alt="Views"/>
+                            <p>${array[i].views}</p>
+                        </div>
+                        <div>
+                            <img src="src/img/subs.png" alt="Downloads"/>
+                            <p>${array[i].lifesubs}</p>
+                        </div>
+                        <div>
+                            <img src="src/img/favs.png" alt="Favorites"/>
+                            <p>${array[i].favs}</p>
+                        </div>
+                    </aside>
+                    <footer class="publishedControls">
+                        <p><a href="steam://url/CommunityFilePage/${array[i].id}">View</a></p>
+                        <p><a class="transition_button updateAddon" data-resize="500, 260" data-id="${array[i].id}"/a>Update</p>
+                    </footer>
+                </section>
+                `);
                 donePopulatingAddonList = true;
             }
 
@@ -510,21 +541,6 @@ $(document).ready(() => {
             } else if (apiError == 429) {
                 donePopulatingAddonList = true;
                 errorNote("Steam API: HTTP 429 error. Try again later.");
-            }
-
-            $(".addon_existing").hover((event) => {
-                var target = $(event.target);
-                var targetLink = $(target).find(".addon_link");
-                $(targetLink).css("opacity", 0).slideDown("fast").animate({ opacity: 1 }, { queue: false, duration: "slow" });
-            }, (event) => {
-                var target = $(event.target);
-                var targetLink = $(target).find(".addon_link");
-                $(targetLink).slideUp("fast").animate({ opacity: 0 }, { queue: false, duration: "slow" });
-            });
-            
-            if (0 == addon_data.length) {
-                $("#yourAddons").append("<p style='background-color: #0f0f0f; padding: 15px 10px; margin: 10px 15px; border-radius: 5px;'><b>No addons found!</b><br/><br/>Either you don't have Steam open or haven't uploaded anything public.</p>");
-                donePopulatingAddonList = true;
             }
         }
     }

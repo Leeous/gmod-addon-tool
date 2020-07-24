@@ -22,7 +22,7 @@
     "icon": "src/img/icon.png",
     "productName": "Garry's Mod Addon Tool",
     "linux": {
-      "target": "deb",
+      "target": "Snap",
       "icon": "src/img/icon.png",
       "synopsis": "A simple tool to update Garry's Mod workshop addons.",
       "description": "A simple tool to update Garry's Mod workshop addons.",

@@ -10,7 +10,7 @@ body {
 }
 
 header, main, footer {
-    padding: 0 5px;    
+    padding: 0 5px;
 }
 
 header input[type="file"] {
@@ -279,23 +279,26 @@ header {
     cursor: pointer;
     font-size: .9em;
     padding: 5px 20px;
-    transform: ease 0.8s all;
     outline: none;
     border-radius: 0 5px 5px 0;
-    margin: 0;
     display: block;
+    transition: ease 0.2s all;
+}
+
+.back_button:hover {
+    background-color: rgb(246, 79, 79);
 }
 
 #addonPreviewDetails {
     margin: 10px auto;
 }
 
-#addonPreviewDetails th {
+#addonPreviewDetails th, #addonPreviewExisting th {
     padding: 5px;
     background-color: #024B7F;
 }
 
-#addonPreviewDetails td {
+#addonPreviewDetails td, #addonPreviewExisting td {
     padding: 5px 15px;
     background-color: #0261A5;
     max-width: 250px;
@@ -305,9 +308,49 @@ header {
     text-overflow: ellipsis; 
 }
 
+#addonPreviewExisting {
+    /* width: 100%; */
+    /* padding: 2; */
+    /* margin: 10px; */
+    background: rgb(0, 85, 146);
+    display: grid;
+    /* margin: 25px auto; */
+    justify-content: space-evenly;
+    grid-auto-flow: column;
+}
+
+div#addonPreviewExisting div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#addonPreviewExisting th {
+    width: 100;
+}
+
+#addonPreviewExisting td {
+    width: 100;
+}
+
+#addonHeader {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+#addonStats {
+    margin: auto;
+    text-align: center;
+}
+
 #yourAddons {
     overflow-y: scroll;
-    height: 65%;
+    max-height: 81.2%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 #jsonTags {
@@ -319,32 +362,61 @@ header {
     padding-top: 15px;
 }
 
-.addon_existing {
-    font-weight: 500;
-    background-color: #048CEC;
+.publishedAddon {
+    display: flex;
+    /* height: 100%; */
+    user-select: none;
+    flex-direction: column;
+    /* width: 100%; */
+    /* background-color: #024b7f; */
+}
+
+.publishedStats {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
     padding: 10px 0;
-    transition: ease 0.5s all;
+    background-color: #024b7f;
 }
 
-.addon_existing:hover {
-    background-color: #43A3E8;
-    padding: 15px 0;
-}
-
-.addon_existing .title {
-    margin: 0;
+.publishedStats p {
+    padding: 0 10px 10px 10px;
+    margin: 10px 0 0 0;
     cursor: default;
 }
 
-.addon_link {
-    display: none;
-    margin-top: 5px;
-    margin-bottom: 0;
+.publishedTitle h1 {
+    margin: 0;
+    padding: 10px;
+    text-shadow: 0px 0px 4px black;
 }
 
-.addon_link a {
-    padding: 3px;
+.publishedControls {
+    display: flex;
+    padding: 0;
+}
+
+.publishedControls p {
+    width: 50%;
+    margin: 0;
+}
+
+.publishedControls p a {
+    border: none;
+    background-color: #0261A5;
     color: white;
+    display: block;
+    font-weight: 800;
+    padding: 10px;
+    transition: ease 0.2s all;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.publishedControls p a:hover {
+    background-color: #43a3e8;
+    letter-spacing: 1.5px;
 }
 
 .removeBackOption {
@@ -397,7 +469,6 @@ header {
 
 #jsonIgnore p {
     font-weight: 700;
-    /* padding-right: 9px; */
 }
 
 #jsonIgnore input[type="text"] {
@@ -411,15 +482,12 @@ header {
 .jsonSectionHeader {
     font-weight: 700;
     width: 55px;
-    /* margin-top: 0; */
     padding-left: 15px;
     letter-spacing: 1px;
-    /* white-space: nowrap; */
 }
 
 .jsonGrid {
     display: grid;
-    /* margin-left: 10px; */
     grid-template-columns: auto auto auto auto auto;
 }
 
