@@ -259,6 +259,11 @@ function openSettings(callback) {
     promptWindow = null 
   });
 
+  promptWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    require('electron').shell.openExternal(url);
+  });
+
   // Load the HTML dialog box
   promptWindow.loadFile("settings.html")
   promptWindow.once('ready-to-show', () => { promptWindow.show();});

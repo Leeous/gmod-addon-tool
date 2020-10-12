@@ -2,7 +2,8 @@
 const {
     remote,
     ipcRenderer,
-    files
+    files,
+    app
 } = require("electron");
 const settings = require("electron-settings");
 const shell = require("electron").shell;
@@ -72,6 +73,23 @@ $(document).on("click", "a[href^='http']", function(event) {
 });
 
 $(document).ready(() => {
+    if (!settings.get('disclaimer')) {
+        dialog.showMessageBox(win, {
+            type: "info",
+            buttons: ["I understand", "Exit"],
+            message: "This is an unofficial tool that is meant to make it easier to create, update, and extract Garry's Mod addons. This tool is in no way endorsed by, or otherwise affiliated with Facepunch Studios. Keep in mind that addon updates are FINAL and they're impossible to revert. ",
+            title: "Disclaimer",
+        }).then(response => {
+            if (response.response == 0) {
+                settings.set("disclaimer", true);
+            }
+            if (response.response == 1) {
+                window.close();
+            }
+        }).catch(err => {
+            console.log("Something went wrong.");
+        });
+    }
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get("gmodDirectory") != null) {
         $("#addon_management").fadeIn();
