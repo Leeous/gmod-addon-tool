@@ -9,7 +9,7 @@ const {
 const fs = require('fs');
 const { spawn } = require('cross-spawn');
 const settings = require('electron-settings');
-const { type } = require('jquery');
+const homedir = require('os').homedir();
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -23,14 +23,18 @@ var finalTime = hours + ":" + minutes;
 console.log('\n');
 
 // Create log file if it doesn't exist
-fs.stat(__dirname + "/log.txt", function(err, stats) {
+fs.stat(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", function(err, stats) {
   if (err) {
-    fs.access("log.txt", fs.constants.F_OK, (err) => {
+    console.log(err)
+    fs.access(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", fs.constants.F_OK, (err) => {
       console.log("Created log.txt");
-      fs.appendFile('log.txt', "--- Beginning of log --- \n", 'utf8', (err) => {
+      console.log(err)
+      fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "--- Beginning of log --- \n", 'utf8', (err) => {
         if (err != null) { console.log(err); }
       });
     });
+  } else {
+    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n-----------------------", 'utf8', (err) => { console.log(err)});
   }
 });
 
@@ -71,7 +75,12 @@ function createWindow() {
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
       mainWindow = null
-  })
+  });
+
+  mainWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    require('electron').shell.openExternal(url);
+  });
 }
 
 // This method will be called when Electron has finished
@@ -119,9 +128,6 @@ function checkIfAddonJSONExist (file) {
   });
 }
 
-// ipcMain.on('checkIfFileExists', (event, file) => {
-// });
-
 // This will send the client the IDs of their addons
 ipcMain.on('getAddonInfo', () => {
   console.log('Trying to get addon info...');
@@ -138,17 +144,14 @@ function sendClientAddonInfo() {
     var arrayOfOutput = data.toString().split('\n')
     sendConsoleData(arrayOfOutput);
     var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3)
-    // console.log(fixedArray)
     for (var i = 0; i < fixedArray.length; i++) {
         fixedArray[i] = fixedArray[i].replace('/r', '');
-        // console.log(fixedArray)
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
-
     if (fixedArray == "Couldn't initialize Steam!\r") {
       mainWindow.webContents.send('errorAlert', ADDON_IDS);
     }
-    console.log(ADDON_IDS);
+    console.log("Addon IDs", ADDON_IDS);
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
   });
 }
@@ -227,7 +230,7 @@ ipcMain.on("extractAddon", (e, path) => {
 
 function sendConsoleData(dataArray) {
   dataArray.forEach(data => {
-    fs.appendFile(__dirname + "/log.txt", "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
+    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
   });
 }
 
@@ -260,40 +263,11 @@ function openSettings(callback) {
 
   // Load the HTML dialog box
   promptWindow.loadFile("settings.html")
-  promptWindow.once('ready-to-show', () => { promptWindow.show() })
-}
-
-function openConsole(callback) {
-  consoleWindow = new BrowserWindow({
-    width: 375, 
-    height: 275,
-    x: 1250,
-    y: 400,
-    parent: mainWindow,
-    show: false,
-    modal: false,
-    title : "Console",
-    autoHideMenuBar: true,
-    resizable: false,
-    fullscreenable: false,
-    backgroundColor: "black",
-    titleBarStyle: "hidden",
-    frame: false,
-    webPreferences: { 
-      nodeIntegration: true,
-    }
-  });
-
-  consoleWindow.on('closed', () => { 
-    consoleWindow = null 
-  });
-
-  // Load the HTML dialog box
-  consoleWindow.loadFile("console.html")
-  consoleWindow.once('ready-to-show', () => { consoleWindow.show() })
+  promptWindow.once('ready-to-show', () => { promptWindow.show();});
 }
 
 ipcMain.on("openSettings", (e) => {
+  console.log(__dirname);
   openSettings();
 });
 

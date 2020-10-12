@@ -1,19 +1,20 @@
 {
   "name": "gmod-addon-tool",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A simple tool to update Garry's Mod workshop addons.",
   "main": "app.js",
   "homepage": "https://leeous.com",
   "dependencies": {
     "cross-spawn": "^7.0.1",
     "electron-settings": "^3.2.0",
+    "g": "^2.0.1",
     "image-size": "^0.8.3",
     "jquery": "^3.5.0",
     "yarn": "^1.22.4"
   },
   "devDependencies": {
     "electron": "^8.0.0",
-    "electron-builder": "^22.4.1",
+    "electron-builder": "^22.8.1",
     "electron-connect": "^0.6.3",
     "electron-packager": "^14.2.1"
   },
@@ -52,7 +53,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
-    "build": "electron-builder -w"
+    "build": "electron-builder -w",
+    "devbuild": "electron-builder --w nsis:x64"
   },
   "author": "Leeous <contact@leeous.com>",
   "license": "ISC",

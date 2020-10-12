@@ -11,13 +11,9 @@
     <link rel="stylesheet" href="src/css/style.css">
 </head>
 <body>
-    <div id="errorNote">
-        <p class="errorText">Placeholder</p>
-        <h6>More info in logs - open settings</h6>
-    </div>
     <div id="main_titlebar">
         <div class="main_title">
-            <p>Garry's Mod Addon Tool <span style='font-size: 0.7em; font-weight: 300; -webkit-app-region: no-drag;'>by <a href='https://leeous.github.io' target='_blank' style='text-decoration: underline; color: inherit;'>Leeous</a></span></p>
+            <p>Garry's Mod Addon Tool</p>
         </div>
         <div class="main_buttons">
             <p id="coffeeApp" title="Buy me a coffee? :)">☕</p>
@@ -49,7 +45,7 @@
         <div id="update_existing_addon" class="path_div">
             <div class="top">
                 <div>
-                    <button class="back_button transition_button" data-divtoshow="#addon_management_prompt" data-divtohide="#update_existing_addon" data-resize="500, 200, false">◀ Back</button>
+                    <button class="transition_button back_button resetAddonCreation" data-divtoshow="#addon_management_prompt" data-divtohide="#update_existing_addon" data-resize="500, 200">◀ Back</button>
                 </div>
                 <div>
                     <h3>Your addons</h3>
@@ -61,7 +57,7 @@
         <div id="create_new_addon" class="path_div">
             <div class="top">
                 <div>
-                    <button id="back_button_addon_creation" class="back_button" data-backwards="#addon_management_prompt" data-forwards="#create_new_addon" data-resize="500, 200">◀ Back</button>
+                    <button class="transition_button back_button" data-divtoshow="#addon_management_prompt" data-divtohide="#create_new_addon" data-resize="500, 200">◀ Back</button>
                 </div>
                 <div>
                     <h3>Addon creation</h3>
@@ -218,7 +214,7 @@
         <div id="extract_addon" class="path_div">
             <div class="top">
                 <div>
-                    <button id="extraction_back" class="back_button transition_button" data-divtoshow="#addon_management_prompt" data-divtohide="#extract_addon" data-resize="500, 200">◀ Back</button>
+                    <button id="extraction_back" class="back_button transition_button resetAddonCreation" data-divtoshow="#addon_management_prompt" data-divtohide="#extract_addon" data-resize="500, 200">◀ Back</button>
                 </div>
                 <div>
                     <h3>Addon Extraction</h3>

@@ -57,7 +57,7 @@ header {
 
 #addon_management_prompt .button_normal {
     margin: 15px 0;
-    box-shadow: 0 5px #0261A5;
+    box-shadow: 0 5px #0261a5;
     transition: none;
     display: inline-block;
 }
@@ -123,13 +123,11 @@ header {
 #settings footer {
     display: flex;
     flex-direction: row;
-    margin-bottom: 5px;
     justify-content: space-between;
 }
 
 #settings footer p a {
     text-decoration: underline;
-    margin: 5px;
     color: white;
 }
 

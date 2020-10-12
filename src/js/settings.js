@@ -1,9 +1,16 @@
 const shell = require("electron").shell;
 const settings = require("electron-settings");
+const homedir = require('os').homedir();
+const {
+    remote,
+    ipcRenderer,
+    files,
+    app
+} = require("electron");
 
 $(document).ready(() => {
     // Button functionality 
-    $("#resetSettings").click(() => {
+    document.getElementById("resetSettings").addEventListener("click", () => {
         $("#resetSettings").text("Settings erased!");
         $("#resetSettings").css({
             backgroundColor: "#ff4343",
@@ -12,11 +19,15 @@ $(document).ready(() => {
         settings.deleteAll();
     });
     
-    $("#openConsole").click(() => {
-        shell.openItem(__dirname + "/log.txt");
+    document.getElementById("openConsole").addEventListener("click", () => {
+        shell.openItem(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt");
     });
 
-    $("#closeApp").click(() => {
+    document.querySelector("#settings footer p a").addEventListener("click", (e) => {
+        e.preventDefault();
+        shell.openExternal("https://leeous.com");
+    });
+    document.getElementById("closeApp").addEventListener("click", () => {
         window.close();
     });
 });
