@@ -31,7 +31,7 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 };
-currentAppVersion = "v2.0";
+currentAppVersion = "v2.1";
 let defaultMenuTitle = ""
 let onlyCreate = null; // This tells us if the user is only wanting to create a GMA
 let consoleData = new Array;
