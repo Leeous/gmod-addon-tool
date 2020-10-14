@@ -72,11 +72,9 @@ window.addEventListener("DOMContentLoaded", (e) => {
     if (settings.get("gmodDirectory") != null) {
         $("#addon_management").fadeIn();
         $("#addon_management_prompt").fadeIn();
-        if (win.getBounds().height == 225) {
-            win.setBounds({
-                height: 200
-            });
-        }
+        win.setBounds({
+            height: 200
+        });
         ipcRenderer.send("getAddonInfo");
     } else {
         $("#directory_selection").fadeIn();
@@ -174,7 +172,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             if (!result.canceled) {
                 currentNewAddon = result.filePaths[0];
                 if (currentNewAddon != null) {
-                    ipcRenderer.send("checkIfDirectoryExists", currentNewAddon);
+                    ipcRenderer.send("checkIfDirectoryExists", currentNewAddon, true);
                     var n = currentNewAddon.lastIndexOf("\\");
                     console.log(n);
                     var result = currentNewAddon.substring(n + 1);
@@ -265,7 +263,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             addonToCreateData.type = addonType;
             addonToCreateData.tags = addonTags;
             addonToCreateData.ignore = ignoreList;
-            ipcRenderer.send("createJsonFile", JSON.stringify(addonToCreateData), currentNewAddon);
+            ipcRenderer.send("createJsonFile", addonToCreateData, currentNewAddon);
             if (addonToCreateData.type === "serverContent") { addonToCreateData.type = "Server Content" }
             if (addonToCreateData.tags !== "") { $("#gmaPreview table tr .addonTags").text(addonToCreateData.tags[0] + ", " + addonToCreateData.tags[1]); } else { $("#gmaPreview table tr .addonTags").text("None"); }
             $("#gmaPreview table tr .addonTitle").text(addonToCreateData.title);
@@ -283,7 +281,16 @@ window.addEventListener("DOMContentLoaded", (e) => {
         goBack("#update_existing_addon", "#create_new_addon, #addonDirPrompt", [500, 250] )
     });
 
-    document.querySelector(".typeCheckbox").addEventListener("click", (event) => {
+    // Tells server to create the GMA
+    // $("#createGMAFile").click(() => {
+    //     $("#gmaPrep").fadeOut(() => {
+    //         win.setBounds({height: 250});
+    //         $("#createGMA").fadeIn();
+    //         ipcRenderer.send("createGMAFile", currentNewAddon);
+    //     });
+    // });
+
+    $('.typeCheckbox').on('click', (event) => {
         var target = $(event.target);
         if (jsonCheckboxCount < 2 && target.is(":checked")) {
             jsonCheckboxCount++;
@@ -506,7 +513,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             if (apiError == 400) {
                 donePopulatingAddonList = true;
                 errorNote("Steam API: HTTP 400 error.");
-            } else if (apiError == 429) {
+            } else if (apiError == 429) { // Too many requests
                 donePopulatingAddonList = true;
                 errorNote("Steam API: HTTP 429 error. Try again later.");
             }
@@ -582,11 +589,23 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
     function errorNote(message, fatal) {
         $("#errorNote .errorText").text(message);
+        let countdownSeconds = 15;
+        let cuntdownMS = 15000;
+        if (fatal) {
+            countdownMS = 20000;
+            document.getElementById("fatalError").style.display = "block";
+            setInterval(() => {
+                document.querySelector("#fatalError span").innerHTML = countdownSeconds;
+                countdownSeconds--
+            }, 1000)
+        } else {
+            document.getElementById("fatalError").style.display = "none";
+        }
         ipcRenderer.send("logError", [message]);
-        $("#errorNote").fadeIn().delay(5000);
+        $("#errorNote").fadeIn().delay(countdownMS).fadeOut();
         setTimeout(() => {
-            if (fatal) { resetAddonCreation(); remote.app.relaunch(); remote.app.exit(0); } // Kills addon flow if something fucks up
-        }, 5000);
+            if (fatal) { resetAddonCreation(); remote.app.exit(0); } // Kills addon flow if something fucks up
+        }, 17000);
     }
 
     // ========================
@@ -599,6 +618,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 
     function populateAddonJSONInfo(e, exists, json) {
+        console.log(JSON.stringify(json))
         json = JSON.parse(JSON.stringify(eval('('+ json +')')));
         if (exists) {
             if (json.type === "serverContent") { json.type = "Server Content" }
@@ -625,11 +645,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
         getAddonInfoFromSteam(message);
     });
 
-    // Sends an alert if Steam doesn"t initialize 
-    ipcRenderer.on("errorAlert", (e, message) => {
-        dialog.showErrorBox("Steam is not accessiable", "Steam doesn't seem to be open!\nOpen Steam and restart.");
-    });
-
+    // Handle errors from app.js
     ipcRenderer.on("errorNote", (e, message, fatal) => {
         errorNote(message, fatal);
     });

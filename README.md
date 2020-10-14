@@ -1,5 +1,5 @@
 
-# Garry's Mod Addon Tool
+# Garry's Mod Addon Tool | GMAT
 ![Version](https://img.shields.io/github/package-json/v/Leeous/gmod-addon-tool?style=flat-square)
 ![Build](https://img.shields.io/github/workflow/status/Leeous/gmod-addon-tool/Build?style=flat-square)
 ![Downloads](https://img.shields.io/github/downloads/Leeous/gmod-addon-tool/total?style=flat-square)

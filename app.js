@@ -105,11 +105,11 @@ app.on('activate', function() {
 // code. You can also put them in separate files and require them here.
 
 // Checks to see if the directory the user chooses is writeable 
-ipcMain.on('checkIfDirectoryExists', (event, file) => {
+ipcMain.on('checkIfDirectoryExists', (event, file, jsonCheck) => {
   fs.access(file, fs.constants.R_OK, (err) => {
     console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
   });
-  checkIfAddonJSONExist(file);
+  if (jsonCheck) { checkIfAddonJSONExist(file) }
 });
 
 function checkIfAddonJSONExist (file) {
@@ -149,7 +149,7 @@ function sendClientAddonInfo() {
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
     if (fixedArray == "Couldn't initialize Steam!\r") {
-      mainWindow.webContents.send('errorAlert', ADDON_IDS);
+      mainWindow.webContents.send('errorNote', "Steam doesn't seem open!\nOpen Steam.", true);
     }
     console.log("Addon IDs", ADDON_IDS);
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
@@ -164,8 +164,10 @@ function sendClientAddonInfo() {
 // This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
   fs.writeFileSync(dir + "/addon.json", json, 'utf8', (err) => {
-    console.log("An error occured while writing JSON object to File.\n", err);
-    mainWindow.webContents.send('error', "Error writing directory.");
+    // mainWindow.webContents.send('error', "Error writing directory.");
+    if (err != null) {
+      console.log("An error occured while writing JSON object to File.\n", err);
+    }
   });
 });
 

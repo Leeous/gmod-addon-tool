@@ -6,3 +6,9 @@ log.txt
 yarn-error.log
 *.ttf
 prepros.config
+.yarn/*
+!.yarn/cache
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
