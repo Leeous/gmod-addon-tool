@@ -389,6 +389,12 @@ div#addonPreviewExisting div {
     text-shadow: 0px 0px 4px black;
 }
 
+.publishedTitle img {
+    width: 128;
+    margin: auto auto 10px auto;
+    border-radius: 5px;
+}
+
 .publishedControls {
     display: flex;
     padding: 0;

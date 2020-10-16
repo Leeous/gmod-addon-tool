@@ -15,6 +15,7 @@ api_data = {"itemcount": "0"};
 okToProcessAddonList = false;
 donePopulatingAddonList = false;
 currentAppVersion = "v2.1";
+hiddenAddons = 0;
 
 // These are addon related variables, most are reset on completion/fail/abort
 currentNewAddon = "";
@@ -129,7 +130,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             }
         }
         }).catch(err => {
-            console.log("dialog error")
+            console.error("Dailog failed to open!");
         });
     });
 
@@ -174,7 +175,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 if (currentNewAddon != null) {
                     ipcRenderer.send("checkIfDirectoryExists", currentNewAddon, true);
                     var n = currentNewAddon.lastIndexOf("\\");
-                    console.log(n);
                     var result = currentNewAddon.substring(n + 1);
                     $("#addonDir b").text(result);
                     $("#addonDirCheck").css("background-color", "#56bd56");
@@ -183,7 +183,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 }
             }
         }).catch(err => {
-            console.log("dialog error");
+            console.error("Dailog failed to open!");
         })
     });
 
@@ -217,9 +217,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
         });
     });
 
-    document.querySelector(".resetAddonCreation").addEventListener("click", (() => {
-        resetAddonCreation();
-    }));
+    document.querySelectorAll(".resetAddonCreation").forEach((element) => {
+        console.log(element);
+        element.addEventListener("click", (event) => {
+            resetAddonCreation();
+        });
+    });
+
 
     document.getElementById("update_existing_addon_button").addEventListener("click", () => {
         if (okToProcessAddonList) {
@@ -236,6 +240,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             var target = event.target;
             var divToGoBack = $(target).data("divtohide");
             var divToShow = $(target).data("divtoshow");
+            console.log(divToShow + "< show hide > " + divToGoBack)
             // Checks for resize data, if it exists, pass it to goBack()
             if ($(target).data("resize") != null) {
                 var resizeInfo = JSON.parse("[" + $(target).data("resize") + "]");
@@ -329,10 +334,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
             jsonChecks[1] = false;
             validateJsonForm();
         }
-    });
-
-    $(".resetAddonExtraction, #extraction_back").click(() => {
-        resetAddonExtraction();
     });
 
     $("#createOnly").click(() => {
@@ -438,15 +439,17 @@ window.addEventListener("DOMContentLoaded", (e) => {
                         }
                         queuePosition++;
                         addon_data.push(addonObject);
+                    } else {
+                        hiddenAddons++;
                     }
                 }
             }
-
             if (queuePosition != amtOfArrays) {
+                // Change button text and allow user to view/update thier addons
                 okToProcessAddonList = true;
                 $("#update_existing_addon_button").text("Update existing addon");
+                document.getElementById("update_existing_addon_button").disabled = false;
             }
-            // Change button text and allow user to view/update thier addons
         });
     }
 
@@ -462,29 +465,68 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
     // General function for transitioning between div tags (with a shitty name)
     function goBack(divToFadeOut, divToFadeIn, resizeInfo) {
-        $(divToFadeOut).fadeOut(() => {
-            if (resizeInfo != null) {
-                win.setBounds({
-                    width: resizeInfo[0],
-                    height: resizeInfo[1]
+        var fadeOutOpacity = 1;
+        var fadeInOpacity = 0;
+        var timer = setInterval(() => {
+            if (fadeOutOpacity <= 0.1) {
+                clearInterval(timer);
+                document.querySelectorAll(divToFadeOut).forEach((element) => {
+                    element.style.display = "none";
                 });
-                // if (resizeInfo[2] != null) {win.setResizable(resizeInfo[2])}
+                console.log(resizeInfo);
+                if (resizeInfo != null) {
+                    win.setBounds({
+                        width: resizeInfo[0],
+                        height: resizeInfo[1]
+                    });
+                }
+                fadeIn();
             }
-            $(divToFadeIn).fadeIn();
-        })
+            document.querySelectorAll(divToFadeOut).forEach((element) => {
+                element.style.opacity = fadeOutOpacity;
+                fadeOutOpacity -= 0.1;
+            });
+        }, 25);
+
+        function fadeIn() {
+            document.querySelectorAll(divToFadeIn).forEach((element) => {
+                element.style.opacity = 0;
+                element.style.display = "block";
+            });
+            var timer = setInterval(() => {
+                if (fadeInOpacity == 100) {
+                    clearInterval(timer);
+                }
+                document.querySelectorAll(divToFadeIn).forEach((element) => {
+                    element.style.opacity = fadeInOpacity;
+                    fadeInOpacity += 0.1;
+                });
+            }, 25);
+        }
+
+        // $(divToFadeOut).fadeOut(() => {
+        //     $(divToFadeOut).css("display", "none")
+        //     if (resizeInfo != null) {
+        //         win.setBounds({
+        //             width: resizeInfo[0],
+        //             height: resizeInfo[1]
+        //         });
+        //         // if (resizeInfo[2] != null) {win.setResizable(resizeInfo[2])}
+        //     }
+        //     $(divToFadeIn).fadeIn();
+        // })
     }
 
     // Get array of addon infomation and append their info to #yourAddons
     function populateAddonList(array) {
-        console.log(array)
-        // This check is done to make sure this only gets executed once
+         // This check is done to make sure this only gets executed once
         if (!donePopulatingAddonList) {
             for (let i = 0; i < array.length; i++) {
-                console.log(array)
                 $("#yourAddons").append(`
                 <section class="publishedAddon">
                     <aside class="publishedTitle">
                         <h1>${array[i].title}</h1>
+                        <img src="${array[i].icon}"/>
                     </aside>
                     <aside class="publishedStats">
                         <div>
@@ -508,20 +550,21 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 `);
                 donePopulatingAddonList = true;
             }
-
+            $("#yourAddons").append("<p>...and " + hiddenAddons + " private addons.</p>");
             // Make sure if nothing is returned to let the user know
             if (apiError == 400) {
                 donePopulatingAddonList = true;
-                errorNote("Steam API: HTTP 400 error.");
+                errorNote("Steam API: HTTP 400 error.", false, false);
             } else if (apiError == 429) { // Too many requests
                 donePopulatingAddonList = true;
-                errorNote("Steam API: HTTP 429 error. Try again later.");
+                errorNote("Steam API: HTTP 429 error. Try again later.", false, false);
             }
         }
     }
 
     // Resets any data we've gotten from the user for the new addon
     function resetAddonCreation() {
+        console.log("Resetting addon creation flow...");
         jsonCheckboxCount = 0;
         onlyCreate = null;
         jsonExists =null
@@ -564,6 +607,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
         // Hide any div that may still be displayed
         $("#addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").css("display", "none");
+        console.log("Done.");
     }
 
     function resetAddonExtraction() {
@@ -587,10 +631,12 @@ window.addEventListener("DOMContentLoaded", (e) => {
         }
     }
 
-    function errorNote(message, fatal) {
+    // fatal: app cannnot contiune, will close in few seconds. flowFatal: addon creation/update failed, resets creation/update process.
+    function errorNote(message, fatal, flowFatal) {
         $("#errorNote .errorText").text(message);
         let countdownSeconds = 15;
         let cuntdownMS = 15000;
+        if (flowFatal) { resetAddonCreation() }
         if (fatal) {
             countdownMS = 20000;
             document.getElementById("fatalError").style.display = "block";
@@ -618,8 +664,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 
     function populateAddonJSONInfo(e, exists, json) {
-        console.log(JSON.stringify(json))
-        json = JSON.parse(JSON.stringify(eval('('+ json +')')));
         if (exists) {
             if (json.type === "serverContent") { json.type = "Server Content" }
             if (json.tags !== "") { $("#gmaPreview table tr .addonTags").text(json.tags[0] + ", " + json.tags[1]); } else { $("#gmaPreview table tr .addonTags").text("None"); }
@@ -628,6 +672,8 @@ window.addEventListener("DOMContentLoaded", (e) => {
             
             $("#addonIconCheck").data("divtoshow", "#gmaPrep");
             $("#addonIconCheck").data("resize", "500, 510");
+        } else {
+            // errorNote("Oh fuck oh shit", false, false)
         }
     }
 
@@ -646,8 +692,8 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 
     // Handle errors from app.js
-    ipcRenderer.on("errorNote", (e, message, fatal) => {
-        errorNote(message, fatal);
+    ipcRenderer.on("errorNote", (e, message, fatal, flowFatal) => {
+        errorNote(message, fatal, flowFatal);
     });
 
     // Get ID of new addon so we can open it in Steam
