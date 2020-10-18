@@ -14,7 +14,7 @@ addon_data = [];
 api_data = {"itemcount": "0"};
 okToProcessAddonList = false;
 donePopulatingAddonList = false;
-currentAppVersion = "v2.1";
+currentAppVersion = "v2.2";
 hiddenAddons = 0;
 
 // These are addon related variables, most are reset on completion/fail/abort
@@ -71,7 +71,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get("gmodDirectory") != null) {
-        $("#addon_management").fadeIn();
+        fadeIn("#addon_management");
         $("#addon_management_prompt").fadeIn();
         win.setBounds({
             height: 200
@@ -167,6 +167,12 @@ window.addEventListener("DOMContentLoaded", (e) => {
         shell.openItem(addonPath.substring(0, addonPath.length - 4));
     });
 
+    document.querySelectorAll(".resetAddonExtraction").forEach((element) => {
+        element.addEventListener("click", (event) => {
+            resetAddonExtraction();
+        });
+    })
+
     // If directory exists (and is writable/readable) allow user to procede 
     document.getElementById("addon_dir_folder").addEventListener("click", () => {
         dialog.showOpenDialog(win, dirDialogOptions).then(result => {
@@ -218,7 +224,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 
     document.querySelectorAll(".resetAddonCreation").forEach((element) => {
-        console.log(element);
         element.addEventListener("click", (event) => {
             resetAddonCreation();
         });
@@ -229,27 +234,12 @@ window.addEventListener("DOMContentLoaded", (e) => {
         if (okToProcessAddonList) {
             populateAddonList(addon_data);
             $("#addon_management_prompt").fadeOut(() => {
-                win.setBounds({height: 250})
                 $("#update_existing_addon").fadeIn();
             })
         }
     });
-    
-    transButtons.forEach((element) => {
-        element.addEventListener("click", (event) => {
-            var target = event.target;
-            var divToGoBack = $(target).data("divtohide");
-            var divToShow = $(target).data("divtoshow");
-            console.log(divToShow + "< show hide > " + divToGoBack)
-            // Checks for resize data, if it exists, pass it to goBack()
-            if ($(target).data("resize") != null) {
-                var resizeInfo = JSON.parse("[" + $(target).data("resize") + "]");
-            }
-            goBack(divToGoBack, divToShow, resizeInfo);
-        });
-    });
 
-    document.getElementById("create_new_addon").addEventListener("click", () => {
+    document.getElementById("create_addon_button").addEventListener("click", () => {
         $("#create_new_addon .top div h3").text("Addon creation");
         $("#create_new_addon, #addonDirPrompt").fadeIn();
     });
@@ -283,7 +273,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
         var target = event.target;
         existingAddonId = $(target).data("id");
         $("#create_new_addon .top div h3").text("Updating addon");
-        goBack("#update_existing_addon", "#create_new_addon, #addonDirPrompt", [500, 250] )
+        transition("#update_existing_addon", "#create_new_addon, #addonDirPrompt", [500, 250] )
     });
 
     // Tells server to create the GMA
@@ -382,7 +372,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 buttons: ["Cancel", "Open"],
                 message: "Update " + ver + " is available for download.",
                 title: "New update available!",
-                checkboxLabel: "Don't remind me again",
+                checkboxLabel: "Don't remind me again", 
             }).then(response => {
                 if (response.response == 1) {
                     shell.openExternal("https://github.com/Leeous/gmod-addon-tool/releases");
@@ -463,58 +453,67 @@ window.addEventListener("DOMContentLoaded", (e) => {
         }
     });
 
-    // General function for transitioning between div tags (with a shitty name)
-    function goBack(divToFadeOut, divToFadeIn, resizeInfo) {
+    // General function for transitioning between div tags
+    transButtons.forEach((element) => {
+        element.addEventListener("click", (event) => {
+            var target = event.target;
+            var elToHide = $(target).data("divtohide");
+            var elToShow = $(target).data("divtoshow");
+            // Checks for resize data, if it exists, pass it to transition()
+            if ($(target).data("resize") != null) {
+                var resizeInfo = JSON.parse("[" + $(target).data("resize") + "]");
+            }
+            transition(elToHide, elToShow, resizeInfo);
+        });
+    });
+
+    function transition(elToHide, elToShow, resizeInfo) {
+        var transitionTime = 25;
+        fadeOut(elToHide, elToShow, resizeInfo, transitionTime);
+    }
+    
+    function fadeOut(elToHide, elToShow, resizeInfo, transitionTime) {
         var fadeOutOpacity = 1;
-        var fadeInOpacity = 0;
         var timer = setInterval(() => {
             if (fadeOutOpacity <= 0.1) {
+                // Done with animation
                 clearInterval(timer);
-                document.querySelectorAll(divToFadeOut).forEach((element) => {
+                document.querySelectorAll(elToHide).forEach((element) => {
                     element.style.display = "none";
                 });
-                console.log(resizeInfo);
+                // Resize window if we get resize info
                 if (resizeInfo != null) {
                     win.setBounds({
                         width: resizeInfo[0],
                         height: resizeInfo[1]
                     });
                 }
-                fadeIn();
+                // If elToShow is provided, fade it in when we're done
+                if (elToShow != null) { fadeIn( elToShow, transitionTime ) }
             }
-            document.querySelectorAll(divToFadeOut).forEach((element) => {
+            document.querySelectorAll(elToHide).forEach((element) => {
                 element.style.opacity = fadeOutOpacity;
-                fadeOutOpacity -= 0.1;
+                fadeOutOpacity -= 0.10;
             });
-        }, 25);
+        }, transitionTime);
+    }
 
-        function fadeIn() {
-            document.querySelectorAll(divToFadeIn).forEach((element) => {
-                element.style.opacity = 0;
-                element.style.display = "block";
+    function fadeIn(elToShow, transitionTime) {
+        var fadeInOpacity = 0.0;
+        document.querySelectorAll(elToShow).forEach((element) => {
+            element.style.opacity = 0;
+            element.style.display = "block";
+        });
+        var timer = setInterval(() => {
+            if (fadeInOpacity >= 1) {
+                // Done with animation
+                clearInterval(timer);
+            }
+            document.querySelectorAll(elToShow).forEach((element) => {
+                element.style.opacity = fadeInOpacity;
+                fadeInOpacity += 0.10;
             });
-            var timer = setInterval(() => {
-                if (fadeInOpacity == 100) {
-                    clearInterval(timer);
-                }
-                document.querySelectorAll(divToFadeIn).forEach((element) => {
-                    element.style.opacity = fadeInOpacity;
-                    fadeInOpacity += 0.1;
-                });
-            }, 25);
-        }
-
-        // $(divToFadeOut).fadeOut(() => {
-        //     $(divToFadeOut).css("display", "none")
-        //     if (resizeInfo != null) {
-        //         win.setBounds({
-        //             width: resizeInfo[0],
-        //             height: resizeInfo[1]
-        //         });
-        //         // if (resizeInfo[2] != null) {win.setResizable(resizeInfo[2])}
-        //     }
-        //     $(divToFadeIn).fadeIn();
-        // })
+        }, transitionTime);
     }
 
     // Get array of addon infomation and append their info to #yourAddons
@@ -567,7 +566,8 @@ window.addEventListener("DOMContentLoaded", (e) => {
         console.log("Resetting addon creation flow...");
         jsonCheckboxCount = 0;
         onlyCreate = null;
-        jsonExists =null
+        jsonExists = null;
+        json = null;
 
         // Clear the old data we used to make addon.json
         addonToCreateData = {
@@ -664,9 +664,17 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 
     function populateAddonJSONInfo(e, exists, json) {
+        json = JSON.parse(json);
         if (exists) {
+            console.log(json.tags.length);
             if (json.type === "serverContent") { json.type = "Server Content" }
-            if (json.tags !== "") { $("#gmaPreview table tr .addonTags").text(json.tags[0] + ", " + json.tags[1]); } else { $("#gmaPreview table tr .addonTags").text("None"); }
+            if (json.tags.length == 1) { 
+                $("#gmaPreview table tr .addonTags").text(json.tags[0]);
+            } else if (json.tags.length == 2) {
+                $("#gmaPreview table tr .addonTags").text(json.tags[0] + ", " + json.tags[1]);
+            } else if (json.tags.length == 0) { 
+                $("#gmaPreview table tr .addonTags").text("None"); 
+            }
             $("#gmaPreview table tr .addonTitle").text(json.title);
             $("#gmaPreview table tr .addonType").text(json.type);
             

@@ -233,7 +233,7 @@ header {
     text-align: center;
 }
 
-#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #extract_addon, #extracting_addon, #extraction_done, #newAddonLocation, #errorNote {
+#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #addonDirPrompt, #uploading, #new_addon, #extract_addon, #extracting_addon, #extraction_done, #newAddonLocation, #errorNote {
     display: none;
 }
 
@@ -393,6 +393,7 @@ div#addonPreviewExisting div {
     width: 128;
     margin: auto auto 10px auto;
     border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px black;
 }
 
 .publishedControls {

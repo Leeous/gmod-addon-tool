@@ -49,7 +49,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 500,
     height: 225,
-    resizable: true,
+    resizable: false,
     fullscreenable: false,
     backgroundColor: "#048CEC",
     titleBarStyle: "hidden",
@@ -65,7 +65,7 @@ function createWindow() {
 
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -127,7 +127,7 @@ function openSettings(callback) {
   });
 
   // Load the HTML dialog box
-  promptWindow.loadFile("settings.html")
+  promptWindow.loadFile("settings.html");
   promptWindow.once('ready-to-show', () => { promptWindow.show();});
 }
 
@@ -187,8 +187,7 @@ function sendClientAddonInfo() {
 
 // This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
-  fs.writeFileSync(dir + "/addon.json", json, 'utf8', (err) => {
-    // mainWindow.webContents.send('error', "Error writing directory.");
+  fs.writeFileSync(dir + "/addon.json", JSON.stringify(json), 'utf8', (err) => {
     if (err != null) {
       mainWindow.webContents.send('errorNote', "An error occured while writing JSON object to File.\n", false, true);
     }
