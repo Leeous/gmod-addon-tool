@@ -1,6 +1,6 @@
 {
   "name": "gmod-addon-tool",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A simple tool to update Garry's Mod workshop addons.",
   "main": "app.js",
   "homepage": "https://leeous.com",

@@ -32,7 +32,7 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 };
-currentAppVersion = "v2.1";
+currentAppVersion = "v2.2";
 let defaultMenuTitle = ""
 let onlyCreate = null; // This tells us if the user is only wanting to create a GMA
 let consoleData = new Array;
@@ -168,7 +168,6 @@ $(document).ready(() => {
     // Let user select a GMA to extract
     $("#gmaFileSelection").click(() => {
         dialog.showOpenDialog(win, fileDialogOptions).then(r => {
-            let addonGMA = r.filePaths[0];
             addonPath = r.filePaths[0];
             if (addonGMA != null) {
                 ipcRenderer.send("checkIfDirectoryExists", addonGMA);
@@ -200,9 +199,9 @@ $(document).ready(() => {
             if (!result.canceled) {
                 currentNewAddon = result.filePaths[0];
                 if (currentNewAddon != null) {
+                    currentNewAddon = currentNewAddon.replace(/\\/g, "/");
                     ipcRenderer.send("checkIfDirectoryExists", currentNewAddon);
-                    var n = currentNewAddon.lastIndexOf("\\");
-                    console.log(n);
+                    var n = currentNewAddon.lastIndexOf("/");
                     var result = currentNewAddon.substring(n + 1);
                     $("#addonDir b").text(result);
                     $("#addonDirCheck").css("background-color", "#56bd56");
@@ -219,6 +218,7 @@ $(document).ready(() => {
     $("#addon_icon").click(() => {
         dialog.showOpenDialog(win, imgDialogOptions).then(result => {
             addonIcon = result.filePaths[0];
+            addonIcon = addonIcon.replace(/\\/g, "/");
             if (addonIcon != null) {
                 ipcRenderer.send("checkIfDirectoryExists", addonIcon);
             }
@@ -567,7 +567,8 @@ $(document).ready(() => {
     function resetAddonCreation() {
         jsonCheckboxCount = 0;
         onlyCreate = null;
-        jsonExists =null
+        jsonExists = null;
+        addonPath = null;
 
         // Clear the old data we used to make addon.json
         addonToCreateData = {

@@ -170,17 +170,21 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
 // This is ran once the client requests to create an addon
 ipcMain.on('createGMAFile', (event, addonDir) => {
   console.log("Addon's Directory: " + addonDir.toString());
+  sendConsoleData(["Addon's directory: " + addonDir.toString()]);
   const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['create', '-folder', addonDir]);
   gmad.stdout.on('data', (data) => {
     var arrayOfOutput = data.toString().split('\n');
     if (data.includes('File list verification failed')) {
-      mainWindow.webContents.send("errorNote", "File list verification failed - check your addon for unallowed files.", true);
+      mainWindow.webContents.send("errorNote", "File list verification failed - check your addon for unallowed files.", false, true);
     }
-    var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1)
-    fixedArray = fixedArray[0].match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "")
-    var addonGMADir = fixedArray;
-    console.log("GMA location: " + addonGMADir);
-    mainWindow.webContents.send('addonGMALocation', addonGMADir);
+    if (data.includes("Successfully")) { 
+      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
+      fixedArray = fixedArray[0].match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "");
+      var addonGMADir = fixedArray;
+      mainWindow.webContents.send('addonGMALocation', addonGMADir); 
+      console.log("GMA location: " + addonGMADir);
+      sendConsoleData(arrayOfOutput);
+    }
   });
 });
 
@@ -202,19 +206,22 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   } else {
     // Passes all the info needed to publish a Garry's Mod addon
     const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['create', '-icon', iconDir, '-addon', gmaDir]);
+    console.log(gmpublishFile, gmaDir, iconDir)
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
       sendConsoleData(arrayOfOutput)
       if (data.includes('512x512')) {
         mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", true);
       }
-      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
-      fixedArray = fixedArray[0].replace(/\D/, '');
-      fixedArray = fixedArray.substr(5, fixedArray.length);
-      var stringArray = fixedArray.toString()
-      var addonURLIndex = stringArray.indexOf("?id=")
-      var addonURL = stringArray.slice(addonURLIndex + 4, addonURLIndex + 14)
-      mainWindow.webContents.send('currentAddonID', addonURL);
+      if (data.includes("Addon creation finished")) {
+        var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
+        fixedArray = fixedArray[0].replace(/\D/, '');
+        fixedArray = fixedArray.substr(5, fixedArray.length);
+        var stringArray = fixedArray.toString();
+        var addonURLIndex = stringArray.indexOf("?id=");
+        var addonURL = stringArray.slice(addonURLIndex + 4, addonURLIndex + 14)
+        mainWindow.webContents.send('currentAddonID', addonURL);
+      }
     });
   };
 });
