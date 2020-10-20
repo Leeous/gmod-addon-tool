@@ -72,13 +72,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get("gmodDirectory") != null) {
         fadeIn("#addon_management");
-        $("#addon_management_prompt").fadeIn();
+        fadeIn("#addon_management_prompt");
         win.setBounds({
             height: 200
         });
         ipcRenderer.send("getAddonInfo");
     } else {
-        $("#directory_selection").fadeIn();
+        fadeIn("#directory_selection");
     }
 
     // ==============
@@ -108,25 +108,27 @@ window.addEventListener("DOMContentLoaded", (e) => {
         var filePath = result.filePaths[0]
         var desName = filePath.substring(filePath.length - 9, filePath.length);
         if (filePath != null) {
+            // Checks to see if directory user selects contains gmad.exe & gmpublish.exe
             ipcRenderer.send("checkIfDirectoryExists", filePath + "/bin/gmad.exe");
             ipcRenderer.send("checkIfDirectoryExists", filePath + "/bin/gmpublish.exe");
             if (desName == "GarrysMod") {
-                $("#status_of_dir").css("color", "lightgreen");
-                $("#status_of_dir").text("Found gmad.exe and gmpublish.exe!");
-                $("#dir_prompt_next button").css("background-color", "#56bd56");
-                $("#dir_prompt_next button").prop("disabled", false);
-                $("#dir_prompt_next button").css("cursor", "pointer");
-                $("#checkmarkNote").fadeIn(() => {
-                    $("#checkmarkNote").delay(1000).fadeOut();
-                })
+                document.getElementById("status_of_dir").style.color = "lightgreen";
+                document.getElementById("status_of_dir").innerHTML = "Found gmad.exe and gmpublish.exe!";
+                document.querySelector("#dir_prompt_next button").style.backgroundColor = "#56bd56";
+                document.querySelector("#dir_prompt_next button").disabled = false;
+                document.querySelector("#dir_prompt_next button").style.cursor = "pointer";
+                fadeIn("#checkmarkNote", () => {
+                    setTimeout(() => {
+                        fadeOut("#checkmarkNote");
+                    }, 500)
+                });
                 settings.set("gmodDirectory", filePath);
                 ipcRenderer.send("getAddonInfo");
             } else {
-                $("#status_of_dir").css("color", "red");
-                $("#status_of_dir").text("Can't find gmad.exe or gmpublish.exe!");
-                console.log(filePath);
-                $("#dir_prompt_next button").prop("disabled", true);
-                $("#dir_prompt_next button").css("cursor", "not-allowed");
+                document.getElementById("status_of_dir").style.color = "red";
+                document.getElementById("status_of_dir").innerHTML = "Can't find gmad.exe or gmpublish.exe!"
+                document.querySelector("#dir_prompt_next button").disabled = true;
+                document.querySelector("#dir_prompt_next button").style.cursor = "not-allowed";
             }
         }
         }).catch(err => {
@@ -453,7 +455,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
         }
     });
 
-    // General function for transitioning between div tags
     transButtons.forEach((element) => {
         element.addEventListener("click", (event) => {
             var target = event.target;
@@ -466,13 +467,24 @@ window.addEventListener("DOMContentLoaded", (e) => {
             transition(elToHide, elToShow, resizeInfo);
         });
     });
-
+    
+    // General function for transitioning between div tags
     function transition(elToHide, elToShow, resizeInfo) {
-        var transitionTime = 25;
-        fadeOut(elToHide, elToShow, resizeInfo, transitionTime);
+        var transitionTime = 25; 
+        fadeOut(elToHide, () => {
+            // Resize window if we get resize info
+            if (resizeInfo != null) {
+                win.setBounds({
+                    width: resizeInfo[0],
+                    height: resizeInfo[1]
+                });
+            }
+            fadeIn(elToShow, null, transitionTime);
+        }, transitionTime);
     }
     
-    function fadeOut(elToHide, elToShow, resizeInfo, transitionTime) {
+    function fadeOut(elToHide, callback, transitionTime) {
+        if (!transitionTime) { var transitionTime = 25; }
         var fadeOutOpacity = 1;
         var timer = setInterval(() => {
             if (fadeOutOpacity <= 0.1) {
@@ -481,15 +493,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 document.querySelectorAll(elToHide).forEach((element) => {
                     element.style.display = "none";
                 });
-                // Resize window if we get resize info
-                if (resizeInfo != null) {
-                    win.setBounds({
-                        width: resizeInfo[0],
-                        height: resizeInfo[1]
-                    });
-                }
-                // If elToShow is provided, fade it in when we're done
-                if (elToShow != null) { fadeIn( elToShow, transitionTime ) }
+                if (callback != null) { callback(); }
             }
             document.querySelectorAll(elToHide).forEach((element) => {
                 element.style.opacity = fadeOutOpacity;
@@ -498,7 +502,8 @@ window.addEventListener("DOMContentLoaded", (e) => {
         }, transitionTime);
     }
 
-    function fadeIn(elToShow, transitionTime) {
+    function fadeIn(elToShow, callback, transitionTime) {
+        if (!transitionTime) { var transitionTime = 25 }
         var fadeInOpacity = 0.0;
         document.querySelectorAll(elToShow).forEach((element) => {
             element.style.opacity = 0;
@@ -508,6 +513,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             if (fadeInOpacity >= 1) {
                 // Done with animation
                 clearInterval(timer);
+                if (callback != null) { callback(); }
             }
             document.querySelectorAll(elToShow).forEach((element) => {
                 element.style.opacity = fadeInOpacity;

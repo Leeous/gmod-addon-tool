@@ -61,11 +61,11 @@ function createWindow() {
   });
       
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('index.html');
 
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -75,6 +75,7 @@ function createWindow() {
       mainWindow = null
   });
 
+  // When an anchor tab w/ a target attribute with a value of "_blank", this will stop the default behavior and open the link in the user's default browser. 
   mainWindow.webContents.on('new-window', function(e, url) {
     e.preventDefault();
     require('electron').shell.openExternal(url);
