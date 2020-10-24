@@ -145,7 +145,7 @@ ipcMain.on('checkIfDirectoryExists', (event, file, jsonCheck) => {
 function checkIfAddonJSONExist(file) {
   console.log("Checking for addon.json in " + file);
   fs.stat(file + "/addon.json", function(err, stats) {
-    console.log((err) ? "User already has addon.json" : "User does not have addon.json");
+    console.log((err) ? "User does not have addon.json" : "User already has addon.json");
     if (err) {
       mainWindow.webContents.send('addonJSONCheck', false);
     } else {

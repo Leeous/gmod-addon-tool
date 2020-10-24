@@ -199,7 +199,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 currentNewAddon = result.filePaths[0];
                 if (currentNewAddon != null) {
                     currentNewAddon = currentNewAddon.replace(/\\/g, "/");
-                    ipcRenderer.send("checkIfDirectoryExists", currentNewAddon);
+                    ipcRenderer.send("checkIfDirectoryExists", currentNewAddon, true);
                     var n = currentNewAddon.lastIndexOf("/");
                     var result = currentNewAddon.substring(n + 1);
                     $("#addonDir b").text(result);
@@ -693,8 +693,8 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 
     function populateAddonJSONInfo(e, exists, json) {
-        json = JSON.parse(json);
         if (exists) {
+            json = JSON.parse(json);
             console.log(json.tags.length);
             if (json.type === "serverContent") { json.type = "Server Content" }
             if (json.tags.length == 1) { 
