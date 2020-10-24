@@ -142,8 +142,10 @@ ipcMain.on('checkIfDirectoryExists', (event, file, jsonCheck) => {
   if (jsonCheck) { checkIfAddonJSONExist(file) }
 });
 
-function checkIfAddonJSONExist (file) {
+function checkIfAddonJSONExist(file) {
+  console.log("Checking for addon.json in " + file);
   fs.stat(file + "/addon.json", function(err, stats) {
+    console.log((err) ? "User already has addon.json" : "User does not have addon.json");
     if (err) {
       mainWindow.webContents.send('addonJSONCheck', false);
     } else {
@@ -180,7 +182,7 @@ function sendClientAddonInfo() {
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
     if (fixedArray == "Couldn't initialize Steam!\r") {
-      mainWindow.webContents.send('errorNote', "Steam doesn't seem open!\nOpen Steam.", true, false);
+      mainWindow.webContents.send('errorNote', "Steam doesn't seem to be open!", true, false);
     }
     console.log("Addon IDs", ADDON_IDS);
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
@@ -191,7 +193,7 @@ function sendClientAddonInfo() {
 ipcMain.on('createJsonFile', (event, json, dir) => {
   fs.writeFileSync(dir + "/addon.json", JSON.stringify(json), 'utf8', (err) => {
     if (err != null) {
-      mainWindow.webContents.send('errorNote', "An error occured while writing JSON object to File.\n", false, true);
+      mainWindow.webContents.send('errorNote', "An error occured while writing JSON object to file.\n", false, true);
     }
   });
 });
@@ -227,10 +229,12 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
       if (data.includes('512x512')) {
         mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", false, false);
       }
-      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
-      fixedArray = fixedArray[0].replace(/\D/, '');
-      fixedArray = fixedArray.substr(5, fixedArray.length);
-      mainWindow.webContents.send('currentAddonID', fixedArray);
+      if (data.includes("Success!")) {
+        var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
+        fixedArray = fixedArray[0].replace(/\D/, '');
+        fixedArray = fixedArray.substr(5, fixedArray.length);
+        mainWindow.webContents.send('currentAddonID', fixedArray);
+      }
     });
   } else {
     // Passes all the info needed to publish a Garry's Mod addon
