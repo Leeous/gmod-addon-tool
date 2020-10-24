@@ -179,7 +179,7 @@ function sendClientAddonInfo() {
     var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3);
     for (var i = 0; i < fixedArray.length; i++) {
         fixedArray[i] = fixedArray[i].replace('/r', '');
-        ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
+        ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()]);
     }
     if (fixedArray == "Couldn't initialize Steam!\r") {
       mainWindow.webContents.send('errorNote', "Steam doesn't seem to be open!", true, false);
