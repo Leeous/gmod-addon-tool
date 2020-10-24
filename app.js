@@ -25,14 +25,14 @@ console.log('\n');
 // Create log file if it doesn't exist
 fs.stat(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", function(err, stats) {
   if (err) {
+    if (err != null) { console.log(err); }
     fs.access(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", fs.constants.F_OK, (err) => {
       console.log("Created log.txt");
       fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "--- Beginning of log --- \n", 'utf8', (err) => {
-        if (err != null) { console.log(err); }
       });
     });
   } else {
-    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n-----------------------", 'utf8', (err) => { console.log(err)});
+    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
   }
 });
 
@@ -61,11 +61,11 @@ function createWindow() {
   });
       
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('index.html');
 
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -74,7 +74,8 @@ function createWindow() {
       // when you should delete the corresponding element.
       mainWindow = null
   });
-
+  
+  // When an anchor tab w/ a target attribute with a value of "_blank", this will stop the default behavior and open the link in the user's default browser. 
   mainWindow.webContents.on('new-window', function(e, url) {
     e.preventDefault();
     require('electron').shell.openExternal(url);
@@ -102,12 +103,43 @@ app.on('activate', function() {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+// Settings Modal
+function openSettings(callback) {
+  promptWindow = new BrowserWindow({
+    width: 200, 
+    height: 150,
+    parent: mainWindow,
+    show: false,
+    modal: true,
+    title : "Settings",
+    autoHideMenuBar: true,
+    resizable: false,
+    fullscreenable: false,
+    backgroundColor: "#262626",
+    titleBarStyle: "hidden",
+    frame: false,
+    webPreferences: { 
+      nodeIntegration: true,
+    }
+  });
+
+  promptWindow.on('closed', () => { 
+    promptWindow = null 
+  });
+
+  // Load the HTML dialog box
+  promptWindow.loadFile("settings.html");
+  promptWindow.once('ready-to-show', () => { promptWindow.show();});
+}
+
+
+
 // Checks to see if the directory the user chooses is writeable 
-ipcMain.on('checkIfDirectoryExists', (event, file) => {
+ipcMain.on('checkIfDirectoryExists', (event, file, jsonCheck) => {
   fs.access(file, fs.constants.R_OK, (err) => {
     console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
   });
-  checkIfAddonJSONExist(file);
+  if (jsonCheck) { checkIfAddonJSONExist(file) }
 });
 
 function checkIfAddonJSONExist (file) {
@@ -147,23 +179,19 @@ function sendClientAddonInfo() {
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
     }
     if (fixedArray == "Couldn't initialize Steam!\r") {
-      mainWindow.webContents.send('errorAlert', ADDON_IDS);
+      mainWindow.webContents.send('errorNote', "Steam doesn't seem open!\nOpen Steam.", true, false);
     }
     console.log("Addon IDs", ADDON_IDS);
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
   });
 }
 
-// Checks to see if addon.json already exists
-// ipcMain.on("checkForJSON", (event) => {
-//   fs.stat(__dirname + "/log.txt", function(err, stats) {
-// });
-
 // This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
-  fs.writeFileSync(dir + "/addon.json", json, 'utf8', (err) => {
-    console.log("An error occured while writing JSON object to File.\n", err);
-    mainWindow.webContents.send('error', "Error writing directory.");
+  fs.writeFileSync(dir + "/addon.json", JSON.stringify(json), 'utf8', (err) => {
+    if (err != null) {
+      mainWindow.webContents.send('errorNote', "An error occured while writing JSON object to File.\n", false, true);
+    }
   });
 });
 
@@ -194,9 +222,9 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['update', '-id', addonId, '-icon', iconDir, '-addon', gmaDir]);
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
-      sendConsoleData(arrayOfOutput)
+      sendConsoleData(arrayOfOutput);
       if (data.includes('512x512')) {
-        mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", true);
+        mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", false, false);
       }
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].replace(/\D/, '');
@@ -209,10 +237,12 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
     console.log(gmpublishFile, gmaDir, iconDir)
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
-      sendConsoleData(arrayOfOutput)
+      sendConsoleData(arrayOfOutput);
+      // If gmpublish output contains "512x512" in data stream, user did not provide a correctly sized image
       if (data.includes('512x512')) {
-        mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", true);
+        mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", false, false);
       }
+      
       if (data.includes("Addon creation finished")) {
         var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
         fixedArray = fixedArray[0].replace(/\D/, '');
@@ -228,7 +258,6 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
 
 // This will extract a GMA file to GarrysMod/garrysmod/addons/[addon_name]
 ipcMain.on("extractAddon", (e, path) => {
-  // console.log(e, path);
   const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['extract', '-file', path]);
   mainWindow.webContents.send("finishExtraction");
 });
@@ -277,6 +306,7 @@ function openSettings(callback) {
 }
 
 ipcMain.on("openSettings", (e) => {
+  console.log(__dirname);
   openSettings();
 });
 
@@ -288,3 +318,9 @@ ipcMain.on("openConsole", (e) => {
 ipcMain.on("logError", (e, error) => {
   sendConsoleData(error);
 });
+
+function sendConsoleData(dataArray) {
+  dataArray.forEach(data => {
+    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
+  });
+}

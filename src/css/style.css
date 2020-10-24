@@ -57,7 +57,7 @@ header {
 
 #addon_management_prompt .button_normal {
     margin: 15px 0;
-    box-shadow: 0 5px #0261A5;
+    box-shadow: 0 5px #0261a5;
     transition: none;
     display: inline-block;
 }
@@ -123,13 +123,11 @@ header {
 #settings footer {
     display: flex;
     flex-direction: row;
-    margin-bottom: 5px;
     justify-content: space-between;
 }
 
 #settings footer p a {
     text-decoration: underline;
-    margin: 5px;
     color: white;
 }
 
@@ -235,7 +233,7 @@ header {
     text-align: center;
 }
 
-#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #uploading, #new_addon, #extract_addon, #extracting_addon, #extraction_done, #newAddonLocation, #errorNote {
+#update_existing_addon, #directory_selection, #create_new_addon, #jsonCreator, #gmaPrep, #addon_management_prompt, #createGMA, #uploadToWorkshopPrompt, #addonIconPrompt, #addonDirPrompt, #uploading, #new_addon, #extract_addon, #extracting_addon, #extraction_done, #newAddonLocation, #errorNote {
     display: none;
 }
 
@@ -389,6 +387,13 @@ div#addonPreviewExisting div {
     margin: 0;
     padding: 10px;
     text-shadow: 0px 0px 4px black;
+}
+
+.publishedTitle img {
+    width: 128;
+    margin: auto auto 10px auto;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px black;
 }
 
 .publishedControls {

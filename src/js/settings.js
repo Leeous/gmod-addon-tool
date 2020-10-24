@@ -23,6 +23,11 @@ $(document).ready(() => {
         shell.openItem(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt");
     });
 
+    document.querySelector("#settings footer p a").addEventListener("click", (e) => {
+        e.preventDefault();
+        shell.openExternal("https://leeous.com");
+    });
+  
     document.getElementById("closeApp").addEventListener("click", () => {
         window.close();
     });
