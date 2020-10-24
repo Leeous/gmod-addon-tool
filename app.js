@@ -171,9 +171,10 @@ var ADDON_IDS = [];
 function sendClientAddonInfo() {
   const bat = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['list']);
   bat.stdout.on('data', (data) => {
-    var arrayOfOutput = data.toString().split('\n')
-    sendConsoleData(arrayOfOutput);
-    var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3)
+    console.log(data.toString());
+    sendConsoleData(data.toString().split('\n'));
+    var arrayOfOutput = data.toString().split('\n');
+    var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3);
     for (var i = 0; i < fixedArray.length; i++) {
         fixedArray[i] = fixedArray[i].replace('/r', '');
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()])
@@ -256,12 +257,13 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   };
 });
 
-// This will extract a GMA file to GarrysMod/garrysmod/addons/[addon_name]
+// This will extract a GMA file into the same directory
 ipcMain.on("extractAddon", (e, path) => {
   const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['extract', '-file', path]);
   mainWindow.webContents.send("finishExtraction");
 });
 
+// Writes info to GMATLog.txt
 function sendConsoleData(dataArray) {
   dataArray.forEach(data => {
     fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
@@ -318,9 +320,3 @@ ipcMain.on("openConsole", (e) => {
 ipcMain.on("logError", (e, error) => {
   sendConsoleData(error);
 });
-
-function sendConsoleData(dataArray) {
-  dataArray.forEach(data => {
-    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
-  });
-}

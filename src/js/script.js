@@ -161,29 +161,29 @@ window.addEventListener("DOMContentLoaded", (e) => {
     // Let user select a GMA to extract
     document.getElementById("gmaFileSelection").addEventListener("click", () => {
         dialog.showOpenDialog(win, fileDialogOptions).then(r => {
-            addonPath = r.filePaths[0];
-            if (addonGMA != null) {
-                ipcRenderer.send("checkIfDirectoryExists", addonGMA);
-                var n = addonGMA.lastIndexOf("\\");
-                var result = addonGMA.substring(n + 1, addonGMA.length);
-                $("#currentGMAFile").text(result);
-                $("#addon_extract_next button").prop("disabled", false);
-                $("#addon_extract_next button").css("background-color", "#56bd56");
-                $("#addon_extract_next button").css("cursor", "pointer");  
+            gmaToExtract = r.filePaths[0];
+            if (gmaToExtract != null) {
+                ipcRenderer.send("checkIfDirectoryExists", gmaToExtract);
+                var n = gmaToExtract.lastIndexOf("\\");
+                var result = gmaToExtract.substring(n + 1, gmaToExtract.length);
+                document.getElementById("currentGMAFile").innerHTML = result;
+                document.querySelector("#addon_extract_next button").disabled = false;
+                document.querySelector("#addon_extract_next button").style.backgroundColor = "#56bd56";
+                document.querySelector("#addon_extract_next button").style.cursor = "pointer";
             }
-        }).catch(err => {});
+        }).catch(err => { console.error("Dailog failed to open!", err) });
     });
     
     document.querySelector("#addon_extract_next button").addEventListener("click", () => {
-        $("#extract_addon_select").fadeOut(() => {
-            $("#extracting_addon").fadeIn(() => {
-                ipcRenderer.send("extractAddon", addonPath);
+        fadeOut("#extract_addon_select", () => {
+            fadeIn("#extracting_addon", () => {
+                ipcRenderer.send("extractAddon", gmaToExtract);
             });
         });
     });
 
     document.getElementById("extractedGMALocation").addEventListener("click", () => {
-        shell.openItem(addonPath.substring(0, addonPath.length - 4));
+        shell.openItem(gmaToExtract.substring(0, gmaToExtract.length - 4));
     });
 
     document.querySelectorAll(".resetAddonExtraction").forEach((element) => {
@@ -231,13 +231,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
                     $("#addonIconCheck").css("cursor", "pointer");
                     $("#gmaPrep div img").attr("src", addonIcon);
                 } else {
-                    alert("Image must be 512x512.");
+                    errorNote("Image must be an 512x512 baseline JPEG.", false, false);
                 }
             } else {
                 $("#addonIconCheck").css("background-color", "#0261A5");
                 $("#addonIconCheck").prop("disabled", true);
                 $("#addonIconCheck").css("cursor", "not-allowed");
-                alert("Doesn't seem like a JPEG image.");
+                errorNote("Doesn't seem like a JPEG image.", false, false);
             }
         }).catch(err => {
             console.error("Dailog failed to open!");
@@ -637,10 +637,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
     }
 
     function resetAddonExtraction() {
-        $("#extracting_addon, #extraction_done").css("display", "none");
-        $("#currentGMAFile").text("");
-        $("#addon_extract_next button").css({backgroundColor: "#0261A5", cursor: "not-allowed"});
-        $("#addon_extract_next button").prop("disabled", true);
+        gmaToExtract = null;
+        document.getElementById("extracting_addon").style.display = "none";
+        document.getElementById("extraction_done").style.display = "none";
+        document.getElementById("currentGMAFile").innerHTML = "";
+        document.querySelector("#addon_extract_next button").style.backgroundColor = "#0261A5";
+        document.querySelector("#addon_extract_next button").style.cursor = "not-allowed";
+        document.querySelector("#addon_extract_next button").disabled = true;
     }
 
     // Ensure all options that are required are checked
