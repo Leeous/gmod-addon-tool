@@ -239,7 +239,6 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   } else {
     // Passes all the info needed to publish a Garry's Mod addon
     const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['create', '-icon', iconDir, '-addon', gmaDir]);
-    console.log(gmpublishFile, gmaDir, iconDir)
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
       sendConsoleData(arrayOfOutput);
