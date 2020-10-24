@@ -718,7 +718,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
     ipcRenderer.on("finishExtraction", (e) => {
         $("#extracting_addon").fadeOut(() => {
             win.setBounds({height: 225});
-            // $("#extractedGMALocation").attr("href", "steam://url/CommunityFilePage/" + newAddonID)
             $("#extraction_done").fadeIn();
         });
     });
