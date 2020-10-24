@@ -10,7 +10,7 @@
 
 A light-weight Electron GUI for `gmad` and `gmpublish` that allows you to create/update/extract Garry's Mod addons very easily.
 
-As of `v2.0`, you can upload and update your addons, as well as extract GMA files.
+As of v2.0, you can upload and update your addons, as well as extract GMA files.
 
 ![](https://i.imgur.com/UYD6q0x.png)
 

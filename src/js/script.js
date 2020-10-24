@@ -2,7 +2,8 @@
 const {
     remote,
     ipcRenderer,
-    files
+    files,
+    app
 } = require("electron");
 const settings = require("electron-settings");
 const shell = require("electron").shell;
@@ -34,8 +35,9 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 };
+currentAppVersion = "v2.2";
+let defaultMenuTitle = ""
 let onlyCreate = null; // This tells us if the user is only wanting to create a GMA
-
 
 // Dialog properties
 let dirDialogOptions = {
@@ -65,9 +67,25 @@ let fileDialogOptions = {
     properties: ["openFile"]
 };
 
-
 window.addEventListener("DOMContentLoaded", (e) => {
     let transButtons = document.querySelectorAll(".transition_button");
+    if (!settings.get('disclaimer')) {
+        dialog.showMessageBox(win, {
+            type: "info",
+            buttons: ["I understand", "Exit"],
+            message: "This is an unofficial tool that is meant to make it easier to create, update, and extract Garry's Mod addons. This tool is in no way endorsed by, or otherwise affiliated with Facepunch Studios. Keep in mind that addon updates are FINAL and they're impossible to revert. ",
+            title: "Disclaimer",
+        }).then(response => {
+            if (response.response == 0) {
+                settings.set("disclaimer", true);
+            }
+            if (response.response == 1) {
+                window.close();
+            }
+        }).catch(err => {
+            console.log("Something went wrong.");
+        });
+    }
 
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get("gmodDirectory") != null) {
@@ -143,7 +161,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
     // Let user select a GMA to extract
     document.getElementById("gmaFileSelection").addEventListener("click", () => {
         dialog.showOpenDialog(win, fileDialogOptions).then(r => {
-            let addonGMA = r.filePaths[0];
             addonPath = r.filePaths[0];
             if (addonGMA != null) {
                 ipcRenderer.send("checkIfDirectoryExists", addonGMA);
@@ -181,8 +198,9 @@ window.addEventListener("DOMContentLoaded", (e) => {
             if (!result.canceled) {
                 currentNewAddon = result.filePaths[0];
                 if (currentNewAddon != null) {
-                    ipcRenderer.send("checkIfDirectoryExists", currentNewAddon, true);
-                    var n = currentNewAddon.lastIndexOf("\\");
+                    currentNewAddon = currentNewAddon.replace(/\\/g, "/");
+                    ipcRenderer.send("checkIfDirectoryExists", currentNewAddon);
+                    var n = currentNewAddon.lastIndexOf("/");
                     var result = currentNewAddon.substring(n + 1);
                     $("#addonDir b").text(result);
                     $("#addonDirCheck").css("background-color", "#56bd56");
@@ -199,6 +217,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     document.getElementById("addon_icon").addEventListener("click", () => {
         dialog.showOpenDialog(win, imgDialogOptions).then(result => {
             addonIcon = result.filePaths[0];
+            addonIcon = addonIcon.replace(/\\/g, "/");
             if (addonIcon != null) {
                 ipcRenderer.send("checkIfDirectoryExists", addonIcon);
             }
@@ -574,6 +593,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
         onlyCreate = null;
         jsonExists = null;
         json = null;
+        addonPath = null;
 
         // Clear the old data we used to make addon.json
         addonToCreateData = {

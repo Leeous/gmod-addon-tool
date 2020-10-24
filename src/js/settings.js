@@ -27,6 +27,7 @@ $(document).ready(() => {
         e.preventDefault();
         shell.openExternal("https://leeous.com");
     });
+  
     document.getElementById("closeApp").addEventListener("click", () => {
         window.close();
     });

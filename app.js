@@ -74,7 +74,7 @@ function createWindow() {
       // when you should delete the corresponding element.
       mainWindow = null
   });
-
+  
   // When an anchor tab w/ a target attribute with a value of "_blank", this will stop the default behavior and open the link in the user's default browser. 
   mainWindow.webContents.on('new-window', function(e, url) {
     e.preventDefault();
@@ -198,17 +198,21 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
 // This is ran once the client requests to create an addon
 ipcMain.on('createGMAFile', (event, addonDir) => {
   console.log("Addon's Directory: " + addonDir.toString());
+  sendConsoleData(["Addon's directory: " + addonDir.toString()]);
   const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['create', '-folder', addonDir]);
   gmad.stdout.on('data', (data) => {
     var arrayOfOutput = data.toString().split('\n');
     if (data.includes('File list verification failed')) {
       mainWindow.webContents.send("errorNote", "File list verification failed - check your addon for unallowed files.", false, true);
     }
-    var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1)
-    fixedArray = fixedArray[0].match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "")
-    var addonGMADir = fixedArray;
-    console.log("GMA location: " + addonGMADir);
-    mainWindow.webContents.send('addonGMALocation', addonGMADir);
+    if (data.includes("Successfully")) { 
+      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
+      fixedArray = fixedArray[0].match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "");
+      var addonGMADir = fixedArray;
+      mainWindow.webContents.send('addonGMALocation', addonGMADir); 
+      console.log("GMA location: " + addonGMADir);
+      sendConsoleData(arrayOfOutput);
+    }
   });
 });
 
@@ -230,6 +234,7 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   } else {
     // Passes all the info needed to publish a Garry's Mod addon
     const gmpublish = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['create', '-icon', iconDir, '-addon', gmaDir]);
+    console.log(gmpublishFile, gmaDir, iconDir)
     gmpublish.stdout.on('data', (data) => {
       var arrayOfOutput = data.toString().split('\n');
       sendConsoleData(arrayOfOutput);
@@ -237,13 +242,16 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
       if (data.includes('512x512')) {
         mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", false, false);
       }
-      var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
-      fixedArray = fixedArray[0].replace(/\D/, '');
-      fixedArray = fixedArray.substr(5, fixedArray.length);
-      var stringArray = fixedArray.toString();
-      var addonURLIndex = stringArray.indexOf("?id=");
-      var addonURL = stringArray.slice(addonURLIndex + 4, addonURLIndex + 14);
-      mainWindow.webContents.send('currentAddonID', addonURL);
+      
+      if (data.includes("Addon creation finished")) {
+        var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
+        fixedArray = fixedArray[0].replace(/\D/, '');
+        fixedArray = fixedArray.substr(5, fixedArray.length);
+        var stringArray = fixedArray.toString();
+        var addonURLIndex = stringArray.indexOf("?id=");
+        var addonURL = stringArray.slice(addonURLIndex + 4, addonURLIndex + 14)
+        mainWindow.webContents.send('currentAddonID', addonURL);
+      }
     });
   };
 });
@@ -253,6 +261,49 @@ ipcMain.on("extractAddon", (e, path) => {
   const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['extract', '-file', path]);
   mainWindow.webContents.send("finishExtraction");
 });
+
+function sendConsoleData(dataArray) {
+  dataArray.forEach(data => {
+    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
+  });
+}
+
+// Settings Modal
+
+// Creating the dialog
+
+function openSettings(callback) {
+  promptWindow = new BrowserWindow({
+    width: 200, 
+    height: 150,
+    parent: mainWindow,
+    show: false,
+    modal: true,
+    title : "Settings",
+    autoHideMenuBar: true,
+    resizable: false,
+    fullscreenable: false,
+    backgroundColor: "#262626",
+    titleBarStyle: "hidden",
+    frame: false,
+    webPreferences: { 
+      nodeIntegration: true,
+    }
+  });
+
+  promptWindow.on('closed', () => { 
+    promptWindow = null 
+  });
+
+  promptWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    require('electron').shell.openExternal(url);
+  });
+
+  // Load the HTML dialog box
+  promptWindow.loadFile("settings.html")
+  promptWindow.once('ready-to-show', () => { promptWindow.show();});
+}
 
 ipcMain.on("openSettings", (e) => {
   console.log(__dirname);
