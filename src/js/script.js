@@ -66,7 +66,17 @@ let fileDialogOptions = {
     properties: ["openFile"]
 };
 
+
 window.addEventListener("DOMContentLoaded", (e) => {
+
+    if (settings.get("darkMode") !== null) {
+        if (settings.get("darkMode")) {
+            document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style-dark.css");
+        } else {
+            document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style.css");
+        }
+    } else { document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style.css"); }
+
     // Show user disclaimer if it has not been accepted
     if (!settings.get('disclaimer')) {
         dialog.showMessageBox(win, {
@@ -87,7 +97,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     }
 
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
-    if (!settings.get("gmodDirectory")) {
+    if (settings.get("gmodDirectory")) {
         fadeIn("#addon_management");
         fadeIn("#addon_management_prompt");
         win.setBounds({
@@ -552,15 +562,15 @@ window.addEventListener("DOMContentLoaded", (e) => {
                     </aside>
                     <aside class="publishedStats">
                         <div>
-                            <img src="src/img/views.png" alt="Views"/>
+                            <img src="src/img/${settings.get("darkMode") ? "views-dark.png" : "views.png" }" alt="Views"/>
                             <p>${array[i].views.toLocaleString()}</p>
                         </div>
                         <div>
-                            <img src="src/img/subs.png" alt="Downloads"/>
+                            <img src="src/img/${settings.get("darkMode") ? "subs-dark.png" : "subs.png" }" alt="Downloads"/>
                             <p>${array[i].lifesubs.toLocaleString()}</p>
                         </div>
                         <div>
-                            <img src="src/img/favs.png" alt="Favorites"/>
+                            <img src="src/img/${settings.get("darkMode") ? "favs-dark.png" : "favs.png" }" alt="Favorites"/>
                             <p>${array[i].favs.toLocaleString()}</p>
                         </div>
                     </aside>
@@ -572,7 +582,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 `);
                 donePopulatingAddonList = true;
             }
-            $("#yourAddons").append("<p>...and " + hiddenAddons + " private addons.</p>");
+            $("#yourAddons").append("<p>...and " + hiddenAddons + ` private ${hiddenAddons == 1 ? "addon" : "addons" }.</p>`);
             // Make sure if nothing is returned to let the user know
             if (apiError == 400) {
                 donePopulatingAddonList = true;
@@ -630,7 +640,14 @@ window.addEventListener("DOMContentLoaded", (e) => {
         existingAddonId = null;
 
         // Hide any div that may still be displayed
-        $("#addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").css("display", "none");
+        $("#create_new_addon, #addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").css("display", "none");
+        fadeIn("#addon_management_prompt");
+
+        // Resize window for #addon_management_prompt
+        win.setBounds({
+            height: 200
+        });
+
         console.log("Done.");
     }
 
@@ -662,7 +679,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     function errorNote(message, fatal, flowFatal) {
         $("#errorNote .errorText").text(message);
         let countdownSeconds = 15;
-        let cuntdownMS = 15000;
+        let countdownMS = 15000;
         if (flowFatal) { resetAddonCreation() }
         if (fatal) {
             countdownMS = 20000;
@@ -673,9 +690,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
             }, 1000)
         } else {
             document.getElementById("fatalError").style.display = "none";
+            fadeIn("#errorNote");
+            setTimeout(() => {
+                fadeOut("#errorNote");
+            }, 5000)
         }
         ipcRenderer.send("logError", [message]);
-        $("#errorNote").fadeIn().delay(countdownMS).fadeOut();
+        // $("#errorNote").fadeIn().delay(countdownMS).fadeOut();
         setTimeout(() => {
             if (fatal) { resetAddonCreation(); remote.app.exit(0); } // Kills addon flow if something fucks up
         }, 17000);

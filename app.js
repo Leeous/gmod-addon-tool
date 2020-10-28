@@ -42,8 +42,18 @@ let isWin = process.platform === "win32";
 if (isWin) {ext = ".ico"; gmpublishFile = "gmpublish.exe"; gmadFile = "gmad.exe"} else {ext = ".png"; gmpublishFile = "gmpublish_linux"; gmadFile = "gmad_linux"};
 
 function createWindow() {
-  // 
   app.allowRendererProcessReuse = true;
+
+  // Change background color based on user theme or first launch
+  if (settings.get("darkMode") !== null ) { 
+    if (settings.get("darkMode")) { 
+      theme = "#202020" 
+    } else { 
+      theme = "#048CEC";
+    } 
+  } else {
+    theme = "#048CEC";
+  }
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -51,7 +61,7 @@ function createWindow() {
     height: 225,
     resizable: false,
     fullscreenable: false,
-    backgroundColor: "#048CEC",
+    backgroundColor: theme,
     titleBarStyle: "hidden",
     frame: false,
     icon: __dirname + "/src/img/icon" + ext,
@@ -62,7 +72,6 @@ function createWindow() {
       
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
-
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -279,8 +288,8 @@ function sendConsoleData(dataArray) {
 
 function openSettings(callback) {
   promptWindow = new BrowserWindow({
-    width: 200, 
-    height: 150,
+    width: 250, 
+    height: 275,
     parent: mainWindow,
     show: false,
     modal: true,

@@ -27,8 +27,7 @@ header {
     padding: 5px 10px;
     border: none;
     border-radius: 5px;
-    background-color: #024B7F;
-    color: white;
+    background-color: white;
     font-size: .8em;
     cursor: pointer;
     transition: ease 0.5s all;
@@ -36,7 +35,7 @@ header {
 }
 
 .button_normal:hover {
-    background-color: #0261A5; 
+    background-color: rgb(167, 167, 167); 
 }
 
 .rowtwo {
@@ -57,13 +56,13 @@ header {
 
 #addon_management_prompt .button_normal {
     margin: 15px 0;
-    box-shadow: 0 5px #0261a5;
+    box-shadow: 0 5px #797979;
     transition: none;
     display: inline-block;
 }
 
 #addon_management_prompt .button_normal:active {
-    box-shadow: 0 2px #0261A5;
+    box-shadow: 0 2px #797979;
     transform: translateY(3px);
 }
 
@@ -79,11 +78,9 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #024B7F;
-    box-shadow: 0 -2px #43A3E8;
+    background-color:#0f0f0f;
     -webkit-app-region: drag;
     font-weight: 700;
-    /* box-shadow: black 0 0 15px; */
 }
 
 #main_titlebar .main_buttons p {
@@ -96,7 +93,7 @@ header {
 }
 
 #main_titlebar .main_buttons p:hover {
-    background-color: #43A3E8;
+    background-color: #202020;
 }
 
 #main_titlebar .main_title p {
@@ -169,21 +166,6 @@ header {
     border-radius: 0 5px 5px 0;
 }
 
-.real_select {
-    display: none;
-}
-
-.fake_select {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: white;
-    font-size: .8em;
-    cursor: pointer;
-    transition: ease 0.5s all;
-    outline: none;
-}
-
 #status_of_dir {
     text-align: center;
 }
@@ -198,8 +180,8 @@ header {
 #dir_prompt_next button {
     width: 100%;
     border-radius: 0;
-    background-color: rgb(0, 85, 146);
     color: white;
+    background-color: #0f0f0f;
     cursor: not-allowed;
     border: none;
     padding: 10px 0;
@@ -217,7 +199,7 @@ header {
 .bottom_btn button {
     width: 100%;
     border-radius: 0;
-    background-color: #0261A5;
+    background-color: #0f0f0f;
     color: white;
     cursor: not-allowed;
     border: none;
@@ -286,7 +268,7 @@ header {
 /* Views styles */
 
 .path_div .top {
-    background-color: #024B7F;
+    background-color: #0f0f0f;
     padding: 15px 0;
     display: grid;
     grid-template-columns: 25% 50% 25%;
@@ -321,12 +303,12 @@ header {
 
 #addonPreviewDetails th, #addonPreviewExisting th {
     padding: 5px;
-    background-color: #024B7F;
+    background-color:#0f0f0f;
 }
 
 #addonPreviewDetails td, #addonPreviewExisting td {
     padding: 5px 15px;
-    background-color: #0261A5;
+    background-color: #202020;
     max-width: 250px;
     max-height: 75px;
     white-space: nowrap;
@@ -338,7 +320,7 @@ header {
     /* width: 100%; */
     /* padding: 2; */
     /* margin: 10px; */
-    background: rgb(0, 85, 146);
+    background: #202020;
     display: grid;
     /* margin: 25px auto; */
     justify-content: space-evenly;
@@ -402,7 +384,7 @@ div#addonPreviewExisting div {
     flex-direction: row;
     justify-content: space-evenly;
     padding: 10px 0;
-    background-color: #024b7f;
+    background-color: #202020;
 }
 
 .publishedStats p {
@@ -436,7 +418,7 @@ div#addonPreviewExisting div {
 
 .publishedControls p a {
     border: none;
-    background-color: #0261A5;
+    background-color: #0f0f0f;
     color: white;
     display: block;
     font-weight: 800;
@@ -448,7 +430,7 @@ div#addonPreviewExisting div {
 }
 
 .publishedControls p a:hover {
-    background-color: #43a3e8;
+    background-color:#202020;
     letter-spacing: 1.5px;
 }
 
@@ -535,7 +517,7 @@ div#addonPreviewExisting div {
 .next_prompt button {
     width: 100%;
     border-radius: 0;
-    background-color: #0261A5;
+    background-color: #202020;
     color: white;
     cursor: not-allowed;
     border: none;

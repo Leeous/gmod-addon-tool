@@ -22,13 +22,11 @@ $(document).ready(() => {
     document.getElementById("openConsole").addEventListener("click", () => {
         shell.openItem(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt");
     });
-
-    document.querySelector("#settings footer p a").addEventListener("click", (e) => {
-        e.preventDefault();
-        shell.openExternal("https://leeous.com");
-    });
   
     document.getElementById("closeApp").addEventListener("click", () => {
         window.close();
     });
+
+    document.getElementById("blueMode").addEventListener("click", () => { settings.set("darkMode", false); remote.app.relaunch(); remote.app.exit(0); });
+    document.getElementById("darkMode").addEventListener("click", () => { settings.set("darkMode", true);  remote.app.relaunch(); remote.app.exit(0); });
 });
