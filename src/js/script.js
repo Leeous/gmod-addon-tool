@@ -282,6 +282,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     document.getElementById("jsonAddonValidate").addEventListener("click", () => {
         if (document.querySelector(".typeCheckbox:checked") != null) {
             document.querySelectorAll(".typeCheckbox:checked").forEach(element => {
+                console.log(element)
                 addonTags.push(element.getAttribute("name"))
             });
         }
@@ -293,12 +294,23 @@ window.addEventListener("DOMContentLoaded", (e) => {
             addonToCreateData.type = addonType;
             addonToCreateData.tags = addonTags;
             addonToCreateData.ignore = ignoreList;
-            ipcRenderer.send("createJsonFile", addonToCreateData, currentNewAddon);
-            if (addonToCreateData.type === "serverContent") { addonToCreateData.type = "Server Content" }
-            if (addonToCreateData.tags != "") { $("#gmaPreview table tr .addonTags").text(addonToCreateData.tags[0] + ", " + addonToCreateData.tags[1]); } else { $("#gmaPreview table tr .addonTags").text("None"); }
+            switch (addonTags.length) {
+                case 1:
+                    $("#gmaPreview table tr .addonTags").text(addonToCreateData.tags[0]);
+                    break;
+                case 2:
+                    $("#gmaPreview table tr .addonTags").text(addonToCreateData.tags[0] + ", " + addonToCreateData.tags[1]);
+                    break;
+                default:
+                    $("#gmaPreview table tr .addonTags").text("None"); 
+                    break;
+             }
             $("#gmaPreview table tr .addonTitle").text(addonToCreateData.title);
             $("#gmaPreview table tr .addonType").text(addonToCreateData.type);
-            
+            ipcRenderer.send("createJsonFile", addonToCreateData, currentNewAddon);
+            if (addonToCreateData.type === "serverContent") { addonToCreateData.type = "Server Content" }
+            $("#gmaPreview table tr .addonTitle").text(addonToCreateData.title);
+            $("#gmaPreview table tr .addonType").text(addonToCreateData.type);
             $("#addonIconCheck").data("divtoshow", "#gmaPrep");
             $("#addonIconCheck").data("resize", "500, 510");
         }
@@ -616,11 +628,11 @@ window.addEventListener("DOMContentLoaded", (e) => {
         $("#addon_icon").val(null);
 
         // Reset directory validation
-        $("#addonDirCheck").css({backgroundColor: "#0261A5", cursor: "not-allowed"});
+        $("#addonDirCheck").css({backgroundColor: (settings.get("darkMode")) ? "#0f0f0f" : "#0261A5", cursor: "not-allowed"});
         $("#addonDirCheck").prop("disabled", true);
 
         // Reset icon validation
-        $("#addonIconCheck").css({backgroundColor: "#0261A5", cursor: "not-allowed"});
+        $("#addonIconCheck").css({backgroundColor: (settings.get("darkMode")) ? "#0f0f0f" :"#0261A5", cursor: "not-allowed"});
         $("#addonIconCheck").prop("disabled", true);
 
         // Reset validation checks
@@ -647,7 +659,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
         document.getElementById("extracting_addon").style.display = "none";
         document.getElementById("extraction_done").style.display = "none";
         document.getElementById("currentGMAFile").innerHTML = "";
-        document.querySelector("#addon_extract_next button").style.backgroundColor = "#0261A5";
+        document.querySelector("#addon_extract_next button").style.backgroundColor = (settings.get("darkMode")) ? "#0f0f0f" : "#0261A5";
         document.querySelector("#addon_extract_next button").style.cursor = "not-allowed";
         document.querySelector("#addon_extract_next button").disabled = true;
     }
@@ -658,11 +670,10 @@ window.addEventListener("DOMContentLoaded", (e) => {
             $("#jsonAddonValidate").css("background-color", "#56bd56");
             $("#jsonAddonValidate").prop("disabled", false);
             $("#jsonAddonValidate").css("cursor", "pointer");
-            populateAddonJSONInfo()
         } else {
             $("#jsonAddonValidate").prop("disabled", true);
             $("#jsonAddonValidate").css("cursor", "not-allowed");
-            $("#jsonAddonValidate").css("background-color", "#0261A5")
+            $("#jsonAddonValidate").css("background-color", (settings.get("darkMode") ? "#0f0f0f" : "#0261A5"))
         }
     }
 
@@ -702,24 +713,32 @@ window.addEventListener("DOMContentLoaded", (e) => {
         populateAddonJSONInfo(e, exists, json);
     });
 
+    document.getElementById("editAddonJSON").addEventListener("click", () => {
+        console.log("Cleared addon data")
+        json = null;
+        addonTags = [];
+    });
+
     function populateAddonJSONInfo(e, exists, json) {
         if (exists) {
             json = JSON.parse(json);
             if (json.type === "serverContent") { json.type = "Server Content" }
-            if (json.tags.length == 1) { 
-                $("#gmaPreview table tr .addonTags").text(json.tags[0]);
-            } else if (json.tags.length == 2) {
-                $("#gmaPreview table tr .addonTags").text(json.tags[0] + ", " + json.tags[1]);
-            } else if (json.tags.length == 0) { 
-                $("#gmaPreview table tr .addonTags").text("None"); 
-            }
+            console.log(json);
+            switch (json.tags.length) {
+                case 1:
+                    $("#gmaPreview table tr .addonTags").text(json.tags[0]);
+                    break;
+                case 2:
+                    $("#gmaPreview table tr .addonTags").text(json.tags[0], json.tags[1]);
+                    break;
+                default:
+                    $("#gmaPreview table tr .addonTags").text("None"); 
+                    break;
+             }
             $("#gmaPreview table tr .addonTitle").text(json.title);
             $("#gmaPreview table tr .addonType").text(json.type);
-            
             $("#addonIconCheck").data("divtoshow", "#gmaPrep");
             $("#addonIconCheck").data("resize", "500, 510");
-        } else {
-            // errorNote("Oh fuck oh shit", false, false)
         }
     }
 

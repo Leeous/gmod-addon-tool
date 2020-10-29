@@ -133,6 +133,12 @@ header {
 }
 
 #settings header div p a {
+    text-decoration: none;
+    font-style: italic;
+    color: white;
+}
+
+#settings header div p a:hover {
     text-decoration: underline;
     color: white;
 }

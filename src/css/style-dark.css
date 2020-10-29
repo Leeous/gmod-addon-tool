@@ -130,6 +130,12 @@ header {
 }
 
 #settings header div p a {
+    text-decoration: none;
+    font-style: italic;
+    color: white;
+}
+
+#settings header div p a:hover {
     text-decoration: underline;
     color: white;
 }
@@ -320,7 +326,7 @@ header {
 
 #addonPreviewDetails td, #addonPreviewExisting td {
     padding: 5px 15px;
-    background-color: #202020;
+    background-color: #0f0f0f;
     max-width: 250px;
     max-height: 75px;
     white-space: nowrap;
@@ -529,7 +535,7 @@ div#addonPreviewExisting div {
 .next_prompt button {
     width: 100%;
     border-radius: 0;
-    background-color: #202020;
+    background-color: #0f0f0f;
     color: white;
     cursor: not-allowed;
     border: none;
@@ -549,10 +555,14 @@ div#addonPreviewExisting div {
     padding: 10px;
     font-size: 1.1em;
     transition: ease 0.2s all;
+    background-color: #0f0f0f;
+    color: white;
 }
 
 .buttonListTemplate button:hover {
     letter-spacing: .3px;
+    background-color: white;
+    color: black;
 }
 
 .buttonListTemplate button:focus {
