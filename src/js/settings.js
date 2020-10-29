@@ -7,16 +7,23 @@ const {
     files,
     app
 } = require("electron");
+const { set } = require("electron-settings");
 
 $(document).ready(() => {
     // Button functionality 
     document.getElementById("resetSettings").addEventListener("click", () => {
-        $("#resetSettings").text("Settings erased!");
-        $("#resetSettings").css({
-            backgroundColor: "#ff4343",
-            color: "white"
-        });
+        document.getElementById("resetSettings").innerHTML = "Settings erased!";
+        document.getElementById("resetSettings").style.backgroundColor = "#ff4343";
+        document.getElementById("resetSettings").style.color = "white";
+        // Delete all settings
         settings.deleteAll();
+        // Restart app to make changes take effect
+        setTimeout(() => {
+            document.getElementById("resetSettings").innerHTML = "Restarting...";
+            setTimeout(() => {
+                remote.app.relaunch(); remote.app.exit(); 
+            }, 1000)
+        }, 2000)
     });
     
     document.getElementById("openConsole").addEventListener("click", () => {

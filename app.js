@@ -42,18 +42,25 @@ let isWin = process.platform === "win32";
 if (isWin) {ext = ".ico"; gmpublishFile = "gmpublish.exe"; gmadFile = "gmad.exe"} else {ext = ".png"; gmpublishFile = "gmpublish_linux"; gmadFile = "gmad_linux"};
 
 function createWindow() {
+  // This will only run the first time the user launches the app or resets settings
+  if (settings.get("firstRun") == null) {
+    settings.set("firstRun", false);
+    settings.set("darkMode", false);
+
+    // Check to see if user has Garry's Mod installed on local C: drive so we can skip getting the directory
+    fs.stat("C:/Program Files (x86)/Steam/steamapps/common/GarrysMod", (err, stat) => {
+      if (!err) { settings.set("gmodDirectory", "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod") }
+    });
+  }
+
   app.allowRendererProcessReuse = true;
 
   // Change background color based on user theme or first launch
-  if (settings.get("darkMode") !== null ) { 
-    if (settings.get("darkMode")) { 
-      theme = "#202020" 
-    } else { 
-      theme = "#048CEC";
-    } 
-  } else {
+  if (settings.get("darkMode")) { 
+    theme = "#202020" 
+  } else { 
     theme = "#048CEC";
-  }
+  } 
 
   // Create the browser window.
   mainWindow = new BrowserWindow({

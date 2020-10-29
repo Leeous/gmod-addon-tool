@@ -69,13 +69,11 @@ let fileDialogOptions = {
 
 window.addEventListener("DOMContentLoaded", (e) => {
 
-    if (settings.get("darkMode") !== null) {
-        if (settings.get("darkMode")) {
-            document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style-dark.css");
-        } else {
-            document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style.css");
-        }
-    } else { document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style.css"); }
+    if (settings.get("darkMode")) {
+        document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style-dark.css");
+    } else {
+        document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style.css");
+    }
 
     // Show user disclaimer if it has not been accepted
     if (!settings.get('disclaimer')) {
