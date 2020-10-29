@@ -165,23 +165,18 @@ header {
     border-radius: 5px 0 0 5px;
 }
 
+#settings main div button:first-child:hover {
+    border-radius: 5px 0 0 5px;
+    background-color: #048CEC;
+}
+
 #settings main div button:last-child {
     border-radius: 0 5px 5px 0;
 }
 
-.real_select {
-    display: none;
-}
-
-.fake_select {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: white;
-    font-size: .8em;
-    cursor: pointer;
-    transition: ease 0.5s all;
-    outline: none;
+#settings main div button:last-child:hover {
+    border-radius: 0 5px 5px 0;
+    background-color: #202020;
 }
 
 #status_of_dir {

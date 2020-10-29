@@ -68,7 +68,7 @@ function createWindow() {
     height: 225,
     resizable: false,
     fullscreenable: false,
-    backgroundColor: theme,
+    backgroundColor: (settings.get("darkMode") ? "#202020" : "#048CEC"),
     titleBarStyle: "hidden",
     frame: false,
     icon: __dirname + "/src/img/icon" + ext,
@@ -304,7 +304,7 @@ function openSettings(callback) {
     autoHideMenuBar: true,
     resizable: false,
     fullscreenable: false,
-    backgroundColor: "#262626",
+    backgroundColor: (settings.get("darkMode") ? "#202020" : "#048CEC"),
     titleBarStyle: "hidden",
     frame: false,
     webPreferences: { 

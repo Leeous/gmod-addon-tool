@@ -15,7 +15,7 @@ addon_data = [];
 api_data = {"itemcount": "0"};
 okToProcessAddonList = false;
 donePopulatingAddonList = false;
-currentAppVersion = "v2.2";
+currentAppVersion = "v2.3";
 hiddenAddons = 0;
 
 // These are addon related variables, most are reset on completion/fail/abort
@@ -35,7 +35,6 @@ addonToCreateData = {
     "tags": [],
     "ignore": []
 };
-currentAppVersion = "v2.2";
 let onlyCreate = null; // This tells us if the user is only wanting to create a GMA
 
 // Dialog properties
@@ -68,11 +67,9 @@ let fileDialogOptions = {
 
 
 window.addEventListener("DOMContentLoaded", (e) => {
-
+    // Switch to dark stylesheet if it's set
     if (settings.get("darkMode")) {
         document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style-dark.css");
-    } else {
-        document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style.css");
     }
 
     // Show user disclaimer if it has not been accepted
@@ -93,6 +90,17 @@ window.addEventListener("DOMContentLoaded", (e) => {
             console.log("Something went wrong.");
         });
     }
+
+    // Check current version, let user know if it differs
+    $.ajax({
+        type: "GET",
+        url: "https://api.github.com/repos/Leeous/gmod-addon-tool/releases/latest",
+        dataType: "json"
+    }).done((data) => {
+        if (data.tag_name !== currentAppVersion) {
+            newUpdate(data.tag_name);
+        }
+    });
 
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get("gmodDirectory")) {
@@ -369,21 +377,6 @@ window.addEventListener("DOMContentLoaded", (e) => {
             $("#createGMA").fadeIn();
             ipcRenderer.send("createGMAFile", currentNewAddon);
         });
-    });
-
-    // =============
-    // AJAX Requests
-    // =============
-
-    // Check current version, let user know if it differs
-    $.ajax({
-        type: "GET",
-        url: "https://api.github.com/repos/Leeous/gmod-addon-tool/releases/latest",
-        dataType: "json"
-    }).done((data) => {
-        if (data.tag_name != currentAppVersion) {
-            newUpdate(data.tag_name);
-        }
     });
 
     // =========
