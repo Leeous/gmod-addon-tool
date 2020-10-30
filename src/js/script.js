@@ -598,7 +598,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     }
 
     // Resets any data we've gotten from the user for the new addon
-    function resetAddonCreation() {
+    function resetAddonCreation(finishedCallback) {
         console.log("Resetting addon creation flow...");
         jsonCheckboxCount = 0;
         onlyCreate = null;
@@ -643,9 +643,17 @@ window.addEventListener("DOMContentLoaded", (e) => {
         existingAddonId = null;
 
         // Hide any div that may still be displayed
-        $("#create_new_addon, #addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").css("display", "none");
-        fadeIn("#addon_management_prompt");
+        document.querySelectorAll("#create_new_addon, #addonIconPrompt, #jsonCreator, #gmaPrep, #createGMA, #new_addon, #uploading, #uploadToWorkshopPrompt, #newAddonLocation").forEach((el) => {
+            el.style.display = "none";
+        });
 
+        // Run callback, only used for when an addon flow error occurs at the moment, example: addon fails file verification
+        try {
+            finishedCallback()
+        } catch (error) {
+            console.log("No callback function provided to resetAddonCreation().")
+        }
+        
         // Resize window for #addon_management_prompt
         win.setBounds({
             height: 200
@@ -679,29 +687,47 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
     // fatal: app cannnot contiune, will close in few seconds. flowFatal: addon creation/update failed, resets creation/update process.
     function errorNote(message, fatal, flowFatal) {
-        $("#errorNote .errorText").text(message);
+
+        // Update #errorNote with the error text
+        $("#errorNote .errorText").text(message)
+        
+        // Countdown durations
         let countdownSeconds = 15;
-        let countdownMS = 15000;
-        if (flowFatal) { resetAddonCreation() }
+        let countdownMS = (fatal) ? 20000 : 3000;
+
+        // If the addon flow failed, hide all divs and fade in #addon_management_prompt
+        if (flowFatal) { 
+            resetAddonCreation(() => {
+                fadeIn("#addon_management_prompt");
+            });
+        }
+
+        // If error is fatal, display countdown until exit.
         if (fatal) {
-            countdownMS = 20000;
             document.getElementById("fatalError").style.display = "block";
+
+            // Countdown logic
             setInterval(() => {
                 document.querySelector("#fatalError span").innerHTML = countdownSeconds;
                 countdownSeconds--
-            }, 1000)
+            }, 1000);
+            
+            // Exit app in 17000ms
+            setTimeout(() => {
+                resetAddonCreation(); remote.app.exit(0); // Kills addon flow if something fucks up
+            }, 17000);
         } else {
             document.getElementById("fatalError").style.display = "none";
-            fadeIn("#errorNote");
-            setTimeout(() => {
-                fadeOut("#errorNote");
-            }, 5000)
         }
-        ipcRenderer.send("logError", [message]);
-        // $("#errorNote").fadeIn().delay(countdownMS).fadeOut();
+
+        // Fade in #errorNote for countdownMS (changed based on fatal or flowFatal)
+        fadeIn("#errorNote");
         setTimeout(() => {
-            if (fatal) { resetAddonCreation(); remote.app.exit(0); } // Kills addon flow if something fucks up
-        }, 17000);
+            fadeOut("#errorNote");
+        }, countdownMS);
+
+        // Log error
+        ipcRenderer.send("logError", [message]);
     }
 
     // ========================
