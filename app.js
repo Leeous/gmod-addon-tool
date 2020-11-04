@@ -9,7 +9,7 @@ const {
 const fs = require('fs');
 const { spawn } = require('cross-spawn');
 const settings = require('electron-settings');
-const homedir = require('os').homedir();
+const homeDir = require('os').homedir();
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -19,27 +19,48 @@ var dtObj = new Date();
 var hours = dtObj.getHours();
 var minutes = dtObj.getMinutes();
 var finalTime = hours + ":" + minutes;
+let isWin = process.platform === "win32";
+// Changes extensions to appropriate endings for Linux or Windows 
+ext = (isWin) ? ".ico" : ".png";
+gmpublishFile = (isWin) ? "gmpublish.exe" : "gmpublish_linux";
+gmadFile = (isWin) ? "gmad.exe" : "gmad_linux";
+logLocation = (isWin) ? "AppData/Roaming/gmod-addon-tool/GMATLog.txt" : "/.gmod-addon-tool/GMATLog.txt";
 
 console.log('\n');
 
 // Create log file if it doesn't exist
-fs.stat(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", function(err, stats) {
-  if (err) {
-    if (err != null) { console.log(err); }
-    fs.access(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", fs.constants.F_OK, (err) => {
-      console.log("Created log.txt");
-      fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "--- Beginning of log --- \n", 'utf8', (err) => {
+if (isWin) {
+  fs.stat(homeDir + logLocation, function(err, stats) {
+    if (err) {
+      if (err != null) { console.log(err); }
+      fs.access(homeDir + logLocation, fs.constants.F_OK, (err) => {
+        console.log("Created log.txt");
+        fs.appendFile(homeDir + logLocation, "--- Beginning of log --- \n", 'utf8', (err) => {
+        });
       });
-    });
-  } else {
-    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
+    } else {
+      fs.appendFile(homeDir + logLocation, "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
+    }
+  });
+} else {
+  // Create directory for GMAT logs, if it doesn't exist
+  if (!fs.existsSync(homeDir + "/.gmod-addon-tool")) {
+    fs.mkdirSync(homeDir + "/.gmod-addon-tool");
   }
-});
 
-// Changes extensions to appropriate endings for Linux or Windows 
-let isWin = process.platform === "win32";
-
-if (isWin) {ext = ".ico"; gmpublishFile = "gmpublish.exe"; gmadFile = "gmad.exe"} else {ext = ".png"; gmpublishFile = "gmpublish_linux"; gmadFile = "gmad_linux"};
+  fs.stat(homeDir + logLocation, function(err, stats) {
+    if (err) {
+      if (err != null) { console.log(err); }
+      fs.access(homeDir + logLocation, fs.constants.F_OK, (err) => {
+        console.log("Created log.txt");
+        fs.appendFile(homeDir + logLocation, "--- Beginning of log --- \n", 'utf8', (err) => {
+        });
+      });
+    } else {
+      fs.appendFile(homeDir + logLocation, "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
+    }
+  });
+}
 
 function createWindow() {
   // This will only run the first time the user launches the app or resets settings
@@ -54,13 +75,6 @@ function createWindow() {
   }
 
   app.allowRendererProcessReuse = true;
-
-  // Change background color based on user theme or first launch
-  if (settings.get("darkMode")) { 
-    theme = "#202020" 
-  } else { 
-    theme = "#048CEC";
-  } 
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -189,20 +203,19 @@ var ADDON_IDS = [];
 function sendClientAddonInfo() {
   const bat = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['list']);
   bat.stdout.on('data', (data) => {
-    console.log(data.toString());
-    sendConsoleData(data.toString().split('\n'));
+    sendConsoleData(data.toString().split("\n"));
     var arrayOfOutput = data.toString().split('\n');
     var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3);
     for (var i = 0; i < fixedArray.length; i++) {
         fixedArray[i] = fixedArray[i].replace('/r', '');
         ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()]);
     }
-    if (fixedArray == "Couldn't initialize Steam!\r") {
+    if (data.includes("Couldn't initialize Steam!")) {
       mainWindow.webContents.send('errorNote', "Steam doesn't seem to be open!", true, false);
     }
     console.log("Addon IDs", ADDON_IDS);
     mainWindow.webContents.send('addonInfo', ADDON_IDS);
-  });
+  }, (err) => {console.log(err)});
 }
 
 // This creates our addon.json
@@ -233,6 +246,7 @@ ipcMain.on('createGMAFile', (event, addonDir) => {
       sendConsoleData(arrayOfOutput);
     }
   });
+  gmad.on("error", (err) => {sendConsoleData([err])})
 });
 
 // This block will upload the GMA file to the Steam Workshop
@@ -285,7 +299,7 @@ ipcMain.on("extractAddon", (e, path) => {
 // Writes info to GMATLog.txt
 function sendConsoleData(dataArray) {
   dataArray.forEach(data => {
-    fs.appendFile(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt", "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
+    fs.appendFile(homeDir + logLocation, "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
   });
 }
 

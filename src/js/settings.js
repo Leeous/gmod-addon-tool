@@ -1,6 +1,6 @@
 const shell = require("electron").shell;
 const settings = require("electron-settings");
-const homedir = require('os').homedir();
+const homeDir = require('os').homedir();
 const {
     remote,
     ipcRenderer,
@@ -9,6 +9,8 @@ const {
 } = require("electron");
 const { set } = require("electron-settings");
 const { domainToUnicode } = require("url");
+let isWin = process.platform === "win32";
+logLocation = (isWin) ? "AppData/Roaming/gmod-addon-tool/GMATLog.txt" : "/.gmod-addon-tool/GMATLog.txt";
 
 $(document).ready(() => {
     if (settings.get("darkMode")) { document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style-dark.css"); }
@@ -31,7 +33,7 @@ $(document).ready(() => {
     document.getElementById("currentAppVersion").innerHTML = "Version " + remote.app.getVersion().slice(0, 3);
     
     document.getElementById("openConsole").addEventListener("click", () => {
-        shell.openItem(homedir + "/AppData/Roaming/gmod-addon-tool/GMATLog.txt");
+        shell.openItem(homeDir + logLocation);
     });
   
     document.getElementById("closeApp").addEventListener("click", () => {
