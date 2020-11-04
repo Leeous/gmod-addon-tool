@@ -31,6 +31,10 @@ Common mistakes you should be aware of,
 
 * you **must** have Garry's Mod installed to use this tool, since it utilizes `gmad.exe` and `gmpublish.exe` which can be found in `/GarrysMod/bin/` 
 
+#### Linux specific
+
+If the "Update existing addon" button is stuck in an infinite load, it's possible the libraries required for `gmad_linux` and `gmpublish_linux` are not correctly linked. This can be fixed in several ways and usually varies by distro so I cannot provide direct troubleshooting for this issue. ~~Google~~ DuckDuckGo is your friend.
+
 Otherwise, [create an issue](https://github.com/Leeous/gmod-addon-tool/issues/new) or send me a tweet/DM.
 
 ### Social
