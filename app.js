@@ -69,8 +69,8 @@ function createWindow() {
     settings.set("darkMode", false);
 
     // Check to see if user has Garry's Mod installed on local C: drive so we can skip getting the directory
-    fs.stat("C:/Program Files (x86)/Steam/steamapps/common/GarrysMod", (err, stat) => {
-      if (!err) { settings.set("gmodDirectory", "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod") }
+    fs.stat((isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod", (err, stat) => {
+      if (!err) { settings.set("gmodDirectory", (isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod") }
     });
   }
 
