@@ -9,71 +9,32 @@ const {
 const fs = require('fs');
 const { spawn } = require('cross-spawn');
 const settings = require('electron-settings');
+const { data } = require('jquery');
 const homeDir = require('os').homedir();
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 let promptWindow;
 let addonJSON;
+let isWin = process.platform === "win32";
 var dtObj = new Date();
 var hours = dtObj.getHours();
 var minutes = dtObj.getMinutes();
 var finalTime = hours + ":" + minutes;
-let isWin = process.platform === "win32";
+var ADDON_IDS = [];
 // Changes extensions to appropriate endings for Linux or Windows 
 ext = (isWin) ? ".ico" : ".png";
 gmpublishFile = (isWin) ? "gmpublish.exe" : "gmpublish_linux";
 gmadFile = (isWin) ? "gmad.exe" : "gmad_linux";
-logLocation = (isWin) ? "AppData/Roaming/gmod-addon-tool/GMATLog.txt" : "/.gmod-addon-tool/GMATLog.txt";
+logLocation = (isWin) ? "\\AppData\\Roaming\\gmod-addon-tool\\GMATLog.txt" : "/.gmod-addon-tool/GMATLog.txt";
 
 console.log('\n');
 
-// Create log file if it doesn't exist
-if (isWin) {
-  fs.stat(homeDir + logLocation, function(err, stats) {
-    if (err) {
-      if (err != null) { console.log(err); }
-      fs.access(homeDir + logLocation, fs.constants.F_OK, (err) => {
-        console.log("Created log.txt");
-        fs.appendFile(homeDir + logLocation, "--- Beginning of log --- \n", 'utf8', (err) => {
-        });
-      });
-    } else {
-      fs.appendFile(homeDir + logLocation, "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
-    }
-  });
-} else {
-  // Create directory for GMAT logs, if it doesn't exist
-  if (!fs.existsSync(homeDir + "/.gmod-addon-tool")) {
-    fs.mkdirSync(homeDir + "/.gmod-addon-tool");
-  }
-
-  fs.stat(homeDir + logLocation, function(err, stats) {
-    if (err) {
-      if (err != null) { console.log(err); }
-      fs.access(homeDir + logLocation, fs.constants.F_OK, (err) => {
-        console.log("Created log.txt");
-        fs.appendFile(homeDir + logLocation, "--- Beginning of log --- \n", 'utf8', (err) => {
-        });
-      });
-    } else {
-      fs.appendFile(homeDir + logLocation, "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
-    }
-  });
-}
+//################//
+// Electron stuff //
+//################//
 
 function createWindow() {
-  // This will only run the first time the user launches the app or resets settings
-  if (settings.get("firstRun") == null) {
-    settings.set("firstRun", false);
-    settings.set("darkMode", false);
-
-    // Check to see if user has Garry's Mod installed on local C: drive so we can skip getting the directory
-    fs.stat((isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod", (err, stat) => {
-      if (!err) { settings.set("gmodDirectory", (isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod") }
-    });
-  }
-
   app.allowRendererProcessReuse = true;
 
   // Create the browser window.
@@ -117,27 +78,49 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function() {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') app.quit()
-})
+//#################//
+// Settings & logs //
+//#################//
 
-app.on('activate', function() {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) createWindow()
-})
+// Create log file if it doesn't exist
+if (isWin) {
+  fs.stat(homeDir + logLocation, function(err, stats) {
+    if (err) {
+      if (err != null) { console.log(err); }
+      fs.access(homeDir + logLocation, fs.constants.F_OK, (err) => {
+        console.log("Created log.txt");
+        fs.appendFile(homeDir + logLocation, "--- Beginning of log --- \n", 'utf8', (err) => {
+        });
+      });
+    } else {
+      fs.appendFile(homeDir + logLocation, "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
+    }
+  });
+} else {
+  // Create directory for GMAT logs, if it doesn't exist
+  if (!fs.existsSync(homeDir + "/.gmod-addon-tool")) {
+    fs.mkdirSync(homeDir + "/.gmod-addon-tool");
+  }
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+  fs.stat(homeDir + logLocation, function(err, stats) {
+    if (err) {
+      if (err != null) { console.log(err); }
+      fs.access(homeDir + logLocation, fs.constants.F_OK, (err) => {
+        console.log("Created log.txt");
+        fs.appendFile(homeDir + logLocation, "--- Beginning of log --- \n", 'utf8', (err) => {
+        });
+      });
+    } else {
+      fs.appendFile(homeDir + logLocation, "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
+    }
+  });
+}
 
-// Settings Modal
+// Settings modal
 function openSettings(callback) {
   promptWindow = new BrowserWindow({
-    width: 200, 
-    height: 150,
+    width: 250, 
+    height: 275,
     parent: mainWindow,
     show: false,
     modal: true,
@@ -145,7 +128,7 @@ function openSettings(callback) {
     autoHideMenuBar: true,
     resizable: false,
     fullscreenable: false,
-    backgroundColor: "#262626",
+    backgroundColor: (settings.get("darkMode") ? "#202020" : "#048CEC"),
     titleBarStyle: "hidden",
     frame: false,
     webPreferences: { 
@@ -157,21 +140,41 @@ function openSettings(callback) {
     promptWindow = null 
   });
 
+  promptWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    require('electron').shell.openExternal(url);
+  });
+
   // Load the HTML dialog box
   promptWindow.loadFile("settings.html");
   promptWindow.once('ready-to-show', () => { promptWindow.show();});
 }
 
-
-
-// Checks to see if the directory the user chooses is writeable 
-ipcMain.on('checkIfDirectoryExists', (event, file, jsonCheck) => {
-  fs.access(file, fs.constants.R_OK, (err) => {
-    console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
+  ipcMain.on("openSettings", (e) => {
+    console.log(__dirname);
+    openSettings();
   });
-  if (jsonCheck) { checkIfAddonJSONExist(file) }
+
+
+// Writes info to GMATLog.txt
+function sendConsoleData(dataArray) {
+  dataArray.forEach(data => {
+    fs.appendFile(homeDir + logLocation, "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
+  });
+}
+
+// Also let client tell us about errors
+ipcMain.on("logError", (e, error) => {
+  sendConsoleData(error);
 });
 
+//#######################//
+// Addon related logic  //
+//#######################//
+
+// addon.json related //
+
+// Check if user's addon folder already has addon.json, let client know
 function checkIfAddonJSONExist(file) {
   console.log("Checking for addon.json in " + file);
   fs.stat(file + "/addon.json", function(err, stats) {
@@ -190,34 +193,6 @@ function checkIfAddonJSONExist(file) {
   });
 }
 
-// This will send the client the IDs of their addons
-ipcMain.on('getAddonInfo', () => {
-  console.log('Trying to get addon info...');
-  sendClientAddonInfo();
-  console.log("User's Gmod Directory:" + settings.get('gmodDirectory'));
-});
-
-var ADDON_IDS = [];
-
-// We use this to get the addon IDs from gmpublish.exe
-function sendClientAddonInfo() {
-  const bat = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['list']);
-  bat.stdout.on('data', (data) => {
-    sendConsoleData(data.toString().split("\n"));
-    var arrayOfOutput = data.toString().split('\n');
-    var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3);
-    for (var i = 0; i < fixedArray.length; i++) {
-        fixedArray[i] = fixedArray[i].replace('/r', '');
-        ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()]);
-    }
-    if (data.includes("Couldn't initialize Steam!")) {
-      mainWindow.webContents.send('errorNote', "Steam doesn't seem to be open!", true, false);
-    }
-    console.log("Addon IDs", ADDON_IDS);
-    mainWindow.webContents.send('addonInfo', ADDON_IDS);
-  }, (err) => {console.log(err)});
-}
-
 // This creates our addon.json
 ipcMain.on('createJsonFile', (event, json, dir) => {
   fs.writeFileSync(dir + "/addon.json", JSON.stringify(json), 'utf8', (err) => {
@@ -226,6 +201,39 @@ ipcMain.on('createJsonFile', (event, json, dir) => {
     }
   });
 });
+
+// User's current addons //
+
+// This will send the client the IDs of their addons
+ipcMain.on('getAddonInfo', () => {
+  console.log('Trying to get addon info...');
+  sendClientAddonInfo();
+  console.log("User's Gmod Directory:" + settings.get('gmodDirectory'));
+});
+
+// We use this to get the addon IDs from gmpublish.exe
+function sendClientAddonInfo() {
+  const bat = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['list']);
+  bat.stdout.on('data', (data) => {
+    sendConsoleData(data.toString().split("\n"));
+    var arrayOfOutput = data.toString().split('\n');
+    // fixedArray are the lines where we get a 
+    var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3);
+    if (data.includes("Couldn't initialize Steam!")) {
+      mainWindow.webContents.send('errorNote', "Steam doesn't seem to be open!", true, false);
+    }
+    if (data.includes("Done.")) { 
+      for (var i = 0; i < fixedArray.length; i++) {
+        fixedArray[i] = fixedArray[i].replace('/r', '');
+        ADDON_IDS.push([fixedArray[i].substr(0, 11).replace(/\s/g, '').toString()]);
+      }
+      console.log("Addon IDs", ADDON_IDS);
+      mainWindow.webContents.send('addonInfo', ADDON_IDS);
+    }
+  }, (err) => {console.log(err)});
+}
+
+// Addon creation and uploading //
 
 // This is ran once the client requests to create an addon
 ipcMain.on('createGMAFile', (event, addonDir) => {
@@ -245,7 +253,7 @@ ipcMain.on('createGMAFile', (event, addonDir) => {
       console.log("GMA location: " + addonGMADir);
       sendConsoleData(arrayOfOutput);
     }
-  });
+  }), (err) => { console.log(err) };
   gmad.on("error", (err) => {sendConsoleData([err])})
 });
 
@@ -276,7 +284,6 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
       if (data.includes('512x512')) {
         mainWindow.webContents.send("errorNote", "Image must be a 512x512 baseline jpeg! Trying exporting with Paint.", false, false);
       }
-      
       if (data.includes("Addon creation finished")) {
         var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
         fixedArray = fixedArray[0].replace(/\D/, '');
@@ -290,66 +297,31 @@ ipcMain.on('uploadToWorkshop', (event, gmaDir, iconDir, addonId) => {
   };
 });
 
+// Other things & stuff //
+
 // This will extract a GMA file into the same directory
 ipcMain.on("extractAddon", (e, path) => {
   const gmad = spawn(settings.get('gmodDirectory') + '/bin/' + gmadFile, ['extract', '-file', path]);
+  gmad.stdout.on("data", (DATA) => sendConsoleData([DATA]));
+  gmad.on("error", (err) => sendConsoleData([err]));
   mainWindow.webContents.send("finishExtraction");
 });
 
-// Writes info to GMATLog.txt
-function sendConsoleData(dataArray) {
-  dataArray.forEach(data => {
-    fs.appendFile(homeDir + logLocation, "\n[" + finalTime + "]" + data, 'utf8', (err) => {});
+// Checks to see if the directory the user chooses is writeable 
+ipcMain.on('checkIfDirectoryExists', (event, file, jsonCheck) => {
+  fs.access(file, fs.constants.R_OK, (err) => {
+    console.log(`${file} ${err ? 'is not readable' : 'is readable'}`);
+  });
+  if (jsonCheck) { checkIfAddonJSONExist(file) }
+});
+
+// This will only run the first time the user launches the app or resets settings
+if (settings.get("firstRun") == null) {
+  settings.set("firstRun", false);
+  settings.set("darkMode", false);
+
+  // Check to see if user has Garry's Mod installed on local drive so we can skip getting the directory
+  fs.stat((isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod", (err, stat) => {
+    if (!err) { settings.set("gmodDirectory", (isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod") }
   });
 }
-
-// Settings Modal
-
-// Creating the dialog
-
-function openSettings(callback) {
-  promptWindow = new BrowserWindow({
-    width: 250, 
-    height: 275,
-    parent: mainWindow,
-    show: false,
-    modal: true,
-    title : "Settings",
-    autoHideMenuBar: true,
-    resizable: false,
-    fullscreenable: false,
-    backgroundColor: (settings.get("darkMode") ? "#202020" : "#048CEC"),
-    titleBarStyle: "hidden",
-    frame: false,
-    webPreferences: { 
-      nodeIntegration: true,
-    }
-  });
-
-  promptWindow.on('closed', () => { 
-    promptWindow = null 
-  });
-
-  promptWindow.webContents.on('new-window', function(e, url) {
-    e.preventDefault();
-    require('electron').shell.openExternal(url);
-  });
-
-  // Load the HTML dialog box
-  promptWindow.loadFile("settings.html")
-  promptWindow.once('ready-to-show', () => { promptWindow.show();});
-}
-
-ipcMain.on("openSettings", (e) => {
-  console.log(__dirname);
-  openSettings();
-});
-
-
-ipcMain.on("openConsole", (e) => {
-  openConsole();
-});
-
-ipcMain.on("logError", (e, error) => {
-  sendConsoleData(error);
-});

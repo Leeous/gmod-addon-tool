@@ -10,7 +10,7 @@ const {
 const { set } = require("electron-settings");
 const { domainToUnicode } = require("url");
 let isWin = process.platform === "win32";
-logLocation = (isWin) ? "AppData/Roaming/gmod-addon-tool/GMATLog.txt" : "/.gmod-addon-tool/GMATLog.txt";
+logLocation = (isWin) ? "\\AppData\\Roaming\\gmod-addon-tool\\GMATLog.txt" : "/.gmod-addon-tool/GMATLog.txt";
 
 $(document).ready(() => {
     if (settings.get("darkMode")) { document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style-dark.css"); }
@@ -26,8 +26,8 @@ $(document).ready(() => {
             document.getElementById("resetSettings").innerHTML = "Restarting...";
             setTimeout(() => {
                 remote.app.relaunch(); remote.app.exit(); 
-            }, 1000)
-        }, 2000)
+            }, 500);
+        }, 1000);
     });
     
     document.getElementById("currentAppVersion").innerHTML = "Version " + remote.app.getVersion().slice(0, 3);

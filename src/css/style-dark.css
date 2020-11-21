@@ -36,6 +36,7 @@ header {
 
 .button_normal:hover {
     background-color: rgb(167, 167, 167); 
+    color: white;
 }
 
 .rowtwo {
