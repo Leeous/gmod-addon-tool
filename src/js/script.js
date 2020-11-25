@@ -8,7 +8,7 @@ const {
 const settings = require("electron-settings");
 const shell = require("electron").shell;
 const imageSize = require("image-size");
-const { event } = require("jquery");
+const { event, type } = require("jquery");
 const { dialog } = require("electron").remote;
 let win = remote.getCurrentWindow();
 addon_data = [];
@@ -92,15 +92,25 @@ window.addEventListener("DOMContentLoaded", (e) => {
     }
 
     // Check current version, let user know if it differs
-    $.ajax({
-        type: "GET",
-        url: "https://api.github.com/repos/Leeous/gmod-addon-tool/releases/latest",
-        dataType: "json"
-    }).done((data) => {
-        if (data.tag_name !== currentAppVersion) {
-            newUpdate(data.tag_name);
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "https://api.github.com/repos/Leeous/gmod-addon-tool/releases/latest", true);
+    xhttp.setRequestHeader('Content-type', 'application/json');
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Response
+            var response = this.responseText; 
         }
-    });
+    };
+    xhttp.send(JSON.stringify(api_data));
+    // $.ajax({
+    //     type: "GET",
+    //     url: "",
+    //     dataType: ""
+    // }).done((data) => {
+    //     if (data.tag_name !== currentAppVersion) {
+    //         newUpdate(data.tag_name);
+    //     }
+    // });
 
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get("gmodDirectory")) {
@@ -287,7 +297,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             });
         }
 
-        var ignoreList = $("#jsonIgnore input[name='addonIgnore']").val().replace(/\s/g,"").split(",");
+        var ignoreList = document.querySelector("#jsonIgnore input[name='addonIgnore']").value.replace(/\s/g,"").split(",");
         
         if (jsonChecks[0, 1]) {
             addonToCreateData.title = addonTitle;
@@ -296,30 +306,28 @@ window.addEventListener("DOMContentLoaded", (e) => {
             addonToCreateData.ignore = ignoreList;
             switch (addonTags.length) {
                 case 1:
-                    $("#gmaPreview table tr .addonTags").text(addonToCreateData.tags[0]);
+                    document.querySelector("#gmaPreview table tr .addonTags").innerHTML = addonToCreateData.tags[0];
                     break;
                 case 2:
-                    $("#gmaPreview table tr .addonTags").text(addonToCreateData.tags[0] + ", " + addonToCreateData.tags[1]);
+                    document.querySelector("#gmaPreview table tr .addonTags").innerHTML = addonToCreateData.tags[0] + ", " + addonToCreateData.tags[1];
                     break;
                 default:
-                    $("#gmaPreview table tr .addonTags").text("None"); 
+                    document.querySelector("#gmaPreview table tr .addonTags").innerHTML = "None";
                     break;
-             }
-            $("#gmaPreview table tr .addonTitle").text(addonToCreateData.title);
-            $("#gmaPreview table tr .addonType").text(addonToCreateData.type);
-            ipcRenderer.send("createJsonFile", addonToCreateData, currentNewAddon);
+            }
             if (addonToCreateData.type === "serverContent") { addonToCreateData.type = "Server Content" }
-            $("#gmaPreview table tr .addonTitle").text(addonToCreateData.title);
-            $("#gmaPreview table tr .addonType").text(addonToCreateData.type);
-            $("#addonIconCheck").data("divtoshow", "#gmaPrep");
-            $("#addonIconCheck").data("resize", "500, 510");
+            document.querySelector("#gmaPreview table tr .addonTitle").innerHTML = addonToCreateData.title;
+            document.querySelector("#gmaPreview table tr .addonType").innerHTML = addonToCreateData.type;
+            ipcRenderer.send("createJsonFile", addonToCreateData, currentNewAddon);
+            document.getElementById("addonIconCheck").setAttribute("divtoshow", "#gmaPrep");
+            document.getElementById("addonIconCheck").setAttribute("resize", "500, 510");
         }
     });
 
-    $("#yourAddons").on("click", ".updateAddon", (event) => {
+    document.getElementById("yourAddons").addEventListener("click", (event) => {
         var target = event.target;
-        existingAddonId = $(target).data("id");
-        $("#create_new_addon .top div h3").text("Updating addon");
+        existingAddonId = target.getAttribute("id");
+        document.querySelector("#create_new_addon .top div h3").innerHTML = "Updating addon";
         transition("#update_existing_addon", "#create_new_addon, #addonDirPrompt", [500, 250] )
     });
 
@@ -332,7 +340,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     //     });
     // });
 
-    $('.typeCheckbox').on('click', (event) => {
+    document.querySelector('.typeCheckbox').addEventListener('click', (event) => {
         var target = $(event.target);
         if (jsonCheckboxCount < 2 && target.is(":checked")) {
             jsonCheckboxCount++;
@@ -343,28 +351,30 @@ window.addEventListener("DOMContentLoaded", (e) => {
         }
 
         if (jsonCheckboxCount == 2) {
-            var checkboxes = $('.typeCheckbox');
-            if (!checkboxes.is(":checked")) {
-                $(checkboxes).prop('disabled', true);
+            var checkboxes = document.querySelectorAll(".typeCheckbox");
+            if (checkboxes.checked) {
+                checkboxes.disabled = true;
             }
         }
     });
 
     // Dyamically change boolean based on whether or not string is empty 
-    $("#jsonTitle >  input[name='addonTitle']").on("keyup", () => {
-        if ($("#jsonTitle >  input[name='addonTitle']").val() != "") {
-            addonTitle = $("#jsonTitle >  input[name='addonTitle']").val();
+    var jsonTitleHTML = document.querySelector("#jsonTitle >  input[name='addonTitle']");
+    jsonTitleHTML.addEventListener("keyup", () => {
+        if (jsonTitleHTML.value != "") {
+            addonTitle = jsonTitleHTML.value;
             jsonChecks[0] = true;
             validateJsonForm();
         } else {
             jsonChecks[0] = false;
             validateJsonForm();
         }
-    });
+    })
 
-    $("#jsonType > select[name='addonType']").change(() => {
-        if ($("#jsonType > select[name='addonType']").val() != "null") {
-            addonType = $("#jsonType > select[name='addonType']").val();
+    var jsonTypeHTML = document.querySelector("#jsonType > select[name='addonType']");
+    jsonTypeHTML.addEventListener("change", () => {
+        if (jsonTypeHTML.value != "null") {
+            addonType = jsonTypeHTML.value;
             jsonChecks[1] = true;
             validateJsonForm();
         } else {
@@ -373,20 +383,20 @@ window.addEventListener("DOMContentLoaded", (e) => {
         }
     });
 
-    $("#createOnly").click(() => {
+    document.getElementById("createOnly").addEventListener("click", () => {
         onlyCreate = true;
-        $("#gmaPrep").fadeOut(() => {
+        fadeOut("#gmaPrep", () => {
             win.setBounds({height: 250});
-            $("#createGMA").fadeIn();
+            fadeIn("#createGMA");
             ipcRenderer.send("createGMAFile", currentNewAddon);
         });
     });
 
-    $("#createAndUpload").click(() => {
+    document.getElementById("createAndUpload").addEventListener("click", () => {
         onlyCreate = false;
-        $("#gmaPrep").fadeOut(() => {
+        fadeOut("#gmaPrep", () => {
             win.setBounds({height: 250});
-            $("#createGMA").fadeIn();
+            fadeIn("#createGMA");
             ipcRenderer.send("createGMAFile", currentNewAddon);
         });
     });
@@ -420,8 +430,14 @@ window.addEventListener("DOMContentLoaded", (e) => {
     }
     
     // Request JSON infomation on addons based on ID (this cannot read from private addons)
+    var updateExistingAddonButtonHTML = document.getElementById("update_existing_addon_button");
     function getAddonInfoFromSteam(message) {
-        if (message.length == 0) { okToProcessAddonList = true; $("#update_existing_addon_button").text("No public addons").attr("disabled", "true").css({"backgroundColor": "#0261a5", "cursor": "not-allowed"}); }
+        if (message.length == 0) { okToProcessAddonList = true; 
+            updateExistingAddonButtonHTML.innerHTML = "No public addons";
+            updateExistingAddonButtonHTML.disabled = true;
+            updateExistingAddonButtonHTML.style.backgroundColor = "#0261a5";
+            updateExistingAddonButtonHTML.style.cursor = "not-allowed"; 
+        }
         arrayOfAddonIds = message;
         arrayOfAddonIds = arrayOfAddonIds.chunk(13);
         for (let i = 0; i < arrayOfAddonIds.length; i++) {
@@ -438,13 +454,14 @@ window.addEventListener("DOMContentLoaded", (e) => {
         }
         
         api_data["itemcount"] = array.length;
+        console.log(api_data)
 
-        $.ajax({
-            type: "POST",
-            url: "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/",
-            data: api_data,
-            dataType: "json",
-        }).done((data) => {
+        var steamRequest = new XMLHttpRequest();
+        steamRequest.open("POST", "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/", true);
+        steamRequest.setRequestHeader('Content-type', 'json');
+        steamRequest.onreadystatechange = function() {
+            console.log(this.responseText); 
+        if (this.readyState == 4 && this.status == 200) {
             var response = data.response;
             console.log(response);
             if (response.result == 1) {
@@ -469,10 +486,19 @@ window.addEventListener("DOMContentLoaded", (e) => {
             if (queuePosition != amtOfArrays) {
                 // Change button text and allow user to view/update thier addons
                 okToProcessAddonList = true;
-                $("#update_existing_addon_button").text("Update existing addon");
-                document.getElementById("update_existing_addon_button").disabled = false;
+                updateExistingAddonButtonHTML.innerHTML = "Update existing addon";
+                updateExistingAddonButtonHTML.disabled = false;
             }
-        });
+        }
+        };
+        xhttp.send(JSON.stringify(api_data));
+        // $.ajax({
+        //     type: "POST",
+        //     url: "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/",
+        //     data: api_data,
+        //     dataType: "json",
+        // }).done((data) => {
+        // });
     }
 
     Object.defineProperty(Array.prototype, 'chunk', {
@@ -488,11 +514,11 @@ window.addEventListener("DOMContentLoaded", (e) => {
     document.querySelectorAll(".transition_button").forEach((element) => {
         element.addEventListener("click", (event) => {
             var target = event.target;
-            var elToHide = $(target).data("divtohide");
-            var elToShow = $(target).data("divtoshow");
+            var elToHide = target.dataset.divtohide;
+            var elToShow = target.dataset.divtoshow;
             // Checks for resize data, if it exists, pass it to transition()
             if ($(target).data("resize") != null) {
-                var resizeInfo = JSON.parse("[" + $(target).data("resize") + "]");
+                var resizeInfo = JSON.parse("[" + target.dataset.resize + "]");
             }
             transition(elToHide, elToShow, resizeInfo);
         });
@@ -557,7 +583,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
          // This check is done to make sure this only gets executed once
         if (!donePopulatingAddonList) {
             for (let i = 0; i < array.length; i++) {
-                $("#yourAddons").append(`
+                document.getElementById("yourAddons").innerHTML = document.getElementById("yourAddons").innerHTML + `
                 <section class="publishedAddon">
                     <aside class="publishedTitle">
                         <h1>${array[i].title}</h1>
@@ -582,7 +608,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                         <p><a class="transition_button updateAddon" data-resize="500, 260" data-id="${array[i].id}"/a>Update</p>
                     </footer>
                 </section>
-                `);
+                `;
                 donePopulatingAddonList = true;
             }
             $("#yourAddons").append("<p>...and " + hiddenAddons + ` private ${hiddenAddons == 1 ? "addon" : "addons" }.</p>`);
@@ -615,25 +641,27 @@ window.addEventListener("DOMContentLoaded", (e) => {
         };
 
         // Reset all input values & checkboxes
-        $("#jsonTitle > input[name='addonTitle']").val("");
-        $("select[name='addonType']").val("null");
-        $(".typeCheckbox").prop("checked", false);
-        $("#jsonIgnore > input[name='addonIgnore']").val("");
+        document.querySelector("#jsonTitle > input[name='addonTitle']").value = "";
+        document.querySelector("select[name='addonType']").value = "null";
+        document.querySelectorAll(".typeCheckbox").forEach((el) => el.checked = false);
+        document.querySelector("#jsonIgnore > input[name='addonIgnore']").value = "";
 
         // Clear the addon name on directory selection
-        $("#addonDir b").text("");
+        document.querySelector("#addonDir b").innerHTML = "";
 
         // Set the file inputs to null
-        $("#addon_dir_folder").val(null);
-        $("#addon_icon").val(null);
+        document.getElementById("addon_dir_folder").value = null;
+        document.getElementById("addon_icon").value = null;
 
         // Reset directory validation
-        $("#addonDirCheck").css({backgroundColor: (settings.get("darkMode")) ? "#0f0f0f" : "#0261A5", cursor: "not-allowed"});
-        $("#addonDirCheck").prop("disabled", true);
+        document.getElementById("addonDirCheck").style.backgroundColor = settings.get("darkMode") ? "#0f0f0f" : "#0261A5";
+        document.getElementById("addonDirCheck").style.cursor = "not-allowed";
+        document.getElementById("addonDirCheck").disabled = true;
 
         // Reset icon validation
-        $("#addonIconCheck").css({backgroundColor: (settings.get("darkMode")) ? "#0f0f0f" :"#0261A5", cursor: "not-allowed"});
-        $("#addonIconCheck").prop("disabled", true);
+        document.getElementById("addonIconCheck").style.backgroundColor = settings.get("darkMode") ? "#0f0f0f" :"#0261A5";
+        document.getElementById("addonIconCheck").style.cursor = "not-allowed";
+        document.getElementById("addonIconCheck").disabled = true;
 
         // Reset validation checks
         jsonChecks = [false, false];
@@ -689,7 +717,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     function errorNote(message, fatal, flowFatal) {
 
         // Update #errorNote with the error text
-        $("#errorNote .errorText").text(message)
+        document.querySelector("#errorNote .errorText").innerHTML = message;
         
         // Countdown durations
         let countdownSeconds = 15;
@@ -752,19 +780,19 @@ window.addEventListener("DOMContentLoaded", (e) => {
             console.log(json);
             switch (json.tags.length) {
                 case 1:
-                    $("#gmaPreview table tr .addonTags").text(json.tags[0]);
+                    document.querySelector("#gmaPreview table tr .addonTags").innerHTML = json.tags[0];
                     break;
                 case 2:
-                    $("#gmaPreview table tr .addonTags").text(json.tags[0], json.tags[1]);
+                    document.querySelector("#gmaPreview table tr .addonTags").innerHTML = json.tags[0], json.tags[1];
                     break;
                 default:
-                    $("#gmaPreview table tr .addonTags").text("None"); 
+                    document.querySelector("#gmaPreview table tr .addonTags").innerHTML = "None"; 
                     break;
              }
-            $("#gmaPreview table tr .addonTitle").text(json.title);
-            $("#gmaPreview table tr .addonType").text(json.type);
-            $("#addonIconCheck").data("divtoshow", "#gmaPrep");
-            $("#addonIconCheck").data("resize", "500, 510");
+            document.querySelector("#gmaPreview table tr .addonTitle").innerHTML = json.title;
+            document.querySelector("#gmaPreview table tr .addonType").innerHTML = json.type;
+            document.getElementById("addonIconCheck").dataset.divtoshow = "#gmaPrep";
+            document.getElementById("addonIconCheck").dataset.resize = "500, 510";
         }
     }
 
@@ -772,7 +800,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     ipcRenderer.on("finishExtraction", (e) => {
         $("#extracting_addon").fadeOut(() => {
             win.setBounds({height: 225});
-            $("#extraction_done").fadeIn();
+            fadeIn("#extraction_done");
         });
     });
     
@@ -791,25 +819,25 @@ window.addEventListener("DOMContentLoaded", (e) => {
         $("#uploading").fadeOut(() => {
             win.setBounds({height: 225});
             if (existingAddonId == null) {
-                $("#new_addon_link").attr("href", "steam://url/CommunityFilePage/" + newAddonID)
+                document.getElementById("new_addon_link").setAttribute("href", "steam://url/CommunityFilePage/" + newAddonID);
             } else {
-                $("#new_addon_link").attr("href", "steam://url/CommunityFilePage/" + existingAddonId)
+                document.getElementById("new_addon_link").setAttribute("href", "steam://url/CommunityFilePage/" + existingAddonId);
             }
-            $("#new_addon").fadeIn();
+            fadeIn("#new_addon");
         });
     });
     
     // Transitions into the view to upload the created GMA to the workshop
     ipcRenderer.on("addonGMALocation", (event, addonGMA) => {
         addonGMADir = addonGMA;
-        $("#createGMA").fadeOut(() => {
+        fadeOut("#createGMA", () => {
             win.setBounds({height: 225});
             if (onlyCreate) {
-                $("#newAddonLocation").fadeIn();
+                fadeIn("#newAddonLocation");
             } else {
                 console.log(addonGMADir, addonIcon, existingAddonId);
                 ipcRenderer.send("uploadToWorkshop", addonGMADir, addonIcon, existingAddonId);
-                $("#uploading").fadeIn();
+                fadeIn("#uploading");
                 win.setBounds({height: 250});
             }
         });
