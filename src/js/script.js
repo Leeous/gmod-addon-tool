@@ -8,11 +8,11 @@ const {
 const settings = require("electron-settings");
 const shell = require("electron").shell;
 const imageSize = require("image-size");
-const { event, type } = require("jquery");
 const { dialog } = require("electron").remote;
+const queryString = require('querystring');
 let win = remote.getCurrentWindow();
 addon_data = [];
-api_data = {"itemcount": "0"};
+api_data = {"itemcount": 0};
 okToProcessAddonList = false;
 donePopulatingAddonList = false;
 currentAppVersion = "v2.3";
@@ -92,25 +92,19 @@ window.addEventListener("DOMContentLoaded", (e) => {
     }
 
     // Check current version, let user know if it differs
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "https://api.github.com/repos/Leeous/gmod-addon-tool/releases/latest", true);
-    xhttp.setRequestHeader('Content-type', 'application/json');
-    xhttp.onreadystatechange = function() {
+    var getNewestAppVersion = new XMLHttpRequest();
+    getNewestAppVersion.open("GET", "https://api.github.com/repos/Leeous/gmod-addon-tool/releases/latest", true);
+    getNewestAppVersion.setRequestHeader('Content-type', 'application/json');
+    getNewestAppVersion.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            // Response
             var response = this.responseText; 
+            var data = JSON.parse(response);
+            if (data.tag_name !== currentAppVersion) {
+                newUpdate(data.tag_name);
+            }
         }
     };
-    xhttp.send(JSON.stringify(api_data));
-    // $.ajax({
-    //     type: "GET",
-    //     url: "",
-    //     dataType: ""
-    // }).done((data) => {
-    //     if (data.tag_name !== currentAppVersion) {
-    //         newUpdate(data.tag_name);
-    //     }
-    // });
+    getNewestAppVersion.send(JSON.stringify(api_data));
 
     // If user has already defined their Garrysmod directory, just skip ahead to #addon_management
     if (settings.get("gmodDirectory")) {
@@ -247,8 +241,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 ipcRenderer.send("checkIfDirectoryExists", addonIcon);
             }
             var jpegCheck = addonIcon.substring(addonIcon.length - 4);
-            var sizeOf = require("image-size");
-            var dimensions = sizeOf(addonIcon);
+            var dimensions = imageSize(addonIcon);
             if (jpegCheck == "jpeg" || jpegCheck == ".jpg") {
                 if (dimensions.height == 512 && dimensions.width == 512) {
                     document.getElementById("addonIconCheck").style.backgroundColor = "#56bd56";
@@ -315,20 +308,12 @@ window.addEventListener("DOMContentLoaded", (e) => {
                     document.querySelector("#gmaPreview table tr .addonTags").innerHTML = "None";
                     break;
             }
-            if (addonToCreateData.type === "serverContent") { addonToCreateData.type = "Server Content" }
             document.querySelector("#gmaPreview table tr .addonTitle").innerHTML = addonToCreateData.title;
             document.querySelector("#gmaPreview table tr .addonType").innerHTML = addonToCreateData.type;
             ipcRenderer.send("createJsonFile", addonToCreateData, currentNewAddon);
             document.getElementById("addonIconCheck").setAttribute("divtoshow", "#gmaPrep");
             document.getElementById("addonIconCheck").setAttribute("resize", "500, 510");
         }
-    });
-
-    document.getElementById("yourAddons").addEventListener("click", (event) => {
-        var target = event.target;
-        existingAddonId = target.getAttribute("id");
-        document.querySelector("#create_new_addon .top div h3").innerHTML = "Updating addon";
-        transition("#update_existing_addon", "#create_new_addon, #addonDirPrompt", [500, 250] )
     });
 
     // Tells server to create the GMA
@@ -449,22 +434,18 @@ window.addEventListener("DOMContentLoaded", (e) => {
         let queuePosition = 0;
 
         for (let i = 0; i < array.length; i++) {
-            // const element = arrayOfAddonIds[i];
             api_data["publishedfileids[" + i + "]"] = parseInt(array[i]);
         }
         
-        api_data["itemcount"] = array.length;
-        console.log(api_data)
-
         var steamRequest = new XMLHttpRequest();
         steamRequest.open("POST", "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/", true);
-        steamRequest.setRequestHeader('Content-type', 'json');
+        steamRequest.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
+        api_data["itemcount"] = array.length;
+        steamRequest.send(queryString.stringify(api_data));
         steamRequest.onreadystatechange = function() {
-            console.log(this.responseText); 
-        if (this.readyState == 4 && this.status == 200) {
-            var response = data.response;
-            console.log(response);
-            if (response.result == 1) {
+            if (this.readyState == 4 && this.status == 200) {
+                var steamDataJSON = JSON.parse(this.response);
+                var response = steamDataJSON.response;
                 for (let i = 0; i < response.resultcount; i++) {
                     if (response.publishedfiledetails[i].result == 1) {
                         var addon = response.publishedfiledetails[i];
@@ -477,28 +458,21 @@ window.addEventListener("DOMContentLoaded", (e) => {
                             "favs": addon.favorited
                         }
                         queuePosition++;
+                        console.log(addonObject)
                         addon_data.push(addonObject);
                     } else {
                         hiddenAddons++;
                     }
                 }
+                if (queuePosition != amtOfArrays) {
+                    // Change button text and allow user to view/update thier addons
+                    okToProcessAddonList = true;
+                    updateExistingAddonButtonHTML.innerHTML = "Update existing addon";
+                    updateExistingAddonButtonHTML.disabled = false;
+                }
             }
-            if (queuePosition != amtOfArrays) {
-                // Change button text and allow user to view/update thier addons
-                okToProcessAddonList = true;
-                updateExistingAddonButtonHTML.innerHTML = "Update existing addon";
-                updateExistingAddonButtonHTML.disabled = false;
-            }
-        }
         };
-        xhttp.send(JSON.stringify(api_data));
-        // $.ajax({
-        //     type: "POST",
-        //     url: "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/",
-        //     data: api_data,
-        //     dataType: "json",
-        // }).done((data) => {
-        // });
+        steamRequest.addEventListener("error", (err) => console.log(err));
     }
 
     Object.defineProperty(Array.prototype, 'chunk', {
@@ -605,12 +579,22 @@ window.addEventListener("DOMContentLoaded", (e) => {
                     </aside>
                     <footer class="publishedControls">
                         <p><a href="steam://url/CommunityFilePage/${array[i].id}">View</a></p>
-                        <p><a class="transition_button updateAddon" data-resize="500, 260" data-id="${array[i].id}"/a>Update</p>
+                        <p><a class="transition_button updateAddon" data-resize="500, 260" data-id="${array[i].id}"/>Update</p>
                     </footer>
                 </section>
                 `;
                 donePopulatingAddonList = true;
             }
+            document.querySelectorAll(".updateAddon").forEach((element) => {
+                element.addEventListener("click", (event) => {
+                    var target = event.target;
+                    console.log(target)
+                    existingAddonId = target.dataset.id;
+                    document.querySelector("#create_new_addon .top div h3").innerHTML = "Updating addon";
+                    transition("#update_existing_addon", "#create_new_addon, #addonDirPrompt", [500, 250])
+                    console.log(existingAddonId)
+                });
+            });
             $("#yourAddons").append("<p>...and " + hiddenAddons + ` private ${hiddenAddons == 1 ? "addon" : "addons" }.</p>`);
             // Make sure if nothing is returned to let the user know
             if (apiError == 400) {

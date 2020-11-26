@@ -9,7 +9,6 @@ const {
 const fs = require('fs');
 const { spawn } = require('cross-spawn');
 const settings = require('electron-settings');
-const { data } = require('jquery');
 const homeDir = require('os').homedir();
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -245,7 +244,7 @@ ipcMain.on('createGMAFile', (event, addonDir) => {
     if (data.includes('File list verification failed')) {
       mainWindow.webContents.send("errorNote", "File list verification failed - check your addon for unallowed files.", false, true);
     }
-    if (data.includes("Successfully")) { 
+    if (data.includes("Successfully")) {
       var fixedArray = arrayOfOutput.slice(arrayOfOutput.length - 2, arrayOfOutput.length - 1);
       fixedArray = fixedArray[0].match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "");
       var addonGMADir = fixedArray;
