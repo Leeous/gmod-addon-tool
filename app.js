@@ -115,7 +115,6 @@ if (isWin) {
   });
 }
 
-// Settings modal
 function openSettings(callback) {
   promptWindow = new BrowserWindow({
     width: 250, 
@@ -167,9 +166,9 @@ ipcMain.on("logError", (e, error) => {
   sendConsoleData(error);
 });
 
-//#######################//
-// Addon related logic  //
-//#######################//
+//#####################//
+// Addon related logic //
+//#####################//
 
 // addon.json related //
 
