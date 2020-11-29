@@ -1,7 +1,7 @@
 {
   "name": "gmod-addon-tool",
   "version": "2.3.0",
-  "description": "A simple tool to update Garry's Mod workshop addons.",
+  "description": "A simple tool to create, update and extract Garry's Mod workshop addons.",
   "main": "app.js",
   "homepage": "https://leeous.com",
   "dependencies": {
@@ -24,8 +24,8 @@
     "linux": {
       "target": "Snap",
       "icon": "src/img/icon.png",
-      "synopsis": "A simple tool to update Garry's Mod workshop addons.",
-      "description": "A simple tool to update Garry's Mod workshop addons.",
+      "synopsis": "A simple tool to create, update and extract Garry's Mod workshop addons.",
+      "description": "A simple tool to create, update and extract Garry's Mod workshop addons.",
       "category": "Utility"
     },
     "win": {

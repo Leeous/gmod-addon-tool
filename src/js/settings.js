@@ -12,7 +12,7 @@ const { domainToUnicode } = require("url");
 let isWin = process.platform === "win32";
 logLocation = (isWin) ? "\\AppData\\Roaming\\gmod-addon-tool\\GMATLog.txt" : "/.gmod-addon-tool/GMATLog.txt";
 
-$(document).ready(() => {
+window.addEventListener("DOMContentLoaded", () => {
     if (settings.get("darkMode")) { document.querySelector("link[rel='stylesheet'][href^='src']").setAttribute("href", "src/css/style-dark.css"); }
     // Button functionality 
     document.getElementById("resetSettings").addEventListener("click", () => {

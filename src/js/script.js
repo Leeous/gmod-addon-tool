@@ -280,7 +280,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             var elToHide = target.dataset.divtohide;
             var elToShow = target.dataset.divtoshow;
             // Checks for resize data, if it exists, pass it to transition()
-            if ($(target).data("resize") != null) {
+            if (target.dataset.resize != null) {
                 var resizeInfo = JSON.parse("[" + target.dataset.resize + "]");
             }
             transition(elToHide, elToShow, resizeInfo);
@@ -463,7 +463,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                     console.log(existingAddonId)
                 });
             });
-            $("#yourAddons").append("<p>...and " + hiddenAddons + ` private ${hiddenAddons == 1 ? "addon" : "addons" }.</p>`);
+            document.getElementById("yourAddons").insertAdjacentHTML("beforeend", "<p>...and " + hiddenAddons + ` private ${hiddenAddons == 1 ? "addon" : "addons" }.</p>`);
             // Make sure if nothing is returned to let the user know
             if (apiError == 400) {
                 donePopulatingAddonList = true;
