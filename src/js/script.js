@@ -173,14 +173,14 @@ window.addEventListener("DOMContentLoaded", (e) => {
             ipcRenderer.send("checkIfDirectoryExists", filePath + "/bin/gmpublish.exe");
             if (desName == "GarrysMod") {
                 document.getElementById("status_of_dir").style.color = "lightgreen";
-                document.getElementById("status_of_dir").innerHTML = "Found gmad.exe and gmpublish.exe!";
+                document.getElementById("status_of_dir").innerHTML = (settings.get("") ? "Found gmad.exe and gmpublish.exe!" : "Found gmad and gmpublish!");
                 document.querySelector("#dir_prompt_next button").style.backgroundColor = "#56bd56";
                 document.querySelector("#dir_prompt_next button").disabled = false;
                 document.querySelector("#dir_prompt_next button").style.cursor = "pointer";
                 fadeIn("#checkmarkNote", () => {
                     setTimeout(() => {
                         fadeOut("#checkmarkNote");
-                    }, 500)
+                    }, 500);
                 });
                 settings.set("gmodDirectory", filePath);
                 ipcRenderer.send("getAddonInfo");
