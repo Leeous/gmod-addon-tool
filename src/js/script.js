@@ -464,7 +464,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 });
             });
             document.getElementById("yourAddons").insertAdjacentHTML("beforeend", "<p>...and " + hiddenAddons + ` private ${hiddenAddons == 1 ? "addon" : "addons" }.</p>`);
-            // Make sure if nothing is returned to let the user know
+            // Make sure if nothing is returned to let the user knowy
             if (apiError == 400) {
                 donePopulatingAddonList = true;
                 errorNote("Steam API: HTTP 400 error.", false, false);
@@ -594,22 +594,19 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 
     // Limit checkboxes to two max, addon tags
-    document.querySelector('.typeCheckbox').addEventListener('click', (event) => {
-        var target = $(event.target);
-        if (jsonCheckboxCount < 2 && target.is(":checked")) {
-            jsonCheckboxCount++;
-        } else if (jsonCheckboxCount != 0 && !target.is(":checked")) {
-            jsonCheckboxCount--;
-        } else if (jsonCheckboxCount == 2 && target.is(":checked")) {
-            event.preventDefault();
-        }
-
-        if (jsonCheckboxCount == 2) {
-            var checkboxes = document.querySelectorAll(".typeCheckbox");
-            if (checkboxes.checked) {
-                checkboxes.disabled = true;
+    var checkboxes = document.querySelectorAll(".typeCheckbox");
+    document.querySelectorAll('.typeCheckbox').forEach((el) => {
+        el.addEventListener('click', (event) => {
+            console.log(jsonCheckboxCount)
+            var target = event.target;
+            if (jsonCheckboxCount < 2 && target.checked) {
+                jsonCheckboxCount++;
+            } else if (jsonCheckboxCount != 0 && !target.checked) {
+                jsonCheckboxCount--;
+            } else if (jsonCheckboxCount == 2 && target.checked) {
+                event.preventDefault();
             }
-        }
+        });
     });
 
     // Dyamically change boolean based on whether or not string is empty, addon title
@@ -639,15 +636,16 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
 
     // Ensure all options that are required are checked
+    var jsonAddonValidateBtn = document.getElementById("jsonAddonValidate");
     function validateJsonForm() {
         if (jsonChecks[0] && jsonChecks[1]) {
-            $("#jsonAddonValidate").css("background-color", "#56bd56");
-            $("#jsonAddonValidate").prop("disabled", false);
-            $("#jsonAddonValidate").css("cursor", "pointer");
+            jsonAddonValidateBtn.style.backgroundColor = "#56bd56";
+            jsonAddonValidateBtn.style.cursor = "pointer";
+            jsonAddonValidateBtn.disabled = false;
         } else {
-            $("#jsonAddonValidate").prop("disabled", true);
-            $("#jsonAddonValidate").css("cursor", "not-allowed");
-            $("#jsonAddonValidate").css("background-color", (settings.get("darkMode") ? "#0f0f0f" : "#0261A5"))
+            jsonAddonValidateBtn.style.backgroundColor = (settings.get("darkMode") ? "#0f0f0f" : "#0261A5");
+            jsonAddonValidateBtn.style.cursor = "not-allowed";
+            jsonAddonValidateBtn.disabled = true;
         }
     }
 
@@ -700,7 +698,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
 
     // Get ID of new addon so we can open it in Steam
     ipcRenderer.on("currentAddonID", (event, newAddonID) => {
-        $("#uploading").fadeOut(() => {
+        fadeOut("#uploading", () => {
             win.setBounds({height: 225});
             if (existingAddonId == null) {
                 document.getElementById("new_addon_link").setAttribute("href", "steam://url/CommunityFilePage/" + newAddonID);
@@ -820,7 +818,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     
     // Transition screen after we've extracted the GMA
     ipcRenderer.on("finishExtraction", (e) => {
-        $("#extracting_addon").fadeOut(() => {
+        fadeOut("#extracting_addon", () => {
             win.setBounds({height: 225});
             fadeIn("#extraction_done");
         });
