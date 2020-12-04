@@ -463,8 +463,8 @@ window.addEventListener("DOMContentLoaded", (e) => {
                     console.log(existingAddonId)
                 });
             });
-            document.getElementById("yourAddons").insertAdjacentHTML("beforeend", "<p>...and " + hiddenAddons + ` private ${hiddenAddons == 1 ? "addon" : "addons" }.</p>`);
-            // Make sure if nothing is returned to let the user knowy
+            document.getElementById("yourAddons").insertAdjacentHTML("beforeend", (hiddenAddons != 0) ? "<p>...and " + hiddenAddons + ` private ${hiddenAddons == 1 ? "addon" : "addons" }.</p>` : "<p>No private addons found.</p>"); 
+            // Make sure if nothing is returned to let the user know
             if (apiError == 400) {
                 donePopulatingAddonList = true;
                 errorNote("Steam API: HTTP 400 error.", false, false);
