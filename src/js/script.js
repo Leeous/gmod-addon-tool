@@ -128,7 +128,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                     settings.set("remindUpdate", false);
                 }
             }).catch(err => {
-                console.log("Something went wrong.");
+                console.log("Something went wrong: " + err);
             });
         }
     }
@@ -165,7 +165,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
     // Validate that we have read/write access to the users Garrysmod directory so we can use gmad & gmpublish
     document.getElementById("gmod_dir_folder").addEventListener("click", () => {
         dialog.showOpenDialog(win, dirDialogOptions).then(result => {
-        var filePath = result.filePaths[0]
+        var filePath = result.filePaths[0];
         var desName = filePath.substring(filePath.length - 9, filePath.length);
         if (filePath != null) {
             // Checks to see if directory user selects contains gmad.exe & gmpublish.exe
@@ -192,7 +192,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
             }
         }
         }).catch(err => {
-            console.error("Dailog failed to open!");
+            console.error("Something went wrong: " + err);
         });
     });
 
@@ -496,7 +496,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 }
             }
         }).catch(err => {
-            console.error("Dailog failed to open!");
+            console.error("Something went wrong: " + err);
         })
     });
 
@@ -526,7 +526,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 errorNote("Doesn't seem like a JPEG image.", false, false);
             }
         }).catch(err => {
-            console.error("Dailog failed to open!");
+            console.error("Something went wrong: " + err);
         });
     });
 
@@ -800,7 +800,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
                 document.querySelector("#addon_extract_next button").style.backgroundColor = "#56bd56";
                 document.querySelector("#addon_extract_next button").style.cursor = "pointer";
             }
-        }).catch(err => { console.error("Dailog failed to open!", err) });
+        }).catch(err => { console.error("Something went wrong: " + err) });
     });
 
     document.querySelector("#addon_extract_next button").addEventListener("click", () => {
