@@ -8,6 +8,7 @@ const {
 } = require('electron');
 const fs = require('fs');
 const { spawn } = require('cross-spawn');
+const dialog = require('dialog');
 const settings = require('electron-settings');
 const homeDir = require('os').homedir();
 // Keep a global reference of the window object, if you don't, the window will
@@ -34,6 +35,23 @@ console.log('\n');
 //################//
 
 function createWindow() {
+  // Called before anything else
+  if (settings.get('gmodDirectory')) { 
+    fs.stat(settings.get('gmodDirectory') + "/bin/" + gmadFile, (err, stat) => {
+      if (err) {
+        dialog.err("It seems like your Garry's Mod directory has changed.\nResetting user settings so you can set your directory again.", "Gmad.exe not found", () => {
+          // Clear all settings
+          settings.deleteAll();
+
+          // Relaunch app so user can show where the directory has moved
+          setTimeout(() => {
+            app.relaunch(); app.exit(); 
+          }, 500);
+        });
+      }
+    });
+  }
+
   app.allowRendererProcessReuse = true;
 
   // Create the browser window.
@@ -115,6 +133,7 @@ if (isWin) {
 }
 
 function openSettings(callback) {
+      
   promptWindow = new BrowserWindow({
     width: 250, 
     height: 275,
@@ -210,17 +229,11 @@ ipcMain.on('getAddonInfo', () => {
 
 // We use this to get the addon IDs from gmpublish.exe
 function sendClientAddonInfo() {
-  fs.stat(settings.get('gmodDirectory') + '/bin/gmad.exe', (err, stat) => {
-    if (err) {
-      mainWindow.webContents.send("wrongDirectory");
-    }
-  });
-
   const bat = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['list']);
   bat.stdout.on('data', (data) => {
     sendConsoleData(data.toString().split("\n"));
     var arrayOfOutput = data.toString().split('\n');
-    // fixedArray are the lines where we get a 
+    //fixedArray should be a list of addon IDs
     var fixedArray = arrayOfOutput.slice(5, arrayOfOutput.length - 3);
     if (data.includes("Couldn't initialize Steam!")) {
       mainWindow.webContents.send('errorNote', "Steam doesn't seem to be open!", true, false);

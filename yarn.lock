@@ -694,6 +694,11 @@ detect-node@^2.0.4:
   resolved "https://registry.yarnpkg.com/detect-node/-/detect-node-2.1.0.tgz#c9c70775a49c3d03bc2c06d9a73be550f978f8b1"
   integrity sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==
 
+dialog@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/dialog/-/dialog-0.3.1.tgz#8fd9b47fdb277bb9e82172bb6e26bc578aa61254"
+  integrity sha512-RYndSaXW/tYkfVbUKmyQzerHH080Pis7YabDxIHXRdYO6yo9/VqTIhPRB5RpoHwYlixeiUOvJCF7di+lmBaH6w==
+
 dir-compare@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/dir-compare/-/dir-compare-2.4.0.tgz#785c41dc5f645b34343a4eafc50b79bac7f11631"

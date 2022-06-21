@@ -6,6 +6,7 @@
   "homepage": "https://leeous.com",
   "dependencies": {
     "cross-spawn": "^7.0.1",
+    "dialog": "^0.3.1",
     "electron-settings": "^3.2.0",
     "g": "^2.0.1",
     "image-size": "^0.8.3",
