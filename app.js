@@ -109,9 +109,8 @@ if (isWin) {
         fs.appendFile(homeDir + logLocation, "--- Beginning of log --- \n", 'utf8', (err) => {
         });
       });
-    } else {
-      fs.appendFile(homeDir + logLocation, "\n-----------------------", 'utf8', (err) => { if (err != null) { console.log(err) } });
     }
+
   });
 }
 
@@ -211,6 +210,12 @@ ipcMain.on('getAddonInfo', () => {
 
 // We use this to get the addon IDs from gmpublish.exe
 function sendClientAddonInfo() {
+  fs.stat(settings.get('gmodDirectory') + '/bin/gmad.exe', (err, stat) => {
+    if (err) {
+      mainWindow.webContents.send("wrongDirectory");
+    }
+  });
+
   const bat = spawn(settings.get('gmodDirectory') + '/bin/' + gmpublishFile, ['list']);
   bat.stdout.on('data', (data) => {
     sendConsoleData(data.toString().split("\n"));
@@ -229,6 +234,12 @@ function sendClientAddonInfo() {
       mainWindow.webContents.send('addonInfo', ADDON_IDS);
     }
   }, (err) => {console.log(err)});
+
+  bat.on('uncaughtException', err => {
+    console.error('There was an uncaught error', err);
+    alert("bruh")
+    process.exit(1); // mandatory (as per the Node.js docs)
+  });
 }
 
 // Addon creation and uploading //
@@ -319,7 +330,7 @@ if (settings.get("firstRun") == null) {
   settings.set("darkMode", false);
 
   // Check to see if user has Garry's Mod installed on local drive so we can skip getting the directory
-  fs.stat((isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod", (err, stat) => {
+  fs.stat((isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod/bin/gmad.exe" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod", (err, stat) => {
     if (!err) { settings.set("gmodDirectory", (isWin) ? "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod" : homeDir + "/.local/share/Steam/steamapps/common/GarrysMod") }
   });
 }

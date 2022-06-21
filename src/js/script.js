@@ -15,7 +15,7 @@ addon_data = [];
 api_data = {"itemcount": 0};
 okToProcessAddonList = false;
 donePopulatingAddonList = false;
-currentAppVersion = "v2.3";
+currentAppVersion = "v2.4";
 hiddenAddons = 0;
 apiError = 0;
 
@@ -64,6 +64,10 @@ let fileDialogOptions = {
     ],
     properties: ["openFile"]
 };
+
+ipcRenderer.on("wrongDirectory", (e) => {
+    alert("Hello World")
+});
 
 window.addEventListener("DOMContentLoaded", (e) => {
     //#########//

@@ -33,7 +33,7 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("currentAppVersion").innerHTML = "Version " + remote.app.getVersion().slice(0, 3);
     
     document.getElementById("openConsole").addEventListener("click", () => {
-        shell.openItem(homeDir + logLocation);
+        shell.openExternal(homeDir + logLocation);
     });
   
     document.getElementById("closeApp").addEventListener("click", () => {
