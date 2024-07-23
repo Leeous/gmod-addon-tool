@@ -1,4 +1,5 @@
-
+## No longer maintained
+It *probably* still works, but I recommend using [gmpublisher](https://github.com/WilliamVenner/gmpublisher/).
 # Garry's Mod Addon Tool | GMAT
 ![Version](https://img.shields.io/github/package-json/v/Leeous/gmod-addon-tool?style=flat-square)
 ![Build](https://img.shields.io/github/workflow/status/Leeous/gmod-addon-tool/Build?style=flat-square)
